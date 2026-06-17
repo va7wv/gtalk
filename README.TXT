@@ -1,3 +1,33 @@
+NOTES (June 2026):
+
+I have disabled the hardware encryption key so you don't have to.
+The precompiled release version in \GTALK will not run due to this
+DRM mechanism that XORed the old DOS BIOS manufacturer name to match
+whatever the author wanted to hardware lock the licensee to.
+
+Use the compiled setup in \SRC.  Don't bother with anything in \GTALK
+unless you have reason to.
+
+There is more info in GTALK\DOC\README.1ST on what to do with this.
+Basically:
+
+1) Run GTALK.EXE in DOSBOX-X (mount \SRC as your C: drive in Dosbox)
+2) Press escape when wait for caller screen comes up
+3) Login as user "0" with "Password" (note: case sensitive)
+4) type /system
+5) Press "P" and set your master password.  It is currently unset.
+
+This is NOT my work, I just made it easier to compile and run.
+Borland C 3.1 is included for your convenience.  Unzip to C:\BORLANDC
+or make necessary changes in the Makefile.
+
+To compile, go to \SRC and type MAKE.  Make sure C:\BORLANDC\BIN is
+in your path so that BCC.EXE can be run from \SRC.
+
+Apparently this is public domain.
+
+------------------------------------------------------------------------
+
 **************************
 Gtalk DOS Source code - README.TXT   - David W. Jeske (jeske@chat.net)
 **************************
@@ -5,6 +35,7 @@ Gtalk DOS Source code - README.TXT   - David W. Jeske (jeske@chat.net)
 This is the DOS source for a chat software product called "Gtalk".
 It was originally written in July 1992. The first chat system based
 on this software, Nuclear Greenhouse, went online in early August 1992.
+
 Since then customers came and went, and so did the Gtalk systems. Now
 a cult following of these systems remain.
 
