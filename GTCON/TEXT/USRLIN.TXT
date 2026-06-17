@@ -1,0 +1,8 @@
+
+|*h1|*b1|*f4|*h1  -----|*f2 Green|*f7House|*f4 MEETINGS -----  |*b0
+|*b1|*f4|*h1 Read /m99 for Meeting INFORMATION |*r1|*b0
+
+|*h1|*h5 The gathering has been decided, please read /m46!!!|*r1
+
+ |*f5Sorry about the system mishap on Friday afternoon; I'm a bonehead--X.
+

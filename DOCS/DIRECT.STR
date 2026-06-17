@@ -1,0 +1,265 @@
+
+
+************************************************************
+****                                                    ****
+****     GTalk - official Documemtation Release 0.1     ****
+****                 Directory Structure                ****
+****                                                    ****
+************************************************************
+
+
+
+Directory Structure   - Written 04/05/93 by David W. Jeske
+-------------------     Copyright 1993 by David W. Jeske and
+                                          Daniel L. Marks
+C:<Gtalk Main Diretory>
+쳐컴HELP         (help files /? type files)
+쳐컴TEXT         (text files, login, logout, timeout, etc)
+쳐컴MENU         (manu files, mail,bbs, etc)
+쳐컴CONFIG       (DOS serial config programs)
+쳐컴SYSTEM       (DOS gtalk userfile utilties/source for utils)
+쳐컴ROTATOR      (/m messages)
+쳐컴BBS
+�   읕컴BBS001   (BBS #001 files)
+쳐컴SYSHELP      ( /syshelp files)
+쳐컴USERS        ( /sm and /sm+ files)
+쳐컴MAIL
+�   읕컴MAIL000  (user #000 mail directory)
+읕컴DOC          (documentation)
+
+
+*******************
+*   HELP FILES    *
+*  <gtalk>\help   *
+*******************
+
+BBS.HLP
+EDITOR.HLP
+MAIL.HLP
+MAIN.HLP
+MESG.HLP
+ROTATOR.HLP
+SYSOP.HLP
+
+*******************
+*   TEXT FILES    *
+*  <gtalk>\text   *
+*******************
+Login Messages:  LOGIN.TXT       Printed BEFORE Login Prompt Message
+                 GSTLIN.TXT      Guest Login Message
+                 SYSLIN.TXT      Sysop Login Message
+                 USRLIN.TXT      User Login Message
+
+Locked Messages: GLOCKED.TXT     Locked Text file to Guests
+                 LOCKED.TXT      Locked Message for valid accounts
+
+LineOut Message: LINOUT.WRN      LineOut Warning
+                 LINOUT.TXT      LineOut Message
+
+Logout Message:  LOGOUT.TXT      /q logout message
+<or disconnect>  SHUTDN.TXT      Shutdown Message
+
+Sysinfo:         SYSINFO.HDR     /sysinfo header
+                 SYSINFO.TXT     /sysinfo text (follors sysinfo statistics)
+
+Editor :         EDTWLC.HDR      Editor Welcome Header
+
+SYSMEM.HDR      Sysop Member list header (/sm+)      **** MOVE TO USERS
+
+
+*******************
+*   MENU FILES    *
+*  <gtalk>\menu   *
+*******************
+
+
+EDITU.MNU
+GUESTPRV.MNU
+MAKEU.MNU
+PASS.MNU
+PRVEDIT.MNU
+STAPLE.MNU
+SYSTEM.MNU
+
+User Editor Menus: UEDELETE.MNU
+                   UEEDITU.MNU
+                   UEMAIN.MNU
+                   UENEW.MNU
+                   UENEWU.MNU
+
+
+*******************
+*    BBS FILES    *
+*  <gtalk>\bbs    *
+*******************
+
+Boards List:   boards.lst  <Jump, then ?, from the BBS menu>
+
+     Each BBS Directory (<gtalk>\BBS\BBSxxx, where xxx is the board number)
+has a file in it called the "DESCRIPT" file which defines the characteristics
+and name of the BBS. The format of the DESCRIPT file follows.
+
+******* SAMPLE <gtalk>\BBS\BBS001\DESCRIPT  file ********************
+50
+0
+100
+Main
+
+******* END OF SAMPLE FILE ******************************************
+
+50   = The Max number of messages in the board
+0    = the Priv(flag) required to enter the bbs board
+100  = the user number who moderates this BBS
+Main = the NAME of the bbs
+
+     To create a new Bulliten Board, simply create the next successive
+directory. (Ex. <gtalk>\BBS\BBS002 ) and in that directory create a new
+DESCRIPT file with the format from above. This new base will NOT automatically
+be added to the <gtalk>\BBS\BOARDS.LST file so you must add it manually.
+(this is done to let sysops make custom color, and full screen ANSI
+board lists)
+
+
+***********************
+*      /m  FILES      *
+*   <gtalk>\ROTATOR   *
+***********************
+
+    The format of the /m files is unpublished. Basically, each is given a name
+of the format ROTxxx where xxx is the box number. There is a file ROTATOR.N
+which holds the ownership and properties of /m boxes. This file is edited
+by Gtalk in the /rot utiltity, and the user should not attempt to alter it.
+If the file becomes corrupted, (due to HD crash or othewise) simply delete it.
+
+
+***********************
+*    SYSHELP FILES    *
+*   <gtalk>\SYSHELP   *
+***********************
+
+    The names of files in the /syshelp online help utility are defined by
+the file: <gtalk>\SYSHELP\FILE.LST. A sample FILE.LST follows
+
+******** SAMPLE  <gtalk>\SYSHELP\FILE.LST  **********************
+RULES.TXT
+System Rules
+HELP.TXT
+Verbose Help File
+PAYMENT.TXT
+Payment Information
+******** END OF SAMPLE *******************************************
+
+the files which appear on the odd lines are the names of the files which
+SHOULD BE LOCATED IN THE <gtalk>\SYSHELP directory. Gtalk will contruct a
+menu based on the names on the EVEN lines. Ex.
+
+
+------- Sample GTalk Output --------------------------------------
+
+GinsuTalk System Help Library
+
+1. System Rules
+2. Verbose Help File
+3. Payment Information
+P. Toggle Paging On/off (default=on)
+
+Which file to read: (1-3,P,Q,?):
+
+------- End of SAMPLE --------------------------------------------
+
+If a user selects (1), the System Rules file, if the above FILE.LST sample
+file were in use. The file <gtalk>\SYSHELP\RULES.TXT would be printed.
+
+
+
+*********************
+*    USERS FILES    *
+*   <gtalk>\USERS   *
+*********************
+
+Files :
+        SYSMBR.LST
+        MEMBER.LST
+        MEMBER.HDR
+        SYSMBR.HDR
+
+
+The files in the USERS directory are related to the /sm and /sm+ commands
+
+/sm is the System Member List command for USERS
+/sm+ is the System Member List command for sysops.
+
+ The /sm command prints the file MEMBER.LST withen the USERS directory. This
+file (like the SYSMBR.LST file) is automatically created/updated by GTalk every
+morning at 6am. The file can be manually updated with the /memud command.
+(NOTE: the updating of these files is a background process, so it takes
+       several moments after the /MEMUD command is completed before
+       the files will actually be updated. If you are monitoring Channel 0
+       Messages as to the progress of the update will be printed.)
+
+ The /sm+ command prints the file SYSMBR.LST.
+
+The two header files in the USERS directory are printed at the top of the
+/sm or /sm+ output.
+
+
+**********************
+*    CONFIG FILES    *
+*   <gtalk>\CONFIG   *
+**********************
+
+The <gtalk>\CONFIG Directory contains the SERIALCF.EXE program. This program
+is SEVERLY ALPHA. This does not mean it will crash or not work. Just that
+it has a severly user UNfriendly interface. Try and write down all the serial
+configuration information on paper before you have to enter it into the
+utility.
+
+ Your Gtalk software release should come with a PRE-made SERIAL.CFG file. If
+this file does not exist in the <gtalk> directory DCFG Enterprises will
+create one for you. Contact them at the address available in the title
+pages.
+
+  NOTE: this serial configuration utility will soon be replaced, please bear
+  with us. Serial Configuration only has to be done once.
+
+
+
+**********************
+*    SYSTEM FILES    *
+*   <gtalk>\SYSTEM   *
+**********************
+
+  The SYSTEM directory contains a few files which are used to create or list
+the USER.DAT file.
+
+  Note: source for these utilities is included so that those proficient in
+        a programming language can create their own general use programs
+        which can read/write the user.dat.
+
+     DCFG Enterprises will assume NO responsibility for damage which
+     occurs from the User file Source provided. For more disclamer information
+     see the source code files themselves.
+
+
+********************
+*    MAIL FILES    *
+*   <gtalk>\MAIL   *
+********************
+
+    The users mail is stored under the <gtalk>\MAIL directory. Each user
+is given a directory called MAILxxx where xxx is that users number.
+
+the mail for user number 000 would be available in the directory
+
+<gtalk>\MAIL\MAIL000
+
+At this time, the mail files are unencrypted.
+
+ The structure of the actual mail system, and the mail files are being
+ redesigned as of this Documemtation press time.
+
+   The new mail system will have optionally encrypted files (sysops discrecion)
+ and a new /mail structure which is easier to use.
+
+
+

@@ -1,0 +1,2536 @@
+ÿÿ   
+                  DigiCHANNEL PC/Xx BIOS & FEPOS SPECIFICATION
+                                   FOR
+                     PC/Xm  -  PART NUMBER  -  30000585 
+                     PC/Xe  -  PART NUMBER  -  30000645 
+                     PC/Xi  -  PART NUMBER  -  30000625 
+
+                              REVISED - 11/22/89 
+
+			      TABLE OF CONTENTS
+
+1.0  SCOPE
+
+2.0  APPLICABLE DOCUMENTS
+        
+3.0  GLOSSARY OF TERMS
+
+4.0  GENERAL DESCRIPTION
+        4.1  FIRMWARE OVERVIEW
+        4.2  SOFTWARE OVERVIEW
+        4.3  HARDWARE OVERVIEW
+
+5.0  SOFTWARE
+        5.1  HOST SOFTWARE INFORMATION
+                5.1.1  HOST DUAL-PORTED MEMORY STARTING ADDRESS MAP
+                5.1.2  HOST I/O MAP
+                5.1.3  HOST IRQ MAP
+                5.1.4  HOST DATA MAP
+        5.2  FEP SOFTWARE INFORMATION
+                5.2.1  FEP MEMORY MAP
+                        5.2.1.1  FEP EPROM
+                        5.2.1.2  FEP LOCAL MEMORY
+                        5.2.1.3  FEP DUAL-PORTED MEMORY
+                        5.2.1.4  FEP RESERVED MEMORY LOCATIONS
+                5.2.2  FEP RESERVED I/O
+                5.2.3  FEP I/O MAP
+                5.2.4  FEP INTERRUPTS
+
+6.0  BIOS
+        6.1  POWER-UP & POST DIAGNOSTICS
+        6.2  BIOS FUNCTIONS
+                6.2.0  FUNCTION 0 - CLEAR FEP TO HOST INTERRUPT REQUEST
+                6.2.1  FUNCTION 1 - EXECUTE MODULE 
+                6.2.2  FUNCTION 2 - MOVE FEP MEMORY BLOCK 
+                6.2.3  FUNCTION 3 - EXECUTE WARM BOOT
+                6.2.4  FUNCTION 4 - READ I/O BYTE
+                6.2.5  FUNCTION 5 - WRITE I/O BYTE 
+                6.2.6  FUNCTION 6 - READ I/O WORD 
+                6.2.7  FUNCTION 7 - WRITE I/O WORD
+                6.2.8  FUNCTION 8 - INSTALL PC/Xm EPROM OPERATING SYSTEM 
+                6.2.9  FUNCTION 9 - READ FROM AN 8530 REGISTER
+                6.2.10 FUNCTION A - WRITE TO AN 8530 REGISTER
+        6.3  FIRMWARE RAM STORAGE/USAGE
+        6.4  INFORMATION FOR CREATING EPROMS
+                6.4.1  SOFTWARE DEVELOPMENT PACKAGES
+                6.4.2  HARDWARE PARTS
+
+7.0  SYSTEM AND APPLICATION INFORMATION
+        7.1 TRANSFER CONTROL FROM BIOS TO SYSTEM/APPLICATION
+        7.2 SYSTEM/APPLICATION INTERFACE
+
+8.0  FRONT END PROCESSOR OPERATING SYSTEM (FEPOS) INFORMATION
+        8.1  RAM MEMORY MAPS
+                8.1.1  FEPOS DATA STORAGE MAP
+                8.1.2  DATA BUFFERS MEMORY MAPS
+        8.2  DATA STRUCTURES
+                8.2.1  ASYNC STRUCTURE
+        8.3  HOST TO FEP INTERFACE
+		8.3.1  BIOS/INT 15H FUNCTIONS
+                        8.3.1.0  BUFFER SET INDIVIDUAL (FCT 20H)
+                        8.3.1.1  ADDITIONAL TASK INTERRUPT ON (FCT 21H)
+                        8.3.1.2  ADDITIONAL TASK INTERRUPT OFF (FCT 22H)
+		8.3.2  CIRCULAR COMMAND BUFFER (CCB) FUNCTIONS
+                        8.3.2.0  SET RX MID WATER MARK (FCT 40H)
+                        8.3.2.1  SET RX HIGH WATER MARK (FCT 41H)
+                        8.3.2.2  FLUSH RX BUFFER (FCT 42H)
+                        8.3.2.3  FLUSH TX BUFFER (FCT 43H)
+                        8.3.2.4  TX PAUSE (FCT 44H)
+                        8.3.2.5  TX RESUME (FCT 45H)
+                        8.3.2.6  SET INTERRUPT TO HOST MASK (FCT 46H)
+                        8.3.2.7  SET BAUD, DATA, STOP, & PARITY (FCT 47H)
+                        8.3.2.8  SEND BREAK (FCT 48H)
+                        8.3.2.9  SET MODEM LINES (FCT 49H)
+                        8.3.2.10  SET BREAK COUNT (FCT 4AH)
+                        8.3.2.11  SET HANDSHAKE (FCT 4BH)
+                        8.3.2.12  SET XON/XOFF CHARACTERS (FCT 4CH)
+                        8.3.2.13  SET TX MID WATER MARK (FCT 4DH)
+                        8.3.2.14  IRQ POLLING TIMER TO HOST (FCT 4EH)
+                        8.3.2.15  BUFFER SET ALL (FCT 4FH)
+                        8.3.2.16  PORT ON (FCT 50H)
+                        8.3.2.17  PORT OFF (FCT 51H)
+                        8.3.2.18  RX PAUSE (FCT 52H)
+                        8.3.2.19  SPECIAL CHARACTER INTERRUPT (FCT 53H)
+                        8.3.2.20  RS-422 ENABLE (FCT 54H)
+                8.3.3  HOST TO FEP DATA TRANSFER
+        8.4  FEP TO HOST INTERFACE
+                8.4.1  FEP TO HOST CONTROL
+                8.4.2  FEP TO HOST DATA TRANSFER
+        8.5  INTERFACE WITH THE COMMUNICATION PORTS
+        8.6  PC/Xx DRIVER INFORMATION
+                8.6.1  TRANSFER CONTROL FROM BIOS TO FEPOS
+                8.6.2  FEPOS INTERFACE
+
+
+
+1.0  SCOPE
+
+        This document is the BIOS specification for the DigiCHANNEL PC/Xm,
+        PC/Xe, and PC/Xi boards.
+
+        This document describes the firmware and software for the 
+        DigiCHANNEL PC/Xx boards, DigiBioard's 3 intelligent communication
+        boards for the IBM PC-bus system.  Hardware references are used to 
+        assist in the explanation of the firmware and software specifications.
+
+
+2.0  APPLICABLE DOCUMENTS
+
+        DigiBoard DigiCHANNEL PC/Xm/80186 Processor Specification 30000580
+        DigiBoard DigiCHANNEL PC/Xe/80186 Processor Specification 30000640
+        DigiBoard DigiCHANNEL PC/Xi/80186 Processor Specification 30000620
+        Serial Communication Controller (SCC) 8530 data sheet
+        Intel 80186 Hardware Reference
+        Intel 80186 Software Reference
+        Microsoft Macro Assembler (Version 4.0 or newer)
+
+
+3.0  GLOSSARY OF TERMS
+
+        The following are terms, words, or phrases used in this document that
+        require a definition.
+
+
+        BIOS  -  Basic Input/Output System.  The software program used to
+                initialize the board.  It is EPROM resident on the PC/Xm and
+                is a 2K downloadable program for the PC/Xe and PC/Xi.
+
+        CCB  -  Circular Command Buffer.  Dedicated RAM area used for loading
+                functions from the HOST to be executed by the FEPOS.
+
+        COM/Xi  -  Refers to DigiBoard's 80188 intelligent communication board
+                that is also available for the IBM PC, XT, AT and true 
+                compatibles.
+
+        DigiCHANNEL PC/Xx/186 PROCESSOR  -  Refers to the board.  The 80186
+                processor, RAM, EPROMs (PC/Xm), up to 9 ports and other 
+                support logic reside on this module.
+
+        DigiCHANNEL PC/Xx -  Is the generic reference for all 3 boards. and
+                the different configurations of the cards.  If specifics are 
+                needed to reference a particular card, one of the following 
+                names will be used.
+                        DigiCHANNEL PC/8m+  - 8 async ports & 1 sync port
+                        DigiCHANNEL PC/4m+  - 4 async ports & 1 sync port
+                        DigiCHANNEL PC/8m   - 8 async ports
+                        DigiCHANNEL PC/4m   - 4 async ports
+
+                        DigiCHANNEL PC/8e   - 8 async ports
+                        DigiCHANNEL PC/4e   - 4 async ports
+
+                        DigiCHANNEL PC/16i+ - 16 async ports & 1 sync port
+                        DigiCHANNEL PC/8i+  - 8 async ports & 1 sync port
+                        DigiCHANNEL PC/4i+  - 4 async ports & 1 sync port
+                        DigiCHANNEL PC/16i  - 16 async ports
+                        DigiCHANNEL PC/8i   - 8 async ports
+                        DigiCHANNEL PC/4i   - 4 async ports
+
+                        DigiCHANNEL PC/Sync - 1 sync port
+
+        DRAM  -  Dynamic Random Access Memory.  The PC/Xm has either 128K or
+                512K DRAM.  All DRAM is addressable from the HOST.
+
+        DUAL-PORTED RAM  -  Memory (DRAM or SRAM) resident on the board that
+                can be addressed by either the FEP or the HOST.  DRAM can 
+                either be DUAL-PORTED or LOCAL.
+
+        EPROM  -  Erasable Programmable Read Only Memory.  Hardware chips that
+                are used to permanently hold software, becoming firmware.
+                EPROMs are used on the PC/Xm.
+
+        FEP  -  Front End Processor.  Refers to the DigiCHANNEL PC/Xx 80186 
+                CPU and associated hardware on the DigiCHANNEL PC/Xx board.
+
+        FEPOS  -  Front End Processor Operating System.  DigiBoard's operating
+                system that is either present in EPROM (PC/Xm) or is download-
+                able to any board.  Section 8 gives the detailed description
+                for the FEPOS.
+
+        FIRMWARE  -  Refers to the program that resides in the EPROM.
+
+        HARDWARE or H/W  -  All the components that physically make up the 
+                DigiCHANNEL PC/Xx.
+
+        HOST  -  The IBM PC-bus system in which the DigiCHANNEL PC/Xx board has
+                been installed.  This term also refers to the HOST's driver
+                that interfaces between the HOST and the FEP.
+
+        IRQ  -  Interrupt ReQuest.  A signal from the FEP to the HOST that
+                calls the HOST's interrupt routine to determine the reason
+                for the interrupt.
+
+        LOCAL RAM  -  Memory resident on the board that is only addressable
+                from the FEP.  This memory is used on the PC/Xe and PC/Xi.
+
+        NMI  -  Non-Maskable Interrupt (INT02).  HOST generated interrupt to
+                the FEP via bit 3 on the HOST's I/O port.  Changing bit 3 from
+                a 0 to a 1 will generate an NMI.
+
+        PORT  -  Refers to one of 18 possible ports on the DigiCHANNEL PC/Xx 
+                board.  Ports 0 through 15 are used for async communications.
+                If the sync port is on the board, it will always be referred 
+                to as the sync 1A, sync 1B is not available on the 8530 chip.
+                The sync port can be accessed via the BIOS functions only
+
+        SOFTWARE or S/W  -  Resident data or code that is loaded into RAM.
+
+        SRAM  -  Static Random Access Memory.  64K is available on the PC/Xm
+                as dual-ported memory.  16K or 64K is available as LOCAL SRAM 
+                on the PC/Xe & PC/Xi.
+
+        WINDOW  -  Refers to the dual-ported RAM that is addressable to both
+                the HOST and FEP.  The WINDOW BASE refers to the base address
+                as seen by the HOST.
+
+        A list of copyrights and registered trademarks that appear in this
+        document follows.
+
+        MASM 4.0        (R) (C) Microsoft Corporation
+        IBM PC          (R)     International Business Machines, Inc.
+
+4.0  GENERAL DESCRIPTION
+
+        The DigiCHANNEL PC/Xx series of option cards is a single board computer
+        that is built around an 80186 with 4 possible clock configurations 
+        (8, 10, 12.5, or 16).  This single-board computer allows for a 
+        dedicated CPU to handle the I/O control for enhanced system 
+        performance, much like a front-end processor (FEP) for a mainframe 
+        (HOST).
+
+                NOTE:   The PC or compatible computer will be referred to
+                        as the "HOST" for the remainder of this document.
+                        "FEP" (Front End Processor) refers to the DigiCHANNEL
+                        PC/Xx.
+
+        The DigiCHANNEL PC/Xx supports either 4, 8, or 16 asynchronous ports 
+        with or without 1 synchronous port; or just the 1 synchronous port.
+        Therefore, 7 configurations are possible.  Each port can be 
+        parameterized separately.  
+
+        The basis for this design was taken from DigiBoard's COM/Xi intelligent
+        board.  This specification uses as much of the present COM/Xi design as
+        possible.  First, it's a proven design; and second, minimal modifica-
+        tions to present PC-type drivers will speed the process of porting them
+        to the DigiCHANNEL PC/Xx boards.
+
+
+4.1  FIRMWARE OVERVIEW
+
+        The PC/Xm's on-board firmware is 16K of EPROM (2 8K X 8).  The EPROM 
+        can be expanded to 128K for custom software.  The power-up and post
+        diagnostic routines are resident in EPROM, and a BIOS (Basic Input/
+        Output System).  The BIOS performs certain functions provides a 
+        simple interface to allow transfer of control to a resident operating 
+        system.  This operating system can be resident in dual-ported memory
+        for all 3 boards; resident in local memory for the PC/Xe or PC/Xi; or
+        resident in EPROM for the PC/Xm.
+
+
+4.2  SOFTWARE OVERVIEW
+
+        The dual-ported RAM on the DigiCHANNEL PC/Xx board will be used for 
+        variable data storage during the BIOS power-up sequence.  The RAM will
+        also be used for buffers to support the installed communications 
+        ports, interface structures for HOST and DigiCHANNEL PC/Xx two-way 
+        communications, and other necessary storage of data.  Communications 
+        between the HOST and FEP are handled through mailboxes, interrupts,
+        structures, and buffers.
+
+
+4.3  HARDWARE OVERVIEW
+
+        The DigiCHANNEL PC/Xx board for the PC uses Intel's 80186 16 bit 
+        microprocessor.  The board can be populated with either 4, 8, or 16 
+        ports for asynchronous communications, with the added option of a 
+        single synchronous port.  Multiple DigiCHANNEL PC/Xx boards can be 
+        installed in a PC system.  For further hardware specifics, refer to 
+        the DigiCHANNEL PC/Xx/80186 Processor hardware specifications.
+
+5.0  SOFTWARE INFORMATION
+
+5.1  HOST SOFTWARE INFORMATION
+
+5.1.1  HOST DUAL-PORTED MEMORY STARTING ADDRESS MAP
+
+        With the ability to address 16 megabytes of memory, the 
+        PC/Xx board can reside at a selectable address via DIPSWITCH #1.  
+        Address lines 16 through 23 are selectable for mapping the board 
+        within the 16 megabyte boundary.  DIP switch #1 on all boards is used 
+        to set the address from which the HOST sees the dual-ported memory.  
+        Setting the switch ON makes the address line equal 0, and setting the 
+        switch OFF makes the address line equal 1 (see the examples below).
+
+	PC/Xm
+
+	        DIP SWITCH #1 - DS1 - DUAL PORTED MEMORY STARTING ADDRESS
+
+                                                        EXAMPLES
+	        12345678                           0C0000H    F00000H
+        	|||||||`- ADDRESS LINE 23            ON        OFF
+        	||||||`--       "      22            ON        OFF
+        	|||||`---       "      21            ON        OFF
+        	||||`----       "      20            ON        OFF
+        	|||`-----       "      19            OFF       ON
+        	||`------       "      18            OFF       ON 
+        	|`-------       "      17            ON        ON
+        	`--------       "      16            ON        ON
+
+	PC/Xe OR PC/Xi
+
+	        DIP SWITCH #1 - DS1 - DUAL PORTED MEMORY STARTING ADDRESS
+				      AND I/O PORT
+
+	        12345678901
+        	||||||||||`---- PORT SELECT  /--------.
+        	|||||||||`----- PORT SELECT  /----.   |
+        	||||||||`------ PORT SELECT  /-.  |   |
+		||||||||		      OFF OFF OFF = DISABLED
+		||||||||		      ON  OFF OFF = 100H
+		||||||||		      OFF ON  OFF = 110H
+		||||||||		      ON  ON  OFF = 120H
+		||||||||		      OFF OFF ON  = 200H
+		||||||||		      ON  OFF ON  = 220H
+		||||||||		      OFF ON  ON  = 300H
+		||||||||		      ON  ON  ON  = 320H
+        	|||||||`- ADDRESS LINE 23
+        	||||||`--       "      22
+        	|||||`---       "      21
+        	||||`----       "      20
+        	|||`-----       "      19
+        	||`------       "      18
+        	|`-------       "      17
+        	`--------       "      16
+
+        Each range is a contiguous block of RAM that is dependent on the
+        amount of dual-ported RAM on the board.
+5.1.2  HOST I/O PORT MAP
+
+        There are 7 defined HOST I/O ports that can be used to access the
+        PC/Xx board.  Multiple boards will use unique port addresses.
+
+        PC/Xm
+                3 switches on DIP switch #2 are used to decode the I/O port.
+                The ports are selected via switches 3-5.
+
+        	DIP SWITCH #2 - DS2 - MEMORY SIZE, I/O PORT, & EPROM SIZE
+
+        	12345678     
+        	|||||||`- EPROM SIZE   /ON     /ON     /OFF    /OFF
+        	||||||`-- EPROM SIZE   /ON=128K/OFF=64K/OFF=32K/OFF=16K
+        	|||||`--- ON=NO EPROM  / OFF=EPROM PRESENT
+        	||||`---- PORT SELECT  /--------.
+        	|||`----- PORT SELECT  /----.   |
+        	||`------ PORT SELECT  /-.  |   |
+		||			OFF OFF OFF = DISABLED
+		||			OFF OFF ON  = 100H
+		||			OFF ON  OFF = 110H
+		||			OFF ON  ON  = 120H
+		||			ON  OFF OFF = 200H
+		||			ON  OFF ON  = 220H
+		||			ON  ON  OFF = 300H
+		||			ON  ON  ON  = 320H
+        	|`------- BANK 1 EMPTY / - ON=NO DRAM / OFF=DRAM PRESENT
+        	`-------- BANK 1 SIZE  / ON=128K / OFF=512K
+
+
+        PC/Xe & PC/Xi
+                See section 5.1.1 for the I/O port select bits.  They are
+                on the same DIP switch with the memory start address.
+
+
+        Once the port has been selected, there are 8 bits to interface with
+        the FEP.  The HOST can determine the type of board, enable/disable 
+        board memory, reset the FEP, and interrupt the FEP.  Any time the HOST
+        changes bit(s) on the port, it is good practice to read the port,
+        change only the desired bit(s) while not altering the other bits, then
+        write the new value back to the port.  The following are the bit 
+        definitions for the 8 bit port for each board.
+
+		PC/Xm -	76543210
+			|||||||`- READ/WRITE
+			||||||`-- MEMORY ENABLE
+			|||||`--- FEP RESET				
+			||||`---- HOST TO FEP INTERRUPT (FEP NMI)
+			|||`----- UNDETERMINABLE
+			||`------ UNDETERMINABLE
+			|`------- UNDETERMINABLE
+			`-------- UNDETERMINABLE
+
+		PC/Xe -	76543210
+			|||||||`- 0
+			||||||`-- MEMORY ENABLE
+			|||||`--- FEP RESET				
+			||||`---- HOST TO FEP INTERRUPT (FEP NMI)
+			|||`----- 0 
+			||`------ 0
+			|`------- REVISION #
+			`-------- REVISION #
+
+
+		PC/Xi -	76543210
+			|||||||`- 1
+			||||||`-- MEMORY ENABLE
+			|||||`--- FEP RESET				
+			||||`---- HOST TO FEP INTERRUPT (FEP NMI)
+			|||`----- MEMORY (00=64K, 01=128K)
+			||`------   "    (10=256K, 11=512K)
+			|`------- REVISION #
+			`-------- REVISION #
+
+
+	The HOST will use bit 0 of the port to determine the board type.
+        Bit 0 on the PC/Xm can be set to 0 or 1, it is always a 0 on the
+        PC/Xe, and always a 1 on the PC/Xi.
+
+        Bit 1 is used by the HOST to enable/disable (1/0) the dual-ported
+        RAM on the PC/Xx board.  The memory must be enabled prior
+        to the HOST's access to the board's dual-ported RAM.
+
+        Setting bit 2 causes the 80186 on the PC/Xx board to reset.  The board
+        acknowledges the reset command by setting bit 2.  Once the HOST sees 
+        bit 2 set, it must reset bit 2 to drop the reset signal, and output it
+        to the FEP.  Resetting the board forces program execution to begin at 
+        address 0FFFF0H.  Successful completion of the card reset is verified 
+        by the contents of 2 bytes at the WINDOW BASE + 0C00H.  The first 
+        byte is a 'G' (47H), and the 2nd byte is a 'D' (44H).  In addition to
+        those 2 bytes, 1 word at WINDOW BASE + 0C12H records events during 
+        the power-up & reset process.  Each bit is set upon successful comple-
+        tion of a task.  Certain bits will not be set due to the memory 
+        configuration for the particular board.  Refer to section 6.1 for 
+        the tasks and assigned bits.  
+
+        Setting bit 3 causes a nonmaskable interrupt (NMI) in the FEP.  The 
+        HOST to FEP's mailbox must be used to pass the parameters for the 
+        FEP to perform the NMI function.  The FEP acknowledges the completion 
+        of the NMI function by setting the first byte in the HOST to FEP's 
+        mailbox to zero, and the second byte is the status of the function.
+        If bit 7 is set in the status byte, there was an error while executing
+        the requested function.  The HOST can now lower bit 3.
+
+5.1.3  HOST IRQ MAP
+
+        There are 8 defined IRQs that can be used to interrupt the HOST from
+        the FEP.  The IRQs are 3-5, 7, 10-12, and 15.  Multiple boards will
+        use unique IRQs.
+
+        These values are selectable via DIP switch #3 (DS3) for the PC/Xm.
+        These values are selectable via DIP switch #2 (DS2) for the PC/Xe or
+        PC/Xi.
+
+	        IRQ INTERRUPT SELECTION
+
+        	12345678
+        	|||||||`- IRQ 15
+        	||||||`-- IRQ 12
+        	|||||`--- IRQ 11
+        	||||`---- IRQ 10
+        	|||`----- IRQ 7
+        	||`------ IRQ 5
+        	|`------- IRQ 4
+        	`-------- IRQ 3
+
+5.1.4  HOST DATA MAP
+
+        All data provided by the FEP for the HOST appears at the same place
+        for the HOST.  Information provided by the FEP BIOS appears at the
+        WINDOW BASE + 0C00H.  The following map is used by the HOST to 
+        retrieve information from the FEP.
+
+        DUAL-PORTED WINDOW
+        BASE + 0C00H = BIOS & FEPOS DATA SEGMENT
+
+        00C00H - 00CFFH         BIOS/FEPOS data - 1K
+          00C00H  DB  'G','D'   After successful power-up & card reset.
+                  DB  'D','G'   Reversed will cause BIOS to jump to 0200:0004H
+                                Referred to as the diagnostic exit method.
+          00C02H  DB  -1,-1     After successful power-up & card reset.
+                  DB  'E','M'   Execute Module (FCT 1) was successful, BIOS
+                                exits to segment and offset passed to FCT 1.
+          00C04H  DB  -1,-1     After successful power-up & card reset.
+                  DB  'E','T'   Install PC/Xm EPROM O/S (FCT 8) was successful,
+                                BIOS exits to FC00:0004H.
+          00C06H  DB  -1,-1     After successful power-up & card reset.
+                  DB  '?','?'   EPROM operating system version in units & 
+                                tenths only if an EPROM O/S is available.
+          00C08H  DB  'BIOSXx'  6 bytes after successful power-up & card reset.
+                                The 6th byte will be either 'm', 'e', or 'i'.
+          00C0EH  DB  '??'      BIOS version number in units & tenths.
+
+
+          00C10H  DB            Board type - PC/Xm=2, PC/Xe=3, PC/Xi=4
+          00C11H  DB            FEP port 0 value
+				 BITS 2 & 1
+				    - PC/Xm
+                                   	00=64K / 10=128K / 11=512K
+				    - PC/Xe or PC/Xi 
+                                   	00=64K / 01=128K / 10=256K / 11=512K
+				 BIT 4
+				    - PC/Xe = 0
+				    - PC/Xi = 1
+          00C12H  DW            BIOS sequence status (see 6.1)
+          00C14H  DW            BIOS error status (see 6.1)
+          00C16H  DW            Amount of local memory (PC/Xe, PC/Xi only)
+                                10H=16K, 40H=64K
+          00C18H  DW            Amount of dual-ported memory
+                                PC/Xm - 40H=64K, 80H=128, C0H=192K,
+                                        200H=512K, 240H=576K
+                                PC/Xe PC/Xi - 40H=64K, 80H=128, 100H=256K,
+                                        200H=512K
+          00C1AH  DW            Dual-ported memory available for buffers
+                                Used by the FEPOS.
+			         - PC/Xm
+				    Dual-ported memory -16K (16K data/struct)
+				    30H(48K)/70H(112K)/B0H(176K)
+				    1F0H(496K)/230H(560K)
+			         - PC/Xe/Xi
+                                    Dual-ported memory - 16K
+                                    (16K data/structures)
+                                    30H(48K)/70H(112K)/F0H(240K)/1F0H(496K)
+          00C1CH  DW            port 1's buffer segment.  Used by FEPOS.
+				 - PC/Xm (5 possible dual-ported configs)
+				 	0400H - 2K,4K,8K,16K
+				 	0800H - 32K
+				 	1000H - 64K
+			         - PC/Xe or PC/Xi with 64K dual-ported
+				 	F400H - 2K,4K,8K (max)
+				 - PC/Xi with 128K dual-ported
+				 	E400H - 2K,4K,8K,16K (max)
+				 - PC/Xi with 256K dual-ported
+				 	C400H - 2K,4K,8K,16K
+				 	C800H - 32K (max)
+				 - PC/Xi with 512K dual-ported
+				 	8400H - 2K,4K,8K,16K
+				 	8800H - 32K
+				 	9000H - 64K
+          00C1EH  DW            ports ON/OFF.  Used by FEPOS.
+                                1 bit/port - 0=off 1=on
+                                bit 0 = port 1, .... , bit 15 = port 16 
+
+
+          00C20H  DW            Async mask, 1 bit set for each async port
+                                bit 0 = port 1, .... , bit 15 = port 16
+          00C22H  DB            Number of total async comm ports installed
+          00C23H  DB            Number of total sync comm ports installed
+          00C24H  DB            Board configuration (5 possible configurations)
+                                        1H = sync port only
+                                        2H = 4 async ports
+                                        3H = 4 async + sync
+                                        6H = 8 async ports
+                                        7H = 8 async + sync
+                                       0EH = 16 async ports
+                                       0FH = 16 async + sync
+          00C25H  DW            Day - real time clock
+          00C27H  DB            Hour -  "       "
+          00C28H  DB            Minute -        "
+          00C29H  DB            Second -        "
+          00C2AH  DB            Counts 18 timer ticks for 1 second
+          00C2BH  DB            Timer tick - increments once every 55 msec
+          00C2CH  DW,DW         Offset & segment for BIOS exit/module entry.
+                                        1- Diagnostic exit.
+                                        2- Execute module (FCT 1).
+                                        3- Transfer to PC/Xm EPROM O/S (FCT 8).
+
+          00C30H-00C3FH         16 Byte FEP to HOST mailbox
+
+          00C40H-00C4FH         16 byte HOST to FEP mailbox
+
+          00C50H-00C7FH         48 bytes used for board debug
+
+          00C80H-00C8FH         Reserved for FEPOS
+
+          00C90H  DW  0204H     Port 1 base address (0 if not installed)
+          00C92H  DW  0200H     Port 2 base address     "       "
+          00C94H  DW  0214H     Port 3 base address     "       "
+          00C96H  DW  0210H     Port 4 base address     "       "
+          00C98H  DW  0224H     Port 5 base address     "       "
+          00C9AH  DW  0220H     Port 6 base address     "       "
+          00C9CH  DW  0234H     Port 7 base address     "       "
+          00C9EH  DW  0230H     Port 8 base address     "       "
+          00CA0H  DW  0244H     Port 9 base address (0 if not installed)
+          00CA2H  DW  0240H     Port 10 base address    "       "
+          00CA4H  DW  0254H     Port 11 base address    "       "
+          00CA6H  DW  0250H     Port 12 base address    "       "
+          00CA8H  DW  0264H     Port 13 base address    "       "
+          00CAAH  DW  0260H     Port 14 base address    "       "
+          00CACH  DW  0274H     Port 15 base address    "       "
+          00CAEH  DW  0270H     Port 16 base address    "       "
+          00CB0H  DW  0104H     Sync 1A base address (0 if not installed)
+          00CB2H  DW  0100H     Sync 1B base address    "       "
+          00CB4H-00CBFH         Reserved for FEPOS
+
+          00CC0H-00CFFH         Reserved for FEPOS
+
+
+5.2  FEP SOFTWARE INFORMATION
+
+5.2.1  FEP MEMORY MAP
+
+        The following are memory maps for the 3 boards.
+
+        PC/Xm
+	1 meg memory map for the PC/Xm is allocated as follows:
+         - E0000H - FFFFFH: 128K - Up to 128K EPROM supported.
+         - 90000H - DFFFFH: 320K - Non-supported memory area.
+         - 00000H - 8FFFFH: Up to 576K is dual-ported SRAM and/or DRAM.
+                            (Configurations: 64K, 128K, 192K, 512K, or 576K).
+
+        PC/Xe
+	1 meg memory map for the PC/Xe is allocated as follows:
+         - F0000H - FFFFFH: Upper 64K is dual-ported SRAM.
+	 - 10000H - EFFFFH: 896K is not available.
+	 - 00000H - 0FFFFH: Lower 64K is local SRAM.  Minimum is 16K.
+
+
+
+        PC/Xi
+	1 meg memory map for the PC/Xi is allocated as follows:
+         - 80000H - FFFFFH: Up to 512K is dual-ported SRAM.  Minimum is 64K.
+                            (Configurations: 64K, 128K, 256K, or 512K).
+	 - 10000H - 7FFFFH: 448K is not available.
+	 - 00000H - 0FFFFH: Lower 64K is local SRAM.  Minimum is 16K.
+
+
+5.2.1.1  FEP EPROM
+
+        EPROMs are only present on the PC/Xm.  The EPROM presently is 16K in 
+        size.  Future support up to 128K is designed into the BIOS.
+
+5.2.1.2  FEP LOCAL MEMORY
+
+        Local memory on the PC/Xe or PC/Xi is either 16K or 64K of SRAM that
+        is not addressable from the HOST.  The base address for this memory
+        is always 0H.  The interrupt vector table, stack and FEPOS reside
+        in this local memory on the PC/Xe or PC/Xi.
+
+5.2.1.3  FEP DUAL-PORTED MEMORY
+
+        
+        Dual-ported memory is quite different to the FEP from the PC/Xm and
+        the other 2 boards.  The PC/Xm will be explained first, follwed by the
+        PC/Xe and PC/Xi.
+
+        PC/Xm
+                All the RAM memory on the PC/Xm is dual-ported.  The FEP base
+                for any configuration is always address 0H.  Five possible 
+                SRAM/DRAM configurations are possible.  
+
+                        SIZE - TYPE                 - ADDRESS
+                         64K - SRAM                 - 00000H - 0FFFFH
+                        128K - DRAM                 - 00000H - 1FFFFH 
+                        192K - 128K DRAM / 64K SRAM - 00000H - 2FFFFH
+                        512K - DRAM                 - 00000H - 7FFFFH
+                        576K - 512K DRAM / 64K SRAM - 00000H - 8FFFFH
+
+        PC/Xe & PC/Xi
+                The dual-ported memory on these 2 boards is addressed from the
+                top of the 1 meg address range.  Four possible DRAM 
+                configurations are possible.
+
+                        SIZE - TYPE                 - ADDRESS
+                         64K - DRAM                 - F0000H - FFFFFH
+                        128K - DRAM                 - E0000H - FFFFFH 
+                        256K - DRAM                 - C0000H - FFFFFH
+                        512K - DRAM                 - 80000H - FFFFFH
+
+5.2.1.4  FEP RESERVED MEMORY LOCATIONS
+
+        This is a map of reserved RAM locations.  This information is valid
+        upon successful completion of power-up and post diagnostics.  Do not
+        use these reserved areas.  The BIOS data segment can be at various 
+        addresses, the '?' indicates a variable number.  The following data 
+        segment will be set by the BIOS for the appropriate board and memory 
+        configuration.
+
+                PC/Xm    (all)  - 00C00H
+                PC/Xe/Xi (64K)  - F0C00H
+                PC/Xi    (64K)  - F0C00H
+                PC/Xi    (128K) - E0C00H
+                PC/Xi    (256K) - C0C00H
+                PC/Xi    (512K) - 80C00H
+
+        20 BIT ADDRESSES        DEFINITION
+
+        00000H - 003FFH         Interrupt vector table - 1K
+
+        00400H - 007FFH         Stack - 1K
+
+        ?0C00H - ?0CFFH         BIOS data - 1K (? - 1 of 6 possible addresses)
+
+        FF800H - FFFFFH         2K BIOS area in RAM for PC/Xe & PC/Xi
+
+
+5.2.2  FEP RESERVED I/O ADDRESSES
+
+        This is a list of the reserved I/O addresses on the PC/Xx.
+
+        UMCS    0FFA0H          Upper memory chip select / ready bits
+        LMCS    0FFA2H          Lower memory chip select / ready bits
+        PACS    0FFA4H          I/O control port / PCS0-3 ready bits
+        MMCS    0FFA6H          Mid memory select / ready bits
+        MPCS    0FFA8H          Mid memory size / PCS4-6 ready bits
+
+        FF20H - FFFEH are 80186 Internal I/O Registers.  This I/O address range
+        is internal to the 80186 and should not be changed.  Reference
+        the BIOS source code for the detailed use of these ports.
+
+        The following is a list of I/O ports and the associated peripheral 
+        chip selects (PCS).
+
+        PCS     NAME            PORT ADDRESS    DEFINITION
+
+        0       FEP port 0      0000H           Interrupt to HOST
+
+        1       Ring            0080H           16 async ring indicators
+
+        2       Sync 1A         00104H/0010CH   Sync port 1A command address
+                Sync 1A         00106H/0010EH   Sync port 1A data address
+                Sync 1B         00100H/00108H   Sync port 1B command address
+                Sync 1B         00102H/0010AH   Sync port 1B data address
+
+        3       Acknowledge     0180H           Async 9-16 8530 vector
+
+        4       Port 1          00204H/0020CH   Async port 1 command address
+                Port 1          00206H/0020EH   Async port 1 data address
+                Port 2          00200H/00208H   Async port 2 command address
+                Port 2          00202H/0020AH   Async port 2 data address
+                Port 3          00214H/0021CH   Async port 3 command address
+                Port 3          00216H/0021EH   Async port 3 data address
+                Port 4          00210H/00218H   Async port 4 command address
+                Port 4          00212H/0021AH   Async port 4 data address
+                Port 5          00224H/0022CH   Async port 5 command address
+                Port 5          00226H/0022EH   Async port 5 data address
+                Port 6          00220H/00228H   Async port 6 command address
+                Port 6          00222H/0022AH   Async port 6 data address
+                Port 7          00234H/0023CH   Async port 7 command address
+                Port 7          00236H/0023EH   Async port 7 data address
+                Port 8          00230H/00238H   Async port 8 command address
+                Port 8          00232H/0023AH   Async port 8 data address
+                Port 9          00244H/0024CH   Async port 9 command address
+                Port 9          00246H/0024EH   Async port 9 data address
+                Port 10         00240H/00248H   Async port 10 command address
+                Port 10         00242H/0024AH   Async port 10 data address
+                Port 11         00254H/0025CH   Async port 11 command address
+                Port 11         00256H/0025EH   Async port 11 data address
+                Port 12         00250H/00258H   Async port 12 command address
+                Port 12         00252H/0025AH   Async port 12 data address
+
+        PCS     NAME            PORT ADDRESS    DEFINITION
+
+                Port 13         00264H/0026CH   Async port 13 command address
+                Port 13         00266H/0026EH   Async port 13 data address
+                Port 14         00260H/00268H   Async port 14 command address
+                Port 14         00262H/0026AH   Async port 14 data address
+                Port 15         00274H/0027CH   Async port 15 command address
+                Port 15         00276H/0027EH   Async port 15 data address
+                Port 16         00270H/00278H   Async port 16 command address
+                Port 16         00272H/0027AH   Async port 16 data address
+
+        5       Acknowledge     0280H           Async 1-8 8530 vector
+
+        6       Acknowledge     0300H           Sync 8530 vector
+
+
+        There are 2 possible addresses for each port because bit 3 is masked,
+        therefore either value will address the same data or command address.
+
+
+5.2.3  FEP I/O MAP
+
+        The FEP I/O port that communicates to the HOST is port 0.  The BIOS 
+        will use port 0 on the board to determine the board type.  Power-up
+	diagnostics, initialization will be performed according to the board 
+        type.  The following are the bit defintions for the 8 bit FEP port 
+        for each board.
+
+	PORT ADDRESS = 0
+
+		PC/Xm -	76543210
+			|||||||`- 0
+			||||||`-- DRAM SIZE (0=128K, 1=512K)
+			|||||`--- DRAM PRESENT (0=64K SRAM, 1=DRAM PRESENT)
+			||||`---- FEP TO HOST INTERRUPT (HOST IRQ)
+			|||`----- 1
+			||`------ 1
+			|`------- 1
+			`-------- 1
+
+
+		PC/Xe -	76543210
+			|||||||`- 0
+			||||||`-- 0
+			|||||`--- 0
+			||||`---- FEP TO HOST INTERRUPT (HOST IRQ)
+			|||`----- 0 
+			||`------ 0
+			|`------- 0
+			`-------- 0
+
+
+		PC/Xi -	76543210
+			|||||||`- 16 PORT OUTBOX SIGNAL
+			||||||`-- BITS 1 & 2 ARE USED FOR VARIABLE MEMORY
+			|||||`---  2/1 (00=64K / 01=128K / 10=256K / 11=512K)
+			||||`---- FEP TO HOST INTERRUPT (HOST IRQ)
+			|||`----- 1
+			||`------ 0
+			|`------- 0
+			`-------- 0
+
+        Bit 0 is reserved.
+
+	Bits 1 & 2 are read only for the BIOS.  They are used to determine the
+        amount of dual-ported memory on the board.  If a PC/Xi is found, the 
+        BIOS must use bits 1 & 2 to determine where to locate the data segment.
+        The amount of dual-ported memory (64K, 128K, 256K, OR 512K) determines
+        the dual-ported base that the BIOS uses to comply with the rule that 
+        the HOST's view of the board is the same as the PC/Xm & THE PC/Xe.
+        Refer to section 5.2.1.4 for further information.
+
+        Bit 3 is reset, then set by the FEP to interrupt the HOST.  A positive
+        going signal will generate an IRQ in the HOST.  It is the only 
+        read/write bit in the port.
+
+        Bits 4-7 are used to determine the board type.
+
+        
+5.2.4  FEP INTERRUPTS
+
+        All 256 interrupt vectors are loaded via the BIOS.  The interrupts
+        noted below by a '#' are supported in the BIOS.  All unused hardware 
+        interrupts are vectored to dummy hardware interrupt routine that 
+        issues a non-specific EOI and returns.  All remaining interrupts are 
+        vectored to a dummy software interrupt routine that performs a return.
+        A downloaded operating system may use additional available interrupts.
+
+        If the FEPOS is to be used as the on-board operating system, the 
+        FEPOS reloads all 256 vectors.  The interrupts noted below by '%' are
+        supported by the FEPOS.
+
+        INTERRUPT NUMBER        INTERRUPT NAME
+
+        INT 0/00H               DIVIDE ERROR
+        INT 1/01H               SINGLE STEP
+    # % INT 2/02H               NMI - HOST TO BIOS INTERRUPT
+        INT 3/03H               BREAK POINT
+        INT 4/04H               OVERFLOW 'INT0'
+        INT 5/05H               BOUND
+        INT 6/06H               BAD OPCODE
+        INT 7/07H               ESC OPCODE
+    # % INT 8/08H               TIMER 0 - REAL TIME CLOCK
+        INT 9/09H       
+      % INT 10/0AH              DMA 0 - REQUEST LINE FOR SYNC RECEIVE
+      % INT 11/0BH              DMA 1 - REQUEST LINE FOR SYNC TRANSMIT
+      % INT 12/0CH              INT0 - COMM INTERRUPT FOR 8 ASYNC PORTS 1 - 8
+      % INT 13/0DH              INT1 - COMM INTERRUPT FOR SYNC PORT
+      % INT 14/0EH              INT2 - RING INDICATOR
+      % INT 15/0FH              INT3 - COMM INTERRUPT FOR 8 ASYNC PORTS 9 - 16
+        INT 16/10H  
+        INT 17/11H  
+      % INT 18/12H              TIMER 1 - FEPOS POLLED MODE (CCB FCT 4EH)
+      % INT 19/13H              TIMER 2 - FEPOS POLLED MODE (PRESCALER)
+        INT 20/14H  
+    # % INT 21/15H              HOST TO BIOS USER DEFINED FUNCTIONS (VIA NMI)
+    # % INT 22/16H              TIMER TICK (55 MSEC)/VIA TIMER 0 & SEND BREAK
+        INT 23/17H - 32/20H     AVAILABLE
+      % INT 33/21H              FEPOS SUPPORT SERVICES (FOR ADDITIONAL TASKS)
+        INT 34/22H - 127/7FH    AVAILABLE
+      % INT 128/80H - 143/8FH   BIOS/INT 15H ADDITIONAL TASK INTERRUPTS
+        INT 144/90H - 255/FFH   AVAILABLE
+6.0  BIOS
+
+        The BIOS resides in EPROM for the PC/Xm and is a 2K downloadable
+        program for the PC/Xe & PC/Xi.
+
+        The firmware refers to all the programs, tables, and permanent data 
+        that resides in the EPROM.  References to RAM are necessary for 
+        variables that are used by the BIOS program.  Refer to the PC/Xx
+        Memory Map section for more details.  16K (2 8K X 8) EPROMs reside on 
+        the PC/Xm board.
+
+        The basis for this design was taken from DigiBoard's COM/Xi intelligent
+        board firmware.  The same basic functions are still available, plus
+        additional functions necessary to support new hardware on the boards.
+        Therefore, converting existing COM/Xi programs will take minimal 
+        modifications, thus speeding the process for porting the code to 
+        PC/Xx boards.
+
+6.1  POWER-UP & POST DIAGNOSTICS
+
+        This code is executed after the board is reset.  HOST I/O port bit 2 
+        is set, then the I/O port is read back until bit 2 is set, followed
+        by writing a 0 to bit 2.  This sequence resets the PC/Xx CPU and will
+        begin the power-up & post diagnostic program.  The code resides in
+        EPROM for the PC/Xm, and for the PC/Xe and PC/Xi the code must be 
+        downloaded to the upper 2K of the dual-ported memory.  The status 
+        sequence word is available at the WINDOW BASE + 0C12H.  The status 
+        error word is available at the WINDOW BASE + 0C14H.  The sequence word
+        indicates which events were performed by the BIOS, and the error word
+        indicates which events failed.  The first 11 events (mask 0 = 400H)
+        are checked for error conditions.  Each event bit is OR'd into the 
+        sequence and error word.  Also 2 bytes at the WINDOW BASE + 0C00H -
+        0C01H will be 'GD' upon completion of the power-up program.  See the 
+        following table for individual bit definitions.
+
+
+        The following table is a sequential list of events that are performed. 
+
+-----------------------------------------------------------------------------
+|  Status Bit   |        BIOS Event                                          |
+|-------------- |------------------------------------------------------------|
+|               | Far jump from FFFF0H to FFC00H                             |
+|               | Enable upper memory - EPROM (16K) or RAM                   |
+|               | Enable lower memory - RAM                                  |
+|               | Enable middle memory - RAM                                 |
+|               | Set middle memory size & PCS 4-6                           |
+|               | Set peripheral base address & PCS 0-3                      |
+|               | Processor flag test                                        |
+|               | Processor register test                                    |
+|               | Setup timer 0 to check on HOST's refresh for RAM           |
+|               | Loop on HOST's refresh to RAM                              |
+|               |                                                            |
+|               | Test dual-ported RAM @ WINDOW BASE                         |
+|               | data segment now available (X0C00H - any board)            |
+|     0001H     |                                                            |
+|               | Test 16K of local memory (if available)                    |
+|               | PC/Xe or PC/Xi 16K local (00000H - 03FFFH)                 |
+|     0002H     |                                                            |
+|               | Test 48K of local memory (if available)                    |
+|               | PC/Xe or PC/Xi 48K local (04000H - 0FFFFH)                 |
+|     0004H     |                                                            |
+|               | Test 2nd 64K bank of dual-ported RAM (if available)        |
+|     0008H     |                                                            |
+|               | Test 3rd 64K bank of dual-ported RAM (if available)        |
+|     0010H     |                                                            |
+|               | Test 4th 64K bank of dual-ported RAM (if available)        |
+|     0020H     |                                                            |
+|               | Test 5th 64K bank of dual-ported RAM (if available)        |
+|     0040H     |                                                            |
+|               | Test 6th 64K bank of dual-ported RAM (if available)        |
+|     0080H     |                                                            |
+|               | Test 7th 64K bank of dual-ported RAM (if available)        |
+|     0100H     |                                                            |
+|               | Test 8th 64K bank of dual-ported RAM (if available)        |
+|     0200H     |                                                            |
+|               | Test 9th 64K bank of dual-ported RAM (if available)        |
+|     0400H     |                                                            |
+|               | Check for async ports 0 thru 15                            |
+|               | Check for the sync port (PC/Xi)                   	     |
+|               | Timer 0 initialization (real time clock)                   |
+|               | Enable interrupts via interrupt mask register              |
+|               | BIOS ROM check for EPROM resident routines (PC/Xm)         |
+|               | Show HOST initialization complete @ WINDOW BASE + 0C00H    |
+|     0800H     |                                                            |
+|               | BIOS supports functions & waits for 1 of 3 exit conditions |
+|     1000H     |                                                            |
+|               | Diagnostic exit to 0200:0004H                              |
+|     2000H     |                                                            |
+|               | Exit to ????:????H after execute module - FCT 1            |
+|     4000H     |                                                            |
+|               | Exit to FC00:0004H after Install EPROM O/S - FCT 8 (PC/Xm) |
+|               |                                                            |
+|     8000H     | Reserved / not used at this time                           |
+-----------------------------------------------------------------------------
+
+        Any time the HOST changes bit(s) on the port, it is good practice to 
+        read the port, change only the desired bit(s) while not altering the 
+        other bits, then write the new value back to the port.
+
+        The following is a scenario for the HOST to initialize the PC/Xm that
+        has 128K of dual-ported memory and is mapped @ C0000H - DFFFFH. The
+        BIOS is resident in EPROM.
+
+	- HOST SYSTEM POWERS UP 
+        - HOST CALLS PC/Xx DRIVER
+        - DRIVER DETERMINES BOARD TO BE PC/Xm
+	- DRIVER HOLDS PC/Xm RESET (I/O PORT BIT 2 = 1)
+	- DRIVER ENABLES DUAL-PORTED MEMORY ON THE PC/Xm (BIT 1 = 1)
+        - DRIVER CLEARS WINDOW BASE + 0C00H (BIOS COMPLETION SIGNATURE)
+	- DRIVER RELEASES PC/Xm RESET CONDITION (BIT 2 = 0)
+                - PC/Xm EXECUTES THE FOLLOWING SEQUENCES
+		- POWER-UP & INITIALIZATION BEGINS
+			- PROGRAM CHIP SELECTS
+			- PCU FLAGS & REGISTER TESTS
+			- TEST 128K OF DUAL-PORTED MEMORY
+                          (FEP ADDRESSES @ 00000H - 1FFFFH)
+                        - BIOS DATA SEGMENT SET @ WINDOW BASE + 0C00H
+			- DEFINE STACK
+			- TRANSFER/FILL INTERRUPT VECTOR TABLE
+			- INTERRUPT CONTROLLER INITIALIZATION
+			- 8530 COMM PORT CHECK
+			- DETERMINE BOARD'S CONFIGURATION
+			- TIMERS INITIALIZATION (START REAL TIME CLOCK)
+			- SHOW INITIALIZATION COMPLETE @ WINDOW BASE + 0C00H
+        - DRIVER INSTALL IS COMPLETE
+	- PC/Xm SUPPORTS BIOS FUNCTIONS VIA MAILBOX & NMI FROM DRIVER
+	- PC/Xm WAITS FOR TRANSFER TO FEPOS OR OTHER OPERATING SYSTEM
+
+
+        The following is a scenario for the HOST to initialize the PC/Xe or 
+        PC/Xi that has 64K of dual-ported memory and is mapped @ D0000H - 
+        DFFFFH.
+
+	- HOST SYSTEM POWERS UP 
+        - HOST CALLS PC/Xx DRIVER
+        - DRIVER DETERMINES BOARD TO BE PC/Xe OR PC/Xi
+	- DRIVER HOLDS PC/Xx RESET (I/O PORT BIT 2 = 1)
+	- DRIVER ENABLES DUAL-PORTED MEMORY ON THE PC/Xx (BIT 1 = 1)
+        - DRIVER CLEARS WINDOW BASE + 0C00H (BIOS COMPLETION SIGNATURE)
+	- DRIVER PERFORMS 2K DUAL-PORTED MEMORY TEST @ DF800H - DFFFFH
+		- 55,AA,FF,00 ARE THE 4 TYPICAL PATTERNS
+		- IF AN ERROR OCCURS, EXIT; ELSE CONTINUE
+	- DRIVER DOWNLOADS 2K BIOS BLOCK FROM HOST TO FEP @ DF800H - DFFFFH
+		- 2K BIOS INCLUDES THE POWER-UP & INITIALIZATION CODE
+	- DRIVER RELEASES PC/Xx RESET CONDITION (BIT 2 = 0)
+                - PC/Xx EXECUTES THE FOLLOWING SEQUENCES
+		- POWER-UP & INITIALIZATION BEGINS
+			- PROGRAM CHIP SELECTS
+			- PCU FLAGS & REGISTER TESTS
+			- TEST REMAINING 62K OF DUAL-PORTED MEMORY
+			  (FEP ADDRESSES @ F0000H - FF7FFH)
+                        - BIOS DATA SEGMENT SET @ WINDOW BASE + 0C00H
+			- TEST 16K MINIMUM LOCAL MEMORY (00000H - 03FFFH)
+			- CHECK/TEST UP TO 48K ADDITIONAL LOCAL MEMORY 
+			  (04000H - 0FFFFH)
+			- DEFINE STACK
+			- TRANSFER/FILL INTERRUPT VECTOR TABLE
+			- INTERRUPT CONTROLLER INITIALIZATION
+			- 8530 COMM PORT CHECK
+			- DETERMINE BOARD'S CONFIGURATION
+			- TIMERS INITIALIZATION (START REAL TIME CLOCK)
+			- SHOW INITIALIZATION COMPLETE @ WINDOW BASE + 0C00H
+        - DRIVER INSTALL IS COMPLETE
+	- PC/Xx SUPPORTS BIOS FUNCTIONS VIA MAILBOX & NMI FROM DRIVER
+	- PC/Xx WAITS FOR TRANSFER TO FEPOS OR OTHER OPERATING SYSTEM
+
+
+6.2  BIOS FUNCTIONS
+
+        BIOS functions are invoked by an interrupt from the HOST.  A function 
+        code and parameters entered into the FEP's mailbox followed by an 
+        interrupt from the HOST initiates communications.  The mailbox supports
+        256 function codes.  0-63 are reserved for the BIOS and are invoked via
+        an NMI.  Functions 0 through 31 are BIOS resident functions, while 32
+        through 63 are referenced through an NMI but the function is performed
+        by an INT 15H that is called in the NMI interrupt routine.  The down-
+        loaded program must load an INT 15H vector for these user defined
+        functions.  The remaining 192 functions are reserved for future
+        system and application development.
+
+        A BIOS function code (0-1FH), and defined parameters provide the
+        necessary information to perform each function.  A defined RAM area 
+        will be set up for parameter storage; this is known as the FEP mailbox.
+        The mailbox will be 16 bytes in length and the necessary parameters 
+        must be placed in the mailbox, followed by an NMI.  The NMI interrupt 
+        on the PC/Xx board is generated by setting bit 3 in the HOST's I/O 
+        port.  The HOST receives a function complete and status via the FEP's 
+        mailbox.  When the first byte in the mailbox is zero, the function is 
+        complete, and the second byte indicates the status of the completed 
+        function, bit 7 set indicates an error was encountered and the 
+        requested function is not executed.
+
+        Word parameters, such as segments, offsets, and ports, that are entered
+        in the mailbox,  store the low byte in the even address and the high
+        byte in the odd address.  All segment and offset values are referenced
+        from the FEP's point of view.
+
+        The following table lists the BIOS functions.
+
+        ---------------------------------------------------------------
+        |    FUNCTION    |            FUNCTION NAME                   |
+        |   DECIMAL/HEX  |                                            |
+        |-------------------------------------------------------------|
+        |      0/0H      |  GENERATE AN IRQ TO THE HOST               |
+        |      1/1H      |  EXECUTE MODULE                            |
+        |      2/2H      |  MOVE FEP MEMORY BLOCK                     |
+        |      3/3H      |  EXECUTE WARM BOOT                         |
+        |      4/4H      |  READ BYTE                                 |
+        |      5/5H      |  WRITE BYTE                                |
+        |      6/6H      |  READ WORD                                 |
+        |      7/7H      |  WRITE WORD                                |
+        |      8/8H      |  INSTALL PC/Xm EPROM OPERATING SYSTEM      |
+        |      9/9H      |  READ FROM AN 8530 REGISTER                |
+        |     10/0AH     |  WRITE TO AN 8530 REGISTER                 |
+        | 11/0BH-31/1FH  |  RESERVED / UNDEFINED                      |
+        |-------------------------------------------------------------|
+        | 32/20H-63/3FH  |  NMI INVOKED / INT 15H USER DEFINED        |
+        |-------------------------------------------------------------|
+        | 64/40H-255/FFH |  FUTURE SYSTEM & APLLICATION DEVELOPMENT   |
+        |-------------------------------------------------------------|
+
+
+
+
+        The following is a list and definition of BIOS functions that enable
+        the HOST to communicate to the FEP and perform the requested function.
+
+        The entry via an NMI to functions 0-63 must follow these rules:
+                1.  Load the FEP mailbox as per the function definition.
+                2.  The mailbox is 16 bytes long and is located at the WINDOW
+                    BASE + 00C40H.
+                3.  Supported BIOS functions are from 0-63 (0-3FH).
+                4.  Invoke an NMI interrupt to the FEP from the HOST.
+
+        When the first byte of the mailbox (WINDOW BASE + 00C40H) equals 0, the
+        function has been executed by the FEP.  Byte 1 (41H) has the status.
+        The status is as follows:
+                BITS 0-6 = TBD
+                BIT 7    = 0 FOR NO ERROR
+                         = 1 INDICATES AN ERROR
+        The HOST lowers the NMI interrupt bit.
+
+6.2.0  FUNCTION 0 - GENERATE AN IRQ TO THE HOST
+
+        This function will lower, then raise bit 3 on FEP's port 0, which is 
+        the FEP to HOST interrupt line that generates an IRQ to the HOST.  
+        Also, whenever the FEP gets an NMI from the HOST and the mailbox has 
+        not been loaded, this function is executed.
+
+        The mailbox byte definitions are as follows:
+                0   = 0
+                1   = N/A (RETURNS STATUS)
+
+6.2.1  FUNCTION 1 - EXECUTE MODULE
+
+        This allows the BIOS to transfer control to a specified address.  To 
+        allow the transfer, the first two bytes in the module must be 'O' & 
+        'S'.  The number of 256 byte blocks is in the third byte, followed by 
+        a CRC byte (see section 7.1 for the block and CRC information).  The 
+        function will check for 'OS', followed by a CRC check on the module; 
+        if it passes, the BIOS will jump to the supplied segment and offset, 
+        and 'EM' will be present in RAM at the WINDOW BASE + 00C02H).  The 
+        supplied segment and offset are addresses relative to the processor on
+        the PC/Xx (see the section on FEP memory map, 5.2.1).  The segment and
+        offset parameters that produce the 20 bit address that BIOS will jump 
+        to should be sent with the upper 16 bits in the segment and the lower 
+        4 bits in the offset.  It is now the responsibility of the new 
+        operating system to communicate to the HOST.  If any of the above 
+        prerequisites fail, error status is returned and the BIOS will not 
+        transfer control.  
+
+        The mailbox byte definitions are as follows:
+                0   = 1
+                1   = N/A (RETURNS STATUS)
+                2/3 = SEGMENT OF DOWNLOADED MODULE
+                4/5 = OFFSET OF DOWNLOADED MODULE
+
+6.2.2  FUNCTION 2 - MOVE FEP MEMORY BLOCK 
+
+        This allows a memory block move from any area within the FEP's to
+        another area.  Parameter entries include segment and offset of both 
+        source and destination addresses, and the number of bytes to be moved.
+        The minimum move is 1 byte (count=1) and the maximum move is 64K 
+        bytes (count=0).  Interrupts must be disabled if the interrupt table 
+        in lower memory is overwritten.  
+
+        The mailbox byte definitions are as follows:
+                0   = 2
+                1   = N/A (RETURNS STATUS)
+                2/3 = SOURCE SEGMENT
+                4/5 = SOURCE OFFSET
+                6/7 = DESTINATION SEGMENT
+                8/9 = DESTINATION OFFSET
+                A/B = BYTE COUNT
+
+6.2.3  FUNCTION 3 - EXECUTE WARM BOOT 
+
+        This function forces the BIOS to perform a board reset.  The program
+        sets its program address to 0FFFF0H.  Upon completion of the reset and
+        initialization, the BIOS waits for another function.  This function
+        performs the same function as a power-up signal to the board.
+
+        The mailbox byte definitions are as follows:
+                0   = 3
+                NO RETURN
+
+6.2.4  FUNCTION 4 - READ I/O BYTE 
+
+        This function performs a byte read and returns the value to the 
+        mailbox.  A 16 bit port address can be specified.
+
+        The mailbox byte definitions are as follows:
+                0   = 4
+                1   = N/A (RETURNS STATUS)
+                2/3 = PORT ADDRESS
+                4   = BYTE READ
+
+6.2.5  FUNCTION 5 - WRITE I/O BYTE 
+
+        This function performs a byte write to the specified port.  A 16 bit 
+        port address can be specified.
+
+        The mailbox byte definitions are as follows:
+                0   = 5
+                1   = N/A (RETURNS STATUS)
+                2/3 = PORT ADDRESS
+                4   = BYTE TO WRITE
+
+6.2.6  FUNCTION 6 - READ I/O WORD 
+
+        This function performs a word read and returns the value to the 
+        mailbox.  A 16 bit port address can be specified.
+
+        The mailbox byte definitions are as follows:
+                0   = 6
+                1   = N/A (RETURNS STATUS)
+                2/3 = PORT ADDRESS
+                4/5 = WORD READ
+
+6.2.7  FUNCTION 7 - WRITE I/O WORD 
+
+        This function performs a word write to the specified port.  A 16 bit 
+        port address can be specified.
+
+        The mailbox byte definitions are as follows:
+                0   = 7
+                1   = N/A (RETURNS STATUS)
+                2/3 = PORT ADDRESS
+                4/5 = WORD TO WRITE
+
+6.2.8  FUNCTION 8 - INSTALL PC/Xm EPROM OPERATING SYSTEM 
+
+        This function jumps to DigiBoard's EPROM operating system, if one is 
+        present.  The function checks that the first two bytes in EPROM are 
+        'O' and 'S'.  The next two bytes must be zero.  If these prerequisites
+        are met, the function has found DigiBoard's PC/Xm operating system in
+        EPROM and will transfer control to that base address of the EPROM plus
+        4; and 'ET' will be present in RAM at the WINDOW BASE + 00C04H.  If an
+        error is found, error status will be returned and the BIOS will not
+	transfer control.  
+
+        The mailbox byte definitions are as follows:
+                0   = 8
+                1   = N/A (RETURNS STATUS)
+
+6.2.9  FUNCTION 9 - READ FROM AN 8530 REGISTER
+
+        This function performs a register read from specific port on the
+        PC/Xx card.
+
+        The mailbox byte definitions are as follows:
+                0   = 9
+                1   = N/A (RETURNS STATUS)
+                2   = PORT (1-16/10H,17/11H=sync port A,18/12H=sync port B)
+                3   = 8530 REGISTER TO READ IN HEX (0,1,2,3,0AH,0CH,0DH,0FH)
+                4   = VALUE READ
+
+6.2.10 FUNCTION 10 - WRITE TO AN 8530 REGISTER 
+
+        This function performs a register write to a specific port on the
+        PC/Xx card.
+
+        The mailbox byte definitions are as follows:
+                0   = 0AH
+                1   = N/A (RETURNS STATUS)
+                2   = PORT (1-16/10H,17/11H=sync port A,18/12H=sync port B)
+                3   = 8530 REGISTER TO WRITE IN HEX (0-0FH)
+                4   = VALUE TO WRITE
+6.3  FIRMWARE RAM STORAGE/USAGE
+
+        Defined RAM storage that is used by the BIOS program.  This RAM 
+        is available after the power-up memory tests are complete.
+
+6.4  INFORMATION FOR CREATING EPROMS
+
+        This area is used to list the software packages, hardware parts,
+        equipment, and other relevant information in the production of the
+        EPROMs resident on the PC/Xm board for the PC system.
+
+6.4.1  SOFTWARE DEVELOPMENT PACKAGES
+
+        A list of software assemblers, linkers, systems, and other software
+        related information needed to develop the code that is burned in
+        the EPROM.
+
+        The BIOS power-up program is written in Microsoft MASM 4.0 format.
+        The object linker is Microsoft's version 3.05, followed by creating
+        a binary file using EXE2BIN.EXE.  The binary file is then split into
+        two files containing their respective data at even and odd addresses.
+        Two EPROMs can now be burned.
+
+6.4.2  HARDWARE PARTS
+
+        A list of hardware packages, development equipment, and other
+        hardware information necessary to produce the EPROMs.
+
+        A logic and memory programmer from Valley Data Sciences was used to
+        program the EPROMs.
+
+
+7.0  SYSTEM & APPLICATION INFORMATION
+
+        This section provides information to enable a system or application 
+        that is residing on the PC/Xx to begin execution.
+
+7.1  TRANSFER CONTROL FROM BIOS TO SYSTEM/APPLICATION
+
+        An Execute module function (FCT 1) in the BIOS will transfer control
+        to a downloaded program.  The new operating system will provide an 
+        acknowledge signal to the HOST for status.  See BIOS function 1 for 
+        further information.
+
+        The file, CONVERT.COM, in the ON-BOARD subdirectory on the supplied
+        disk is used to convert a download module.  For example, first take
+        the file and assemble with MASM 4.0 (or later).  Then LINK and 
+        EXE2BIN to obtain the .BIN file.  Now execute CONVERT.COM on the .BIN
+        file.  This will fill in the number of 256 byte blocks (byte 2) and 
+        2's compliment CRC (byte 3).  The .BIN file is now ready to be 
+        downloaded and executed via FUNCTION 1.  The segment and offset 
+        parameters that produce the 20 bit address that the BIOS will jump to
+        should be sent with the upper 16 bits in the segment and the lower 4 
+        bits in the offset.  For example, to transfer control to the 
+        PC/Xx's address 02004H, the segment value is 0200H and the offset is 
+        0004H.  After the HOST has downloaded the .BIN to a location in RAM, 
+        FUNCTION 1 can now be executed.  Successful execution will transfer 
+        control from the BIOS to the 02004H.
+        An Install PC/Xm EPROM operating system function (FCT 8) will transfer
+        control to the PC/Xm's EPROM operating system that resides in EPROM.  
+        See section 6.2.8 for a detailed description.
+
+        A special exit procedure can also be used to exit the BIOS.  The 2 
+        bytes at the WINDOW BASE + 0C00H are 'G' and 'D' after successful 
+        power-up and card reset. If these bytes are reversed to 'D' and 'G' 
+        the BIOS will jump to address 0200:0004H.
+
+7.2  SYSTEM/APPLICATION INTERFACE
+
+        The new operating system may disable interrupts and reload interrupt
+        vectors as necessary to support the new operating system in the FEP.
+
+        When using the BIOS, only one function at a time can be sent.  The HOST
+        must wait for the mailbox to clear before sending the next function.
+        The HOST must interrupt (NMI) the FEP after placing the function and
+        necessary parameters in the mailbox to signal to the FEP to perform a 
+        function.  
+
+        A BIOS function code (0-3FH), and defined parameters provide the 
+        necessary information to perform each function.  64 function codes are 
+        reserved for the BIOS, from 0 to 63 (0-3FH).  A defined RAM area 
+        has been set up for parameter storage; this is known as the FEP mail-
+        box.  The necessary parameters must be placed in the mailbox, followed
+        by an NMI.  The NMI interrupt on the PC/Xx board is generated by 
+        setting bit 3 on the HOST's I/O port.  The HOST receives a function 
+        complete and status via the FEP's mailbox.  When the first byte in the
+        mailbox is zero, the function is complete, and the second byte 
+        indicates the status of the completed function.  The HOST can now lower
+        bit 3.  Functions 0-31 (0-1FH) are executed by the BIOS, and functions
+        32-63 (20H-3FH) are passed from the BIOS's NMI handler to INT 15H (to 
+        be application specific).  The downloaded or EPROM resident operating 
+        system will relocate the INT 15H vector and support functions 32-63 
+        (20H-3FH).
+
+
+8.0  FRONT END PROCESSOR OPERATING SYSTEM (FEPOS) INFORMATION
+
+        This section refers to DigiBoard's FEPOS that is provided for PC/Xx.
+        This program handles the intelligent communications between a 
+        HOST program/driver and PC/Xx.  This program can reside in EPROM on 
+        the PC/Xm, or it can be downloaded from the HOST for any PC/Xx board.
+        In either case, control is transferred from the BIOS to the FEPOS.
+
+        The following is a generic scenario for the HOST to download the FEPOS
+        to a PC/Xx.
+
+        - HOST/DRIVER PERFORMS THE BOARD RESET SCENARIO (SECTION 6.1)
+	- DRIVER LOOKS FOR BIOS COMPLETE INDICATION 'GD' @ WINDOW BASE + 0C00H
+	- DRIVER DOWNLOADS 8K FEPOS TO HOST TO PC/Xx DUAL-PORTED MEMORY.
+	        - PC/Xe OR PC/Xi OPTION - HOST INITIATES BIOS FUNCTION 2 TO 
+                                          MOVE 8K FEPOS TO LOCAL MEMORY 
+	                                - HOST CLEARS 8K WHERE FEPOS RESIDED 
+                                          IN DUAL-PORTED MEMORY
+	- DRIVER EXECUTES A BIOS FUNCTION 1
+	- BIOS TRANSFERS CONTROL TO FEPOS
+	- FEPOS PERFORMS INITIALIZATION
+		- 'OS' REPLACES 'GD' AFTER SUCCESSFUL FEPOS INITIALIZATION
+                   AT WINDOW BASE + 0C00H - 0C01H
+        - ENTER FEPOS EXECUTIVE
+	
+        The following is a generic scenario for the HOST to invoke the FEPOS
+        from EPROM in a PC/Xm.
+
+        - HOST/DRIVER PERFORMS THE BOARD RESET SCENARIO (SECTION 6.1)
+	- DRIVER LOOKS FOR BIOS COMPLETE INDICATION 'GD' @ WINDOW BASE + 0C00H
+	- DRIVER EXECUTES A BIOS FUNCTION 8
+	- BIOS TRANSFERS CONTROL TO FEPOS 
+	- FEPOS PERFORMS INITIALIZATION
+		- 'OS' REPLACES 'GD' AFTER SUCCESSFUL FEPOS INITIALIZATION
+                   AT WINDOW BASE + 0C00H - 0C01H
+        - ENTER FEPOS EXECUTIVE
+
+        An Execute Module function (FCT 1) in the BIOS will transfer control to
+        the FEPOS.  The HOST must load the mailbox followed by an NMI interrupt
+        to invoke this function.  The new FEPOS will provide an acknowledge 
+        signal to the HOST for status.  Refer to the section 6 for a detailed 
+        description.
+
+        An Install PC/Xm EPROM operating system function (FCT 8) will transfer
+        control to DigiBoard's EPROM FEPOS that resides in EPROM.  The HOST 
+        must load the mailbox followed by an NMI interrupt to invoke this 
+        function.  The new FEPOS will provide an acknowledge signal to the 
+        HOST for status.  Refer to the section 6 for a detailed description.
+
+        A special exit procedure can also be used to exit the BIOS and execute
+        the FEPOS.  The 2 bytes at the WINDOW BASE + 0C00H are 'G' and 'D' 
+        after successful power-up and card reset. If these bytes are reversed 
+        to 'D' and 'G' the BIOS will jump to the fixed address @ 0200:0004H.
+
+        Once the FEPOS is in control, its functions are to provide fast 2-way
+        communication to the HOST and fast two-way communication with the 
+        available comm ports.  The FEPOS disables interrupts and reloads 
+        interrupt vectors as necessary to support the new FEPOS on the board.
+
+        The FEPOS version number (2 bytes) is available in RAM at the WINDOW 
+        BASE + 0C0EH - 0C0FH.  When the FEPOS has successfully completed 
+        initialization, 'OS' replaces 'DG' at the WINDOW BASE + 0C00H - 0C01H,
+        and 'FEPOS ' replaces 'BIOSXx' at the WINDOW BASE + 0C08H - 0C0DH (? 
+        is either 'm', 'e', or 'i').
+
+8.1  RAM MEMORY MAPS
+
+        The PC/Xx has two types of RAM memory, dual-ported and local. All
+        boards have dual-ported, and only the PC/Xe and PC/Xi have local.
+
+        The dual-ported memory is divided into two basic sections.  The lower
+        16K is set aside for FEPOS data; such as downloaded programs,
+        buffer pointers, port and command structures, the stack, tables, 
+        congfiguration data, and other miscellaneous system data.  The 
+        remaining RAM is reserved for data buffers.  This amount varies
+        according to the amount of memory & board type.  Since the minimum 
+        dual-ported configuration is 64K, the remaining 48K is defaulted to 
+        2K per async port (up to 16) and 8K is reserved for the sync port.  
+        Specific buffer functions are available to change buffer sizes to 
+        maximize the RAM on any particular board configuration.
+
+        The local memory cannot be accessed by the HOST.  It used for the
+        interrupt vector table, stack, and FEPOS for the PC/Xe and PC/Xi.
+
+8.1.1  FEPOS DATA STORAGE MAP
+
+        These data storage maps for the FEPOS are quite different among the
+        different board types.  Each board type and memory configuration will 
+        be explained separately.  All addresses are shown as viewed from the
+        FEPOS.
+
+        All boards have certain things in common.
+              - The interrupt vector table resides in the lower 1K, address
+                0000H - 03FFH.  All 256 interrupt vectors are loaded.
+              - The stack is given 1K bytes of storage.  It is setup and 
+                initialized by the BIOS power-up program.  It is located at 
+                FEP address 0400H - 07FFH.
+              - The BIOS data segment is always set at the dual-ported WINDOW
+                BASE + 0C00H.
+              - The default async buffers are set to 2K/port and are set
+                at the WINDOW BASE + 4000H.
+              - CCB function 4FH (buffer set all) or BIOS function 20H (buffer
+                set individual) can be used to maximize dual-ported memory.
+
+        PC/Xm (all) specifics:
+              - All RAM is dual-ported.
+              - The FEPOS can reside in EPROM and can be invoked via BIOS
+                function 8.
+              - The FEPOS can reside in dual-ported RAM and can be invoked
+                via BIOS function 1 or the special exit procedure.
+        
+---------------------------------------------------------------------------
+|    ADDRESS    |       DESCRIPTION OF RESIDENT SOFTWARE                  |
+|---------------|---------------------------------------------------------|
+| ?D000 - ?FFFF |   8K - Future sync expansion                            |
+| ?C000 - ?DFFF |   8K - Sync data buffers (4K RX & TX) Always top of     |
+|               |        dual-ported RAM - 16K                            |
+| 10000 - 8FFFF | 512K - Open (PC/Xm 576K) - minus 16K if sync installed  |
+| 10000 - 7FFFF | 448K - Open (PC/Xm 512K) - minus 16K if sync installed  |
+| 10000 - 2FFFF | 128K - Open (PC/Xm 192K) - minus 16K if sync installed  |
+| 10000 - 1FFFF |  64K - Open (PC/Xm 128K) - minus 16K if sync installed  |
+| 0C000 - 0FFFF |  16K - Open (PC/Xm all)                                 |
+| 04000 - 0BFFF |  32K - Async data buffers max=16 ports (2K/port)        |
+| 02000 - 03FFF |   8K - Downloaded programs from the HOST (FEPOS)        |
+| 01800 - 01FFF |   2K - Port structures (64 bytes each)                  |
+|               |        16 async structures + sync 1A & 1B               |
+| 01400 - 017FF |   1K - FEP to HOST interrupt buffer                     |
+| 01000 - 013FF |   1K - Circular command buffer                          |
+| 00C00 - 00FFF |   1K - Uses file DUALXA.DAT. BIOS data storage, tables, |
+|               |        configuration, etc.                              |
+| 00800 - 00BFF |   1K - Not used                                         |
+| 00400 - 007FF |   1K - Stack                                            |
+| 00000 - 003FF |   1K - Interrupt table                                  |
+---------------------------------------------------------------------------
+
+
+        PC/Xe or PC/Xi (64K) specifics:
+              - The FEPOS can reside in dual-ported RAM or local RAM and can 
+                be invoked via BIOS function 1 or the special exit procedure.
+              - Dual-ported RAM is addressed @ 1 meg - 64K.
+        
+---------------------------------------------------------------------------
+|    ADDRESS    |       DESCRIPTION OF RESIDENT SOFTWARE                  |
+|---------------|---------------------------------------------------------|
+| FF800 - FFFFF |   2K - BIOS (downloaded from the HOST)                  |
+| FE000 - FF7FF |   6K - Open                                             |
+| FC000 - FDFFF |   8K - Sync data buffers (4K RX & TX)                   |
+| F4000 - FBFFF |  32K - Async data buffers max=16 ports (2K/port)        |
+| F2000 - F3FFF |   8K - Open (interim download area for FEPOS)           |
+| F1800 - F1FFF |   2K - Port structures (64 bytes each)                  |
+|               |        16 async structures + sync 1A & 1B               |
+| F1400 - F17FF |   1K - FEP to HOST interrupt buffer                     |
+| F1000 - F13FF |   1K - Circular command buffer                          |
+| F0C00 - F0FFF |   1K - Uses file DUALXA.DAT. BIOS data storage, tables, |
+|               |        configuration, etc.                              |
+| F0000 - F0BFF |   3K - Open                                             |
+| 10000 - EFFFF | 896K - Not available                                    |
+| 04000 - 0FFFF |  48K - Open if available                                |
+| 02000 - 03FFF |   8K - FEPOS                                            |
+| 00800 - 01FFF |   6K - Not used                                         |
+| 00400 - 007FF |   1K - Stack                                            |
+| 00000 - 003FF |   1K - Interrupt table                                  |
+---------------------------------------------------------------------------
+
+        PC/Xi (128K)
+              - The FEPOS can reside in dual-ported RAM or local RAM and can 
+                be invoked via BIOS function 1 or the special exit procedure.
+              - Dual-ported RAM is addressed @ 1 meg - 128K.
+        
+---------------------------------------------------------------------------
+|    ADDRESS    |       DESCRIPTION OF RESIDENT SOFTWARE                  |
+|---------------|---------------------------------------------------------|
+| FF800 - FFFFF |   2K - BIOS (downloaded from the HOST)                  |
+| FE000 - FF7FF |   6K - Open                                             |
+| FC000 - FDFFF |   8K - Sync data buffers (4K RX & TX)                   |
+| F0000 - FBFFF |  48K - Open                                             |
+| EC000 - EFFFF |  16K - Open                                             |
+| E4000 - EBFFF |  32K - Async data buffers max=16 ports (2K/port)        |
+| E2000 - E3FFF |   8K - Open (interim download area for FEPOS)           |
+| E1800 - E1FFF |   2K - Port structures (64 bytes each)                  |
+|               |        16 async structures + sync 1A & 1B               |
+| E1400 - E17FF |   1K - FEP to HOST interrupt buffer                     |
+| E1000 - E13FF |   1K - Circular command buffer                          |
+| E0C00 - E0FFF |   1K - Uses file DUALXA.DAT. BIOS data storage, tables, |
+|               |        configuration, etc.                              |
+| E0000 - E0BFF |   3K - Open                                             |
+| 10000 - DFFFF | 832K - Not available                                    |
+| 04000 - 0FFFF |  48K - Open if available                                |
+| 02000 - 03FFF |   8K - FEPOS                                            |
+| 00800 - 01FFF |   6K - Not used                                         |
+| 00400 - 007FF |   1K - Stack                                            |
+| 00000 - 003FF |   1K - Interrupt table                                  |
+---------------------------------------------------------------------------
+        PC/Xi (256K)
+              - The FEPOS can reside in dual-ported RAM or local RAM and can 
+                be invoked via BIOS function 1 or the special exit procedure.
+              - Dual-ported RAM is addressed @ 1 meg - 256K.
+        
+---------------------------------------------------------------------------
+|    ADDRESS    |       DESCRIPTION OF RESIDENT SOFTWARE                  |
+|---------------|---------------------------------------------------------|
+| FF800 - FFFFF |   2K - BIOS (downloaded from the HOST)                  |
+| FE000 - FF7FF |   6K - Open                                             |
+| FC000 - FDFFF |   8K - Sync data buffers (4K RX & TX)                   |
+| D0000 - FBFFF | 176K - Open                                             |
+| CC000 - CFFFF |  16K - Open                                             |
+| C4000 - CBFFF |  32K - Async data buffers max=16 ports (2K/port)        |
+| C2000 - C3FFF |   8K - Open (interim download area for FEPOS)           |
+| C1800 - C1FFF |   2K - Port structures (64 bytes each)                  |
+|               |        16 async structures + sync 1A & 1B               |
+| C1400 - C17FF |   1K - FEP to HOST interrupt buffer                     |
+| C1000 - C13FF |   1K - Circular command buffer                          |
+| C0C00 - C0FFF |   1K - Uses file DUALXA.DAT. BIOS data storage, tables, |
+|               |        configuration, etc.                              |
+| C0000 - C0BFF |   3K - Open                                             |
+| 10000 - BFFFF | 704K - Not available                                    |
+| 04000 - 0FFFF |  48K - Open if available                                |
+| 02000 - 03FFF |   8K - FEPOS                                            |
+| 00800 - 01FFF |   6K - Not used                                         |
+| 00400 - 007FF |   1K - Stack                                            |
+| 00000 - 003FF |   1K - Interrupt table                                  |
+---------------------------------------------------------------------------
+
+        PC/Xi (512K)
+              - The FEPOS can reside in dual-ported RAM or local RAM and can 
+                be invoked via BIOS function 1 or the special exit procedure.
+              - Dual-ported RAM is addressed @ 1 meg - 512K.
+        
+---------------------------------------------------------------------------
+|    ADDRESS    |       DESCRIPTION OF RESIDENT SOFTWARE                  |
+|---------------|---------------------------------------------------------|
+| FF800 - FFFFF |   2K - BIOS (downloaded from the HOST)                  |
+| FE000 - FF7FF |   6K - Open                                             |
+| FC000 - FDFFF |   8K - Sync data buffers (4K RX & TX)                   |
+| 90000 - FBFFF | 432K - Open                                             |
+| 8C000 - 8FFFF |  16K - Open                                             |
+| 84000 - 8BFFF |  32K - Async data buffers max=16 ports (2K/port)        |
+| 82000 - 83FFF |   8K - Open (interim download area for FEPOS)           |
+| 81800 - 81FFF |   2K - Port structures (64 bytes each)                  |
+|               |        16 async structures + sync 1A & 1B               |
+| 81400 - 817FF |   1K - FEP to HOST interrupt buffer                     |
+| 81000 - 813FF |   1K - Circular command buffer                          |
+| 80C00 - 80FFF |   1K - Uses file DUALXA.DAT. BIOS data storage, tables, |
+|               |        configuration, etc.                              |
+| 80000 - 80BFF |   3K - Open                                             |
+| 10000 - 7FFFF | 448K - Not available                                    |
+| 04000 - 0FFFF |  48K - Open if available                                |
+| 02000 - 03FFF |   8K - FEPOS                                            |
+| 00800 - 01FFF |   6K - Not used                                         |
+| 00400 - 007FF |   1K - Stack                                            |
+| 00000 - 003FF |   1K - Interrupt table                                  |
+---------------------------------------------------------------------------
+8.1.2  DATA BUFFERS MEMORY MAPS
+
+        The following table is the genreic memory map that is used for the
+        seven possible hardware configurations of the PC/Xx board.  The
+        single sync port configuration is not supported with this operating 
+        system.  If the sync port is available on the board, this operating 
+        system supports it only through the BIOS functions. The FEPOS handles
+        up to 16 async ports via the CCB.  This table's addresses are 
+        referenced for the HOST from the WINDOW BASE.
+
+       
+-------------------------------------------------------------------------
+|    ADDRESS    |       DESCRIPTION OF RESIDENT SOFTWARE                |
+|-----------------------------------------------------------------------|
+| ?D000 - ?DFFF |  4K - sync   - Sync receive buffer                    |
+| ?C000 - ?CFFF |  4K - sync   - Sync trasnmit buffer                   |
+| 0BC00 - 0BFFF |  1K - port 15 - Async receive buffer                  |
+| 0B800 - 0BBFF |  1K - port 15 - Async transmit buffer                 |
+| 0B400 - 0B7FF |  1K - port 14 - Async receive buffer                  |
+| 0B000 - 0B3FF |  1K - port 14 - Async transmit buffer                 |
+| 0AC00 - 0AFFF |  1K - port 13 - Async receive buffer                  |
+| 0A800 - 0ABFF |  1K - port 13 - Async transmit buffer                 |
+| 0A400 - 0A7FF |  1K - port 12 - Async receive buffer                  |
+| 0A000 - 0A3FF |  1K - port 12 - Async transmit buffer                 |
+| 09C00 - 09FFF |  1K - port 11 - Async receive buffer                  |
+| 09800 - 09BFF |  1K - port 11 - Async transmit buffer                 |
+| 09400 - 097FF |  1K - port 10 - Async receive buffer                  |
+| 09000 - 093FF |  1K - port 10 - Async transmit buffer                 |
+| 08C00 - 08FFF |  1K - port 9 - Async receive buffer                   |
+| 08800 - 08BFF |  1K - port 9 - Async transmit buffer                  |
+| 08400 - 087FF |  1K - port 8 - Async receive buffer                   |
+| 08000 - 083FF |  1K - port 8 - Async transmit buffer                  |
+| 07C00 - 07FFF |  1K - port 7 - Async receive buffer                   |
+| 07800 - 07BFF |  1K - port 7 - Async transmit buffer                  |
+| 07400 - 077FF |  1K - port 6 - Async receive buffer                   |
+| 07000 - 073FF |  1K - port 6 - Async transmit buffer                  |
+| 06C00 - 06FFF |  1K - port 5 - Async receive buffer                   |
+| 06800 - 06BFF |  1K - port 5 - Async transmit buffer                  |
+| 06400 - 067FF |  1K - port 4 - Async receive buffer                   |
+| 06000 - 063FF |  1K - port 4 - Async transmit buffer                  |
+| 05C00 - 05FFF |  1K - port 3 - Async receive buffer                   |
+| 05800 - 05BFF |  1K - port 3 - Async transmit buffer                  |
+| 05400 - 057FF |  1K - port 2 - Async receive buffer                   |
+| 05000 - 053FF |  1K - port 2 - Async transmit buffer                  |
+| 04C00 - 04FFF |  1K - port 1 - Async receive buffer                   |
+| 04800 - 04BFF |  1K - port 1 - Async transmit buffer                  |
+| 04400 - 047FF |  1K - port 0 - Async receive buffer                   |
+| 04000 - 043FF |  1K - port 0 - Async transmit buffer                  |
+| 00000 - 03FFF | 16K - FEPOS data area (see 8.1.1)                     |
+-------------------------------------------------------------------------
+
+
+8.2  DATA STRUCTURES
+
+        The data structure for the 16 async ports and two sync 1A & 1B are
+        identical.  The 16 async port are all initialized to async mode.  
+        Sync 1A & 1B are not supported via the FEPOS but have structures
+        reserved for future development.  A 2K area at WINDOW BASE + 1800H - 
+        1FFFH is used for structure storage.  Presently, a total of 18 
+        structures are created, and the remaining memory is reserved for
+        future development.  Each structure is 64 bytes in length and is 
+        stored sequentially.
+
+8.2.1  ASYNC STRUCTURE
+
+        All 18 async control structures are the same length and their fields 
+        are identical.  The reserved bytes are for future expansion or 
+        enhancements.  The following is a breakdown of the async structure.
+        The legend is referenced from the HOST's point of view.
+        
+        CONTROL LEGEND: R   - Read only
+                        W   - Write only
+                        R/W - Read and Write
+                        F   - Fixed, read only
+                        C   - Changed by functions only
+                        U   - Unknown, internal to FEP
+
+        The labels represented in the table are actual labels used in the 
+        FEPOS.  These are referenced during the explanations of the functions.
+
+---------------------------------------------------------------------
+| BYTE/| CON- | LABEL     |          ASYNC STRUCTURE DEFINITION     |
+| WORD | TROL |           |                                         |
+|-------------------------------------------------------------------| 
+|      |      |           |                                         |
+|  W   | R/W  |TXHD       | Transmit buffer head pointer            |
+|  W   |  R   |TXTL       | Transmit buffer tail pointer            |
+|  W   |  F   |TXSTRT     | Start offset of transmit buffer         |
+|  W   |  F   |TXMAX      | End offset of transmit buffer           |
+|  W   |  R   |RXHD       | Receive buffer head pointer             |
+|  W   | R/W  |RXTL       | Receive buffer tail pointer             |
+|  W   |  F   |RXSTRT     | Start offset of receive buffer          |
+|  W   |  F   |RXMAX      | End offset of receive buffer            |
+|  W   |  F   |CMD_PORT   | Command port                            |
+|  W   |  F   |CHAN_SEG   | Segment for TX & RX buffers             |
+|  W   |  C   |RXMW       | Resume level for the Receive buffer     |
+|  W   |  C   |RXHW       | Pause level for the Receive buffer      |
+|  W   |  R   |TXMW       | TX interrupt HOST mid water mark        |
+|  W   |  R   |BRKPOS     | RX head at time of last break           |
+|  B   |  U   |FLWCNTL    | Flow control                            |
+|  B   |  U   |MSTAT      | Internal modem status                   |
+|  B   |  U   |LSTAT      | Internal line status                    |
+|  B   |  U   |STATUS     | FEP status                              |
+|  B   |  C   |IMASK      | Interrupt mask                          |
+|  B   |  C   |BAUD       | Baud rate                               |
+|  B   |  C   |DTYPE      | Data type (data bits/stop bits)         |
+|  B   |  C   |HNDSHK     | Handshaking protocol                    |
+|  B   |  C   |XOFFCHAR   | XOFF character                          |
+|  B   |  C   |XONCHAR    | XON character                           |
+|  B   |  W   |HFLSH      | HOST cleared RX buffer                  |
+|  B   |  C   |BRKCNT     | Break signal timeout value              |
+|  B   |  U   |BRKCNTR    | Break timeout counter                   |
+|  B   |  R   |PORT_NUM   | port number (0-15/0FH, 1A=10H, 1B=11H)  |
+|  B   |  C   |DB_678     | Data Byte mask for 6, 7, or 8 bits      |
+|  B   |  C   |SC_IRQ     | Special character IRQ interrupt    	    |
+|  B   |  R   |T_MASK     | TX flag storage                         |
+|  B   |  R   |T_VAL      | TX flag storage                         |
+|  W   |  R   |           | Reserved                                |
+|  B   |  R   |RR_0       | Read register 0                         |
+|  B   |  R   |RR_1       | Read register 1                         |
+|  B   |  R   |RR_3       | Read register 3                         |
+|  B   |  R   |RR_10      | Read register 10                        |
+|  B   |  R   |WR_0       | Write register 0                        |
+|  B   |  R   |WR_1       | Write register 1                        |
+|  B   |  R   |WR_2/RR_2  | Write register 2 / read register 2      |
+|  B   |  R   |WR_3       | Write register 3                        |
+|  B   |  R   |WR_4       | Write register 4                        |
+|  B   |  R   |WR_5       | Write register 5                        |
+|  B   |  R   |WR_9       | Write register 9                        |
+|  B   |  R   |WR_11      | Write register 11                       |
+|  B   |  R   |WR_12/RR_12| Write register 12 / read register 12    |
+|  B   |  R   |WR_13/RR_13| Write register 13 / read register 13    |
+|  B   |  R   |WR_14      | Write register 14                       |
+|  B   |  R   |WR_15/RR_15| Write register 15 / read register 15    |
+---------------------------------------------------------------------
+
+
+8.3  HOST TO FEP INTERFACE
+
+        The 2-way communication between the FEP and the HOST is accomplished
+        by interrupts, mailboxes, and the circular command buffer.  Functions 
+        and data are transferred between the HOST and the FEP.
+
+        There are 256 possible functions that can be supported by the FEP.
+        These functions are divided into 4 groups, each containing 64 functions
+        Functions 0H thru 3FH are reserved for the FEP BIOS resident in the
+        BIOS (see section 6.2).  Functions 40H thru 7FH must be requested via 
+        the Circular Command Buffer (CCB).  Functions 80H thru BFH are reserved
+        for future CCB functions.  Functions C0H thru FFH are reserved for 
+        custom software applications.
+
+        The two methods for the HOST to communicate with the FEP are through
+        the FEP BIOS functions, or the CCB.
+
+        When using the BIOS, only one function at a time can be sent.  The HOST
+        must wait for the mailbox to clear before sending the next function.
+        The HOST must interrupt (NMI) the FEP after placing the function and
+        necessary parameters in the mailbox to signal to FEP to perform a 
+        function.  
+
+        A BIOS function code (0-3FH), and defined parameters provide the 
+        necessary information to perform each function.  64 function codes are 
+        reserved for the BIOS, from 0 to 63 (0-3FH).  A defined RAM area 
+        will be set up for parameter storage; this is known as the FEP mailbox.
+        The necessary parameters must be placed in the mailbox, followed by an 
+        NMI.  The NMI interrupt on the PC/Xx board is generated by setting bit
+        3 on the HOST's I/O port.  The HOST receives a function complete and 
+        status via the FEP's mailbox.  When the first byte in the mailbox is 
+        zero, the function is complete, and the second byte indicates the 
+        status of the completed function.  The HOST can now lower bit 3.  
+        Functions 0-31 (0-1FH) are executed by the BIOS, and functions 32-63 
+        (20H-3FH) are passed from the BIOS's NMI handler to INT 15H.  The BIOS
+        functions allow access to 16 async ports and sync 1A & 1B.
+
+        The Circular Command Buffer allows the HOST to queue multiple functions
+        for the FEP without waiting for function completion.  The CCB functions
+        are executed by the FEP, and it continually checks the CCB buffer for 
+        new functions.  All functions have a defined 4 byte structure. The
+        HOST is responsible for the CCB head pointer, which must never pass
+        the tail; and the FEP is responsible the tail pointer.  A typical 
+        scenario is for the HOST to check for room in the CCB, place the 4 
+        bytes in the CCB, add 4 to the CCB head.  The HOST and FEPOS are each
+        responsible for wrapping their pointer at the proper time.  If a CCB 
+        error occurs, an IRQ to the HOST is sent with the 4 byte CCB command 
+        parameters as the information in the FEP to HOST's mailbox so that the
+        HOST can determine the error.  Typically, an invalid parameter causes 
+        the error.  The CCB functions support only the 16 async ports.  The 
+        CCB head, tail, start & end variables are located @ the WINDOW BASE 
+        + 0D10H - 0D17H.  The 1K CCB buffer is located @ the WINDOW BASE 
+        + 1000H - 13FFH.  Since the FEPOS references the CCB from its data 
+        segment of 0C00H, the head, tail, start, & end are 0400H, 0400H, 0400H,
+        & 7FFH respectively.  The HOST must adjust these pointers by 0C00H to 
+        access the CCB at its WINDOW BASE +1000H.
+
+
+        The power-up BIOS does not support the CCB functions.  An error status
+        will be returned to the HOST if an invalid or non-supported CCB 
+	function is sent to the FEP.  The downloaded or EPROM resident 
+	FEPOS will relocate the INT 15H vector and support functions 32-63 
+        (20H-3FH).
+
+        The following table lists the INT 15H & CCB functions supported by 
+        the FEPOS.
+
+        ------------------------------------------------------------
+        |  FUNCTION  #   |            FUNCTION                     |
+        |  DECIMAL/HEX   |                                         |
+	|----------------------------------------------------------|
+	|    BIOS FCTS   |					   |
+	|   0/0H-31/1FH	 |  SEE	SECTION 6.2                    	   |
+	|----------------------------------------------------------|
+	| BIOS - INT 15H |					   |
+	|     32/20H	 |  BUFFER SET INDIVIDUAL		   |
+	|     33/21H	 |  ADDITIONAL TASK INTERRUPT ON           |
+	|     34/22H	 |  ADDITIONAL TASK INTERRUPT OFF	   |
+	|  35/23H-63/3FH |  RESERVED / UNDEFINED		   |
+        |----------------------------------------------------------|
+        | CCB FUNCTIONS  |                                         | 
+        |     64/40H     |  SET RX MID WATER MARK                  |
+        |     65/41H     |  SET RX HIGH WATER MARK                 |
+        |     66/42H     |  FLUSH RX BUFFER                        |
+        |     67/43H     |  FLUSH TX BUFFER                        |
+        |     68/44H     |  TX PAUSE                               |
+        |     69/45H     |  TX RESUME                              |
+        |     70/46H     |  SET INTERRUPT TO HOST MASK             |
+        |     71/47H     |  SET BAUD, DATA, STOP, & PARITY         |
+        |     72/48H     |  SEND BREAK                             |
+        |     73/49H     |  SET MODEM LINES                        |
+        |     74/4AH     |  SET BREAK COUNT                        |
+        |     75/4BH     |  SET HANDSHAKE                          |
+        |     76/4CH     |  SET XON/XOFF CHARACTERS                |
+        |     77/4DH     |  SET TX MID WATER MARK                  |
+        |     78/4EH     |  IRQ POLLING TIMER TO HOST              |
+        |     79/4FH     |  BUFFER SET ALL                         |
+        |     80/50H     |  PORT ON                                |
+        |     81/51H     |  PORT OFF                               |
+        |     82/52H     |  RX PAUSE                               |
+        |     83/53H     |  SPECIAL CHARACTER INTERRUPT            |
+        |     84/54H     |  RS-422 ENABLE                          |
+        | 85/55H-127/7FH |  RESERVED / UNDEFINED                   |
+        |----------------------------------------------------------|
+        | CCB FUTURE     |                                         | 
+        |128/80H-191/BFH |  RESERVED / FUTURE CCB FUNCTIONS        |
+        |----------------------------------------------------------|
+        | CUSTOM S/W     |                                         | 
+        |192/C0H-255/FFH |  RESERVED / CUSTOM APPLICATIONS         |
+        ------------------------------------------------------------
+
+
+8.3.1  BIOS/INT 15H FUNCTIONS
+
+	The following is a list	of the BIOS/INT 15H functions and the 
+	parameters necessary for proper	execution by the FEPOS.  The port
+	number that is sent from the HOST can be a value between 0 & 15/0FH,
+	which equates to the async ports 0 to 15/0FH in this specification.  
+        The parameters are placed in the HOST to FEP mailbox followed by an 
+        NMI interrupt.
+
+	When the FEPOS has completed the function, byte 0 will equal to 0 and
+	byte 1 will have the status for	function 20H.  A successful function
+	will have status equal to 0.  The following is a list of return	status
+	possibilities from the FEPOS INT 15H routine.
+
+		AH=0       - function successful
+		AH=80H     - non-supported function for INT 15H
+                AH=81H-FFH - function specific
+
+	All variables in the following functions are to	be sent	to the HOST to
+	FEP mailbox in HEX.
+
+8.3.1.0	 20H - BUFFER SET INDIVIDUAL
+		byte 0	   - 20H
+		byte 1	   - returns status
+		byte 2	   - port # (async = 0-15/0FH)
+		byte 3	   - total buffers requested 1-40H (1-64K)
+		byte 4	   - TX	weight 0=.5K,...7=63K (.5,1,2,4,8,16,32,63K)
+		byte 5	   - RX	weight 0=.5K,...7=63K (.5,1,2,4,8,16,32,63K)
+		bytes 6/7  - port's segment (FEP referenced)
+		bytes 8-15 - N/A
+        This function is used to set individual ports to specific buffers
+        sizes.  The total for TX and RX must not exceed 64K.  Care must be 
+        taken when selecting the segment; the total buffers cannot pass over 
+        a 64K segment boundary.  The following are the errors associated with
+        function 20H. 
+		AH=81H - all ports are not off (CCB FCT 51H)
+		AH=82H - TX weight error
+		AH=83H - RX weight error
+		AH=84H - port #	error (>15/0FH)
+		AH=85H - port not available
+
+8.3.1.1	 21H - ADDITIONAL TASK INTERRUPT ON
+		byte 0	   - 21H
+		byte 1	   - returns status
+		byte 2	   - S/W interrupt # (80H - 8FH)
+		byte 3	   - priority value
+                             FFH = task interrupted every O/S loop
+                             01H = every other loop
+                             03H = every 4TH loop
+                             07H = every 8TH loop
+                             0FH = every 16TH loop
+                             1FH = every 32ND loop
+                             3FH = every 64TH loop
+                             7FH = every 128TH loop
+                bytes 4/5  - offset entry point
+                bytes 6/7  - segment entry point
+		bytes 8-15 - N/A
+
+        This function is used to turn on additional tasks.  Up to 16 additional
+        tasks can be running in conjunction with the FEPOS.  The FEPOS will
+        load the supplied segment & offset into the interrupt vector table.
+        The priority of the tasks are selected via byte 3.  This is not a real
+        time call since the FEPOS can be idle or handling data for every 
+        port.  The task is executed via the priority value and how long it
+        takes to go through 1 main loop of the FEPOS.  The HOST must first
+        download a task to the PC/Xx, this task must return to the FEPOS via
+        an interrupt return (IRET).  All registers must be saved/restored.
+
+        In order for a task to pass information back to the HOST via an IRQ, 
+        the task can execute an INT 21H.  This prevents two programs from
+        interfering with the IRQ to the HOST.  The FEPOS will take the data
+        and place it in the IRQ buffer for the HOST.  When the HOST receives 
+        the IRQ, the 4 bytes will be in the FEP to HOST mailbox defined in 
+        the FEPOS.  The following defines the registers to be used with the 
+        INT 21H to pass 4 bytes of information to the HOST.
+                byte 0 - AL
+                byte 1 - AH
+                byte 2 - BL
+                byte 3 - BH
+        The BP resgister must be returned to the value prior to FEPOS 
+        interrupt 8?H call to restore the data segment.  Application specific
+        polling routines can also be designed as an alternative communication 
+        method with the HOST.
+        
+        The following are the errors associated with function 21H. 
+                AH=81H - illegal interrupt # (80H - 8FH)
+
+8.3.1.2	 22H - ADDITIONAL TASK INTERRUPT OFF
+		byte 0	   - 22H
+		byte 1	   - returns status
+		byte 2	   - S/W interrupt # (80H - 8FH)
+		bytes 3-15 - N/A
+        This function is used to turn off additional tasks.  The task turned
+        on via function 21H will no longer be called via the selected 
+        interrupt.  The following are the errors associated with function 21H.
+                AH=81H - illegal interrupt # (80H - 8FH)
+
+
+8.3.2  CIRCULAR COMMAND BUFFER (CCB) FUNCTIONS
+
+        The following is a list of the CCB functions and the parameters
+        necessary for proper execution by the FEPOS.  The port number that
+        is sent from the HOST can be a value between 0 & 15/0FH, which equates
+        to the async ports 0 to 15/0FH in this specification.  The parameters 
+        are placed in the CCB buffer, followed by the HOST advancing the CCB 
+        head pointer by 4.  All variables in the following CCB functions are 
+        sent to the CCB in HEX.
+
+
+8.3.2.0  64/40H - SET RX MID WATER MARK
+                byte 0   = 40H
+		byte 1	 = port # (async = 0-15/0FH)
+                byte 2/3 = value stored in structure:RXMW
+        This is a value used in conjunction with bit 1 of CCB function 46H.
+        If bit 1 has been set in function 46H, and the difference between the
+        RX head and tail equal this mid water mark, an IRQ interrupt from the 
+        FEP to the HOST will be generated.  Since the RX buffer stores 2 bytes
+        for each RX character (character & status), The mid water mark is 
+        forced to an even number.  For instance, if 8 was set as the mid water
+        mark, after 4 characters were received by the PC/Xx, and none were 
+        taken by the HOST, the difference between the RX head and tail would be
+        8.  If the interrupt mask was selected for RX mid water, then an IRQ 
+        would be sent to the HOST.  The word in each port's structure is 
+        initialized to -1 (invalid mid water mark).        
+
+8.3.2.1  65/41H - SET RX HIGH WATER MARK
+                byte 0   = 41H
+		byte 1	 = port # (async = 0-15/0FH)
+                byte 2/3 = value stored in structure:RXHW
+        This value is used for RX flow control, and is initialized to 10 less
+        than the size of the RX buffer.  If either S/W or H/W RX flow control
+        has been enabled via function 4BH, and the difference between the RX
+        head and tail equal this value, the appropriate flow control will be
+        activated to suspend RX on the port.  In the case of the default,
+        there is room for 5 more characters in the RX buffer until buffer
+        overflow, each RX input stores 1 character byte and 1 status byte.
+        When the HOST has emptied the RX buffer, the HOST must set the HFLSH 
+        byte to a non-zero value to resume RX.
+
+8.3.2.2  66/42H - FLUSH RX BUFFER
+                byte 0   = 42H
+		byte 1	 = port # (async = 0-15/0FH)
+                byte 2/3 = N/A
+        This function sets both the head and tail pointers for the RX buffer
+        equal to the starting address of the buffer.  It also sets the HFLSH
+        flag in the structure to a non-zero value to notify the FEPOS that
+        the HOST has requested a RX flush and the buffer is now empty.
+
+8.3.2.3  67/43H - FLUSH TX BUFFER
+                byte 0   = 43H
+		byte 1	 = port # (async = 0-15/0FH)
+                byte 2/3 = N/A
+        This function sets the TX tail pointer equal to the TX head pointer.
+
+
+
+8.3.2.4  68/44H - TX PAUSE
+                byte 0   = 44H
+		byte 1	 = port # (async = 0-15/0FH)
+                byte 2/3 = N/A
+        This function will pause further TX until a function 45H is sent to
+        resume TX; or either a S/W flow control character (XON), or H/W flow 
+        control signal (CTS) causes a TX resume.
+
+8.3.2.5  69/45H - TX RESUME
+                byte 0   = 45H
+		byte 1	 = port # (async = 0-15/0FH)
+                byte 2/3 = N/A
+        This function will resume TX.
+
+8.3.2.6  70/46H - SET INTERRUPT TO HOST MASK
+                byte 0   = 46H
+		byte 1	 = port # (async = 0-15/0FH)
+                byte 2   = bits to set in structure:IMASK
+                byte 3   = bits to clear in structure:IMASK
+        This function allows the FEP to interrupt the HOST via an IRQ.  Eight 
+        unique interrupt conditions exist that are selectable from the HOST.  
+        This byte is initialized to 0. The following is a bit definitions:
+                76543210
+                |||||||`-- RX buffer went from empty to not empty
+                ||||||`--- RX buffer is at the RX mid water mark
+                |||||`---- RX buffer overflow has occurred
+                ||||`----- TX buffer went from not empty to empty
+                |||`------ TX buffer is at the TX mid water mark
+                ||`------- Break has been detected
+                |`-------- Line error detected (overrun/parity/framing)
+                `--------- Modem status changed (CTS/DSR/RI/DCD)
+
+8.3.2.7  71/47H - SET BAUD, DATA, STOP, & PARITY
+                byte 0   = 47H
+		byte 1	 = port # (async = 0-15/0FH)
+                byte 2   = baud index in structure:BAUD
+                byte 3   = data, stop, & parity stored in structure:DTYPE
+        This function sets various port parameters.  Both bytes affected by
+        this function are initialized to 0FFH.  Byte 2 is used to select the
+        desired baud rate and the code is as follows:
+
+		00H - 57600		0AH - 75
+		01H - 110		0BH - 134.5
+		02H - 150		0CH - 200
+		03H - 300		0DH - 1800
+		04H - 600		0EH - 2000
+		05H - 1200		0FH - 3600
+		06H - 2400		10H - 7200
+		07H - 4800		11H - 19200
+		08H - 9600		12H - 38400
+		09H - 50
+
+        Byte 3 selects the data bits, parity, stop bits, and istrip.  The
+	istrip bit is used in conjunction with the selection of 8 data bits
+	via bits 0 & 1.  With 8 data bits selected and istrip=0, all RX data
+	will be passed back to the HOST as 8 bits.  With 8 bits selected and
+	istrip=1, all RX data will be masked to 7 bits with the upper bit 
+	equal to 0. The bits are defined as follows:
+                76543210
+                ||||||``- data bits: 0=5 bits, 1=6, 2=7, 3=8
+                |||||`--- stop bits: 0=1 stop, 1=2 stop bits
+                |||``---- parity bits:  0=no parity, 1=odd, 3=even
+		||`------ istrip: 0=8 bits, 1=7 bits
+                ``------- not used
+
+        Board initialization sets the defaults to 9600 baud, 8 data bits,
+        1 stop bit, and no parity.
+
+8.3.2.8  72/48H - SEND BREAK
+                byte 0   = 48H
+		byte 1	 = port # (async = 0-15/0FH)
+                byte 2/3 = N/A
+        This function will transmit a break signal for the time specified in
+        the BRKCNT byte.  Each count equals 55 msec.
+
+8.3.2.9  73/49H - SET MODEM LINES
+                byte 0   = 49H
+		byte 1	 = port # (async = 0-15/0FH)
+                byte 2   = bits to set in 8530
+                byte 3   = bits to clear in 8530
+        This function is used to set or clear the following output control
+        lines.  This function will execute only if H/W flow control for RX is
+        NOT enabled.  If RX H/W flow control is enabled, the RTS line is
+        controlling the flow of data into the card, therefore cannot be altered
+        by this function.  Set/clear the desired bits followed by function 4BH
+        for flow control selection.  These bits are reset to the 0 state on
+        the 8530.  The bits are as follows:
+                76543210
+                |||||||`- DTR / data terminal ready
+                ||||||`-- RTS / request to send
+                ``````--- Not used
+
+8.3.2.10  74/4AH - SET BREAK COUNT
+                byte 0   = 4AH
+		byte 1	 = port # (async = 0-15/0FH)
+                byte 2   = value stored in structure:BRKCNT
+                byte 3   = N/A
+        This function will store a word value to be used for sending a break.
+        Each count equals 55 msec.  The FEP uses its timer tick to control 
+        the sending of the break signal.The structure is set to 5 for the 
+        default value.  
+
+8.3.2.11  75/4BH - SET HANDSHAKE 
+                byte 0   = 4BH
+		byte 1	 = port # (async = 0-15/0FH)
+                byte 2   = bits to set in structure:HNDSHK
+                byte 3   = bits to clear in structure:HNDSHK
+
+        This function sets up the type of flow control for RX and TX between 
+        the PC/Xx and the port.  The receive mode between the PC/Xx and the 
+        port can be either polled or interrupt driven for RX data.  Default 
+        settings for XON/XOFF are 11H/13H.  This byte is initialized to 0 (no 
+        flow control and polled).  
+
+        S/W flow control for RX uses the XON/XOFF characters that are in
+        the port structure.  If the receive buffer on the PC/Xx reaches 
+        its high water mark, the PC/Xx will send the XOFF character in the 
+        structure, and send XON when the HOST sets the port's HFLSH byte to
+        a non-zero value.  The HFLSH byte tells the PC/Xx that the HOST has 
+        emptied the RX buffer which allows the PC/Xx to resume RX.
+
+        S/W flow control for TX uses the XON/XOFF characters that are in
+        the port structure.  It also allows for the received XON to be any
+        character, and whether that character is to be kept in the RX buffer.
+        The RX input is checked for either the XON or XOFF character and 
+        resumes or pauses the TX accordingly.
+
+        If H/W flow control is going to be selected for RX, RTS should be set
+        to 1 via function 49H prior to this function.  Upon power-up, RTS is
+        set to zero.  If the receive buffer on the PC/Xx reaches its high 
+        water mark, the PC/Xx will lower RTS, and raise it when the HOST sets 
+        the port's HFLSH byte to a non-zero value.  The HFLSH byte tells 
+        the PC/Xx that the HOST has emptied the RX buffer which allows the 
+        PC/Xx to resume RX.
+
+        If H/W flow control is going to be selected for TX, CTS and/or DSR
+	can be selected.  When the signal(s) is high, TX is enabled; and when
+ 	it is low, TX is paused.  The bits are as follows:
+                76543210
+                |||||||`- S/W flow control for RX (send XON/XOFF)
+                ||||||`-- S/W flow control for TX (monitor RX for XON/XOFF)
+                |||||`--- H/W flow control for RX (raise/lower RTS)
+                ||||`---- H/W flow control for TX (monitor CTS)
+                |||`----- XON any character
+                ||`------ keep XON any character
+                |`------- polled(0) or interrupt(1)
+                `-------- H/W flow control for TX (monitor DSR)
+
+8.3.2.12  76/4CH - SET XON/XOFF CHARACTERS
+                byte 0   = 4CH
+		byte 1	 = port # (async = 0-15/0FH)
+                byte 2   = XON set in structure:XONCHAR
+                byte 3   = XOFF set in structure:XOFFCHAR
+        This function set the values for XON and XOFF in the structure.  
+        These values will be if S/W flow control is selected.  These bytes are
+        initialized to 11H for XON and 13H for XOFF.
+
+8.3.2.13  77/4DH - SET TX MID WATER MARK
+                byte 0   = 4DH
+		byte 1	 = port # (async = 0-15/0FH)
+                byte 2/3 = value stored in structure:TXMW
+        This is a value used in conjunction with bit 4 of CCB function 46H.
+        If bit 4 has been set in function 46H, and the difference between the
+        TX head and tail equal this mid water mark, an IRQ interrupt from the 
+        FEP to the HOST will be generated.  The word in each port's struc-
+        ture is initialized to -1 (no TX mid water interrupt is poosible).
+
+8.3.2.14  78/4EH - IRQ POLLING TIMER FOR HOST
+                byte 0   = 4EH
+                byte 1   = Modes
+                           76543210
+                           |||||||`- interrupts the HOST if RX available is
+                           |||||||      set in any port. 
+                           ||||||`-- interrupts the HOST on a timed interval.
+                           ``````--- not used
+                         = 0 disables both modes & disables timers 1 & 2.
+                byte 2   = 1 to 0FFH, number of 1 msec ticks between checks
+                           for RX available on all ports.
+                byte 3   = 1 to 0FFH, multiple of byte 2 to generate an
+                           interrupt to the HOST (msec).
+        This function is used to generate IRQ interrupts from the FEP to the 
+        HOST.  The two modes may be used separately or together.  The RX 
+        available mode (bit 0 set) is used to interrupt only when input is 
+        available for the HOST.  The HOST must then check the ports to 
+        determine which port(s) have data.  Byte 2 is used to set an 
+        interval from 1 to 255 msec when the FEP checks all the ports for 
+        RX data.  If the HOST wants to strictly poll at regular intervals for 
+        RX data, the timed mode (bit 1 set) will interrupt the HOST at an
+        interval determined by multiplication of byte 2 times byte 3.  The
+        FEPOS uses 80186 timers 1 & 2 to provide the necessary timing for
+        this function.  The timers are disabled during initialization and
+        when the function is disabled.
+
+        A zero in byte 1 will disable the IRQ polling interrupt for the HOST.
+        Other IRQs via function 46H are still enabled.  This function is 
+        initially disabled.
+
+        When an IRQ is generated via this function, the FEP to HOST mailbox
+        data in bytes 0, 2, and 3 will be the same as was sent to the CCB for
+        this function.  Byte 1 will indicate which mode(s) caused the IRQ.
+
+        Example 1:  RX available mode.
+                4EH,1H,32H,0H is sent to the FEP via the CCB.  The FEP would
+                check all available ports for RX data every 50 (32H) msec
+                and generate an IRQ ONLY IF at least 1 port has RX data.
+                4EH,1H,32H,0H would be in the FEP to HOST mailbox.
+        Example 2:  Timed mode.
+                4EH,2H,0AH,3H is sent to the FEP via the CCB.  The timed mode
+                is 3 times the value of byte 2 (3x10=30).  The FEP would
+                interrupt the HOST every 30 msec.  4EH,2H,0AH,3H would be in 
+                the FEP to HOST mailbox.
+        Example 3:  Rx available mode & timed mode.
+                4EH,3H,14H,5H is sent to the FEP via the CCB.  The FEP would
+                check all available ports for RX data every 20 msec and
+                generate an IRQ only if there was RX data (4EH,1,14H,5H is in
+                the mailbox); and every 100 msec would interrupt the HOST due
+                to the timer mode (4EH,2H,14H,5H is in the mailbox).  If RX
+                data appeared at the same time the timed mode was to send an
+                interrupt, 4EH,3H,14H,5H appears in the mailbox.
+
+
+8.3.2.15  79/4FH - BUFFER SET ALL
+                byte 0   = 4FH
+                byte 1   = N/A
+                byte 2   = buffer size parameter
+                byte 3   = N/A
+        This function will set all the 4/8/16 async buffers to the same size.
+        All ports on the board must be off (FCT 51H), the memory needed
+        to satisfy the buffer requests will be checked against the available
+        memory on the board, and byte 2 must be between 0 & 6, or 0FFH.  If any
+        condition is not met, the function is not executed and an interrupt 
+        is sent back to the host with the 4 bytes from this command placed 
+        in the FEP to HOST mailbox.  The memory needed equals the amount of
+        dual-ported RAM on the board minus 16K.  If byte 2 is set to 0FFH, 
+	the FEPOS will maximize the buffers for the particular board 
+	configuration.  All buffers are set sequentially in memory.  The 7 
+	selectable sizes are as follows.  For port selection 1K, 2K, 4K, 8K,
+ 	or 16K; port 1's buffer always begins at the WINDOW BASE + 4000H (16K
+ 	boundary).  For the 32K selection, port 1's buffer is at the WINDOW 
+	BASE + 8000H.  For the 64K selection, port 1's buffer is at the WINDOW
+ 	BASE + 8000H.  Additional buffers are at the base + the size per port.
+  	See section 8.1.2 for the buffer address map.
+
+        BYTE    SIZE (?K)    MEMORY NEEDED  MEMORY NEEDED  MEMORY NEEDED
+         2      PER PORT     FOR PC/4x      FOR PC/8x      FOR PC/16x
+        ---------------------------------------------------------------
+         0H        1K           4K             8K            16K
+         1H        2K           8K            16K            32K
+         2H        4K          16K            32K            64K
+         3H        8K          32K            64K           128K
+         4H       16K          64K           128K           256K
+         5H       32K         128K           256K           512K
+         6H       64K         256K           512K            N/A
+       0FFH     MAXIMIZED FOR PARTICULAR BOARD CONFIGURATION
+
+8.3.2.16  80/50H - PORT ON
+                byte 0   = 50H
+		byte 1	 = port # (async = 0-15/0FH)
+                byte 2/3 = N/A
+        This function will enable TX and RX on the requested port.  This
+        function must executed for each port prior to either TX or RX.  Once
+        ON, the FEP will poll for TX data, and either poll for RX data or 
+        enable interrupts for RX data (see FCT 4BH).
+
+8.3.2.17  81/51H - PORT OFF
+                byte 0   = 51H
+		byte 1	 = port # (async = 0-15/0FH)
+                byte 2/3 = N/A
+        This function will disable TX and RX on the requested port.  The
+        FEP will stop polling for TX data, and turn off the receiver.  The
+        FEP ignores all events and status from the port.
+
+8.3.2.18  82/52H - RX PAUSE
+                byte 0   = 52H
+		byte 1	 = port # (async = 0-15/0FH)
+                byte 2/3 = N/A
+        This function will disable RX on the requested port.  If S/W hand-
+        shaking is enabled, the FEPOS will send the port's XOFF character.
+        If H/W handshaking is enabled, the FEPOS will lower RTS for.  The RX
+        will stay paused until the HOST sets the HFLSH byte to an nonzero 
+        value.  At that time the FEPOS will turn on RX via S/W and/or H/W
+        handshaking with XON and RTS respectively.
+
+8.3.2.19  83/53H - SPECIAL CHARACTER INTERRUPT
+                byte 0 = 53H
+		byte 1 = port # (async = 0-15/0FH)
+                byte 2 = 0FFH to enable the special character interrupt
+                       = 0 to disable the special character interrupt
+                byte 3 = special character (ASCII)
+        This function will enable/disable an IRQ to the HOST on a special
+        character.  Whenever the specified character is received via polled
+        or interrupt mode from the 8530, and the interrupt is enabled; an IRQ
+        will be sent to the HOST.  The first 3 bytes is the FEP to HOST mailbox will
+        be 53H, port #, and special character.
+
+8.3.2.20  84/54H - RS-422 ENABLE
+                byte 0 = 54H
+		byte 1 = port # (async = 0-15/0FH)
+                byte 2 = N/A
+                byte 3 = N/A
+        This function will enable RS-422 communications on the specified port.
+        The FEPOS will disable external status interrupts for DSR and DCD.  
+        This command should be done prior to FCT 50H, port on.  This 
+        function should only be used if the port is RS-422.
+
+
+8.3.3  HOST TO FEP DATA TRANSFER
+
+	The HOST will write its	data to	the appropriate	port's transmit
+	buffer.	 The HOST is responsible to ensure that	there is room in the
+	transmit buffer	and controls the transmit head pointer.	 The head
+	pointer	must never pass	the tail or transmitted	data will be lost.
+	The port's data structure is used to determine where to write the
+	data in	the buffer.  The FEPOS polls the transmit buffer for each
+	port and updates the transmit tail pointer after the FEPOS has sent
+        the data to the port.
+
+
+8.4  FEP TO HOST INTERFACE
+
+8.4.1  FEP TO HOST CONTROL 
+
+        The FEPOS can communicate with the HOST via the interrupt bit on the
+        FEP's I/O port.  The FEP to HOST mailbox located at the WINDOW BASE 
+        + 00C30H is is used to pass information back to the HOST.  The FEPOS 
+        will place the data in the mailbox, interrupt the HOST via the 
+        selected IRQ.  The HOST's IRQ interrupt routine will interpret the 
+        mailbox data and set the first byte of the mailbox (00C30H) to 0; 
+        thus signalling the FEPOS that the data has been received and the 
+        FEPOS can send another interrupt.
+
+        Four events can cause the FEPOS to interrupt the HOST.  If the FEPOS
+        finds an error in a CCB command string, if a condition is met that 
+        the interrupt mask function (46H) has requested, if the FEPOS IRQ 
+        polling function (4EH) is being used, or if the special character 
+        interrupt function (53H) is enabled and the special character is
+        received.
+
+        The FEPOS checks certain CCB command parameters.  If an error 
+        condition exists with any command, the same 4 bytes are placed in
+        the FEP to HOST mailbox and an IRQ is sent to the HOST.  Examples
+        of errors are: invalid function number, invalid port number, or an
+        invalid baud rate index.
+
+        Eight unique conditions can be masked to interrupt the HOST for each
+        port.  CCB function 46H is used to select which function(s) that 
+        the FEPOS interrupts the HOST.  There is a mask for each port.  The
+        HOST selects which condition(s) to interrupt the HOST.  An IRQ to the 
+        HOST is generated when the selected condition(s) occurs and the 
+        necessary information is made available to the HOST via the mailbox.
+        The 4 bytes returned in the mailbox are 46H, port #, IMASK byte
+        for the port and the corrsponding bit(s) that the FEPOS matched with
+        the IMASK byte.  See function 46H for bit descriptions.  The first 3
+        bytes returned to the HOST are 46H, port #, and IMASK for the 
+        port.  The 4th byte will be line status (LSTAT) for any IMASK bits 
+        0-6.  If bit 7, modem status changed, is sending the IRQ; then modem 
+        status (MSTAT) is returned in byte 4.  The line status returned is 
+        defined as the int 14H status byte.  The bits are as follows.
+
+        BITS  = 76543210
+                |||||||`- DATA READY
+                ||||||`-- OVERRUN ERROR
+                |||||`--- PARITY ERROR
+                ||||`---- FRAMING ERROR
+                |||`----- BREAK INTERRUPT
+                ||`------ TX HOLDING REGISTER EMPTY
+                |`------- TX SHIFT REGISTER EMPTY
+                `-------- TIMEOUT ERROR
+
+        The modem status return is defined as the int 14H modem status.  The
+        bits are as follows.
+
+        BITS  = 76543210
+                |||||||`- CHANGE IN CLEAR TO SEND
+                ||||||`-- CHANGE IN DATAS SET READY
+                |||||`--- CHANGE IN TRAILING EDGE RING INDICATOR
+                ||||`---- CHANGE IN CARRIER DETECT
+                |||`----- CLEAR TO SEND
+                ||`------ DATA SET READY
+                |`------- RING INDICATOR
+                `-------- CARRIER DETECT
+
+        Function 4EH can be used by the HOST to provide timed IRQ interrupts.
+        For the Rx available mode, the minimum time is 1 msec, and the maximum
+        is 255 msec.  For the timed mode, a multiple of the RX available mode
+        is used to interrupt the HOST.  See the definition for function 4EH
+        for more information.  This function is primarily provided for a HOST 
+        driver that wants to poll for its RX data.  The HOST's polling routine
+        is resident in the HOST's IRQ routine.  The 4 bytes placed in the FEP 
+        to HOST mailbox will be the 4 byte CCB command that initiated the 
+        polling function.
+
+        Fucntion 53H can be used by the HOST to provide an IRQ interrupt 
+        whenever a specified character is received.  See function 53H for
+        more information.
+
+8.4.2  FEP TO HOST DATA TRANSFER
+
+        Received data from a port is put in its receive buffer.  With each
+        byte received, a status byte is also stored in the RX buffer.  There-
+        fore, The HOST must take 2 bytes from the RX buffer.  The line status
+        returned with each data bit is defined as the int 14H status byte.  
+        The bits are as follows.
+
+        BITS  = 76543210
+                |||||||`- DATA READY
+                ||||||`-- OVERRUN ERROR
+                |||||`--- PARITY ERROR
+                ||||`---- FRAMING ERROR
+                |||`----- BREAK INTERRUPT
+                ||`------ TX HOLDING REGISTER EMPTY
+                |`------- TX SHIFT REGISTER EMPTY
+                `-------- TIMEOUT ERROR
+
+        The HOST is informed of received data via an IRQ interrupt from the 
+        FEP, or the HOST can poll the receive buffers for new data.  The 
+        port's data structure is used by the HOST's driver to extract the
+        data/status and pass it back to the HOST.  The FEP is responsible for 
+        the receive head pointer and the HOST's driver controls the receive 
+        tail pointer.  All head and tail adjustments are in 2 byte multiples.
+
+        The HOST can receive data from the receive buffers in the dual-ported
+        RAM via the driver.  The HOST calls the driver and the driver returns
+        a character and status, if present, from the requested port's RX 
+        buffer.  
+
+        Any time the HOST takes the last character out of the RX buffer 
+        (head=tail), The HOST must set the HFLSH byte in the port structure
+        to a non-zero value to inform the FEP of the empty buffer.
+
+
+8.5  INTERFACE WITH THE COMMUNICATIONS PORTS
+
+        Receive data is stored on a individual port basis.  The character
+        and line status, gathered at the time of the character read, is stored
+        in the receive buffer at the position pointed to by the receive head
+        pointer.  The data byte is at the even address and the status is at 
+        the odd address.  
+
+        Receive data is selectable, either interrupt driven via the 8530's or
+        polled via the FEPOS.  Function 4BH / bit 6 is used to select the
+        receive method for data entering the ports on the PC/Xx.
+
+        Flow control can be either software or hardware handshaking, or both
+        (FCT 4BH).  The XON/XOFF characters for software control are selectable
+        from the HOST (FCT 4CH).  Hardware handshaking uses RTS for input 
+        flow control, and uses CTS for output flow control (FCT 4BH).
+
+
+8.6  PC/Xx DRIVER INFORMATION
+
+        This section supplies the necessary information to incorporate the
+        supplied FEPOS.
+
+        Once the PC/Xx's FEPOS is executing, its functions are to provide
+        2-way communication to the HOST and 2-way communication with the
+        available comm ports.  The 2-way communication between the FEPOS
+        and the HOST is accomplished by interrupts and mailboxes, using the 
+        functions resident in BIOS & FEPOS.
+
+8.6.1  TRANSFER CONTROL FROM THE BIOS TO FEPOS
+
+        An Execute module function (FCT 1) in the BIOS will transfer control to
+        FEPOS.  The FEPOS will provide an acknowledge signal to the HOST for 
+        status by placing 'OS' @ the WINDOW BASE + 0C00H - 0C01H.  See BIOS 
+        function 1 for further information.
+
+        The file, CONVERT.COM, in the ON-BOARD subdirectory on the supplied
+        disk is used to convert a download module.  Execute CONVERT.COM on 
+        the XAFEP.BIN file.  This will fill in the number of 256 byte blocks 
+        (byte 2) and 2's compliment CRC (byte 3).  The XAFEP.BIN file is now 
+        ready to be downloaded and executed via FUNCTION 1.  The segment and 
+        offset parameters that produce the 20 bit address that the BIOS will 
+        jump to should be sent with the upper 16 bits in the segment and the 
+        lower 4 bits in the offset.  For example, to transfer control to the
+        PC/Xx's address 02004H, the segment value is 0200H and the offset is 
+        0004H.  After the HOST has downloaded the XAFEP.BIN to the location 
+        in RAM, FUNCTION 1 can now be executed.  Successful execution will 
+        transfer control from the BIOS to the 02004H.  
+
+        An Install PC/Xm EPROM operating system function (FCT 8) will transfer
+        control to DigiBoard's EPROM FEPOS that resides in EPROM.  See BIOS 
+        function 8 for the detailed definition.
+
+        A special exit procedure can also be used to exit the BIOS.  The 2 
+        bytes at the WINDOW BASE + 00C00H are 'G' and 'D' after successful 
+        power-up and card reset. If these bytes are reversed to 'D' and 'G' 
+        the BIOS will jump to address 0200:0004H.
+
+8.6.2  FEPOS INTERFACE
+
+        The driver may now use either BIOS functions or the CCB functions to
+        communicate with the PC/Xx.
+
+        When using the BIOS, only one function at a time can be sent.  The HOST
+        must wait for the mailbox to clear before sending the next function.
+        The HOST must interrupt (NMI) the FEP after placing the function and
+        necessary parameters in the mailbox to signal to FEP to perform a 
+        function.  
+
+        A BIOS function code (0-3FH), and defined parameters provide the 
+        necessary information to perform each function.  64 function codes are 
+        reserved for the BIOS, from 0 to 63 (0-3FH).  A defined RAM area has
+        been set up for parameter storage; this is known as the FEP mailbox.
+        The necessary parameters must be placed in the mailbox, followed by
+        an NMI.  The NMI interrupt on the PC/Xx board is generated by setting 
+        bit 3 on the HOST's I/O port.  The HOST receives a function complete 
+        and status via the FEP's mailbox.  When the first byte in the mailbox 
+        is zero, the function is complete, and the second byte indicates the 
+        status of the completed function.  The HOST can now lower bit 3.  
+        Functions 0-31 (0-1FH) are executed by the BIOS, and functions 32-63 
+        (20H-3FH) are passed from the BIOS's NMI handler to INT 15H (to be 
+        applicaiton specific).  The downloaded or EPROM resident operating 
+        system will relocate the INT 15H vector and support functions 32-63 
+        (20H-3FH).
+
+
+

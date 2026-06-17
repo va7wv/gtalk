@@ -1,0 +1,9 @@
+
+ Start  Stop   Length Name               Class
+
+ 00000H 01F9FH 01FA0H CODE               CODE
+
+Error: Undefined symbol TOPLEN in module XAPCM232.ASM
+Program entry point at 0000:0000
+Warning: No stack
+

@@ -1,0 +1,8 @@
+|*2GinsuTalk
+|*f1A|*f4N|*f5S|*f6I |*f7|*h1Color Chart
+Version 930204/agx|*r1
+
+Standard Text:                  Highlighted Text:
+
+|*f11|*f22|*f33|*f44|*f55|*f66|*f77                          |*h1|*f11|*f22|*f33|*f44|*f55|*f66|*f77
+

@@ -1,0 +1,145 @@
+Feature                                         Implemented in version
+------------------------------------------------------------------------
+
+Node - to - Node chat                           1.8 <early>
+public xfers
+copy protection                                 1.6c
+better security                           <some>1.8a4 -
+passwords ENCRYPTED
+system passwords in data file                   1.6c5
+/away
+/user  (for user defaults)           <basic 1.8a4>
+  login/logout message toggles
+  away idle time
+  kill idle time
+  timeout message toggles
+  sysmon toggle
+
+macro include time between lines also  <1.7 but scrapped>
+
+/m index
+put sysop passwords in system.cfg               1.6c3
+need MASS delete mail from user
+ANSI on/off by channel                           <NEVER?>
+Disable ANSI to normal links                    1.6c3
+Allow ANSI to Ginsu-Ddial-Links                 1.8a4
+/P link prv (disallow guests)
+/xg /x all guests
+/t link priv
+fix /sp list                                    1.7a?
+add /sl                                         1.8a4
+
+Users:
+  Need Link accounts
+  Fix user privs
+  longer handles
+
+going to fix the lingering handleline bug       1.7a1
+
+add code to (1.7a8) date_sync (gt.c) so that
+   it will correct #calls and other vars when
+   system starts up IF they start up over a
+   midnight break, OR if they startup on a
+   different day
+    - ALSO, change task.c (after it loades
+      sys_info) to check what DAY it is
+      (see if there is any reason for this)
+
+
+LINKS:
+    need to add support for links
+      - /t   /h   /remote
+      - interpret }}} and                       1.8a1 (broke 'til a2-3)
+      - AUTO/DEMAND /sp
+      - SENDING COMMANDS OVER LINKS
+        (neatly)
+
+
+
+GinsuTERM:
+      - Gmodem  (downloading and talking??)
+         STS planning to do this for UNIX version
+         (we can do it in MS-DOS version)
+      - sound, vga support w/multiple windows
+
+RIPterm support:
+      - VGA, cool ass stuff
+
+Full Screen Editor:
+      - Need a vt100/ANSI full screen editor, should use a buffer window
+        and load part of the file into the buffer window.
+        - NEED IT SOON
+
+
+BUG:Timeout-> Forced Lurk (message reveals lurker)
+highlight "P"
+BUG:/chat is fucked (can't exit)
+    - need "left to chat" message
+Add ANSI to /bbs
+BUG:NON-ACTIVE messages will still rotate
+
+Voting /k
+
+/m index w/NAMES
+
+Relog or /q password
+
+Guest Quota and/or Auto-System Lock (by time or capacity)
+
+/page should have node number
+
+BUG: Disable pages while in xfer
+
+BUG: /last dosn't reset ANSI after handle
+
+BUG: fix ANSI in CHAT and add CR_LF before chat announcement
+
+BUG: /f/t ANSI fix
+
+Full Duplex on Links
+
+/sp Lists in Links
+
+logins/logouts over links
+
+Neutralize nons from links
+
+Add Allowed on Links
+
+User speed (output)
+
+BUG: /cg ANSI
+
+ANSI in /cn (allow ANSI channel names)
+
+WHO /Ked
+
+BUG: Link can barge in on t2
+
+add "ALLOW_MODERATE" to channel info
+
+Let RGA account receive mail but not send
+
+look at /sysop menu
+
+CANADA STUFF
+------------
+baby=minor
+full=major
+rotator message=message slot
+
+BUG: /sl needs !slienced for the MONITOR thing
+
+user personal event log, and personal finger (profile)
+
+Floppy Access warning to users
+
+Email groups
+
+Category NAME for account
+
+Fix it so that if a user is monitoring channels, he only sees "user X moved"
+  not BOTH of the messages
+
+edit /I and add CAnada Contact
+

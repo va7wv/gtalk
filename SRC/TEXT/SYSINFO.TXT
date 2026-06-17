@@ -1,0 +1,9 @@
+
+    Hardware:
+       286/8mhz
+       40meg HD
+       5.25" floppy
+       10 PP2400SA clone modems
+       an 8 port digiboard with 8 16450s
+       an AT I/O card
+

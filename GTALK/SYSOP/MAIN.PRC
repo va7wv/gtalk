@@ -1,0 +1,8 @@
+Privilege Editor
+5
+G*Guest Privs*sysop\guest.prv
+U*User Privs*sysop\user.prv
+M*Minor Co Privs*sysop\mcosys.prv
+C*Major Co Privs*sysop\cosys.prv
+S*Sysop Privs*sysop\sysop.prv
+

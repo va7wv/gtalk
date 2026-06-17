@@ -1,0 +1,72 @@
+
+
+
+************************************************************
+****                                                    ****
+****     GTalk - official Documemtation Release 0.1     ****
+****               Sysop System Commands                ****
+****                                                    ****
+************************************************************
+
+
+
+Sysop System Commands    - Written 04/05/93 by David W Jeske
+---------------------      Copyright 1993 by David W. Jeske and
+                                             Daniel L. Marks
+
+
+The Following is a list of GTalk SYSOP commands:
+
+GTalk Kernal/Serial Info Commands:
+  /CHK                  - checksum util
+  /MEMORY               - memory
+  /FILES                - gtalk file usage
+  /SCHED                - scheduled task list
+  /SERIAL               - serial configuration list
+  /DCD                  - Toggle DCD detect for node on/off
+  /QUICK                - Quick system shutdown
+  /SHUTDOWN             - Shutdown system
+  /RESETn               - Reset node #n
+
+Sysop Utilities:
+  /SYSTEM               - General Sysop Utilities menu
+  /SYSOP                - Sysop FILE utilities
+  /COMMAND              - Global Toggle commands on/off
+  /EF                   - Edit File
+  /VIEW                 - View file
+  /ROT                  - Enter rotator menu
+  /TERMn                - Enter terminal node #n
+  /U                    - Enter user editor
+  /WALL <text>          - Send broadcast message
+  /WALLA <text>         - Send anonymous broadcast message
+  /WATCH                - watch utility
+
+
+Sysop General Use Commands:
+  /SYSMON               - System Monitoring (auto monitoring of channel 0)
+  /Fn                   - "Force" another node
+  /LURK+,-              - Set lurk on/off
+  /SAFE+,-              - Set safe mode for lurk on/off
+  /LOCKxx               - Set priority lock for system
+  /RLn                  - Relog node #n
+  /SM+                  - Display sysop user list
+
+Time/Access Related Commands
+  /Vn                   - Validate node #n
+  /Gn(+,-,=)xx          - +/-/set time (xx/min) for #n
+  /Kn                   - Kill node #n
+  /MAKEn(GRUBCS*)       - Set Temporary Access Priviliges
+
+Link Related Commands:
+  /LINKn                - Set node #n as a link
+
+System Update Commands:
+  /MEMUD                - Member list update
+  /SYSUD                - Update system information file
+
+
+
+
+
+
+

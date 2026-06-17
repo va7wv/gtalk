@@ -1,0 +1,4518 @@
+NAME	XAPCM232
+TITLE	DOS TO DIGICHANNEL PC/Xa M232 DEVICE DRIVER   VER 1.9.1
+PAGE	58,132	
+.186
+
+Comment	~
+
+   (C) Copyright 1989 DigiBoard Inc.   All rights reserved.
+   (R) DigiCHANNEL PC/Xa & PC/Xi are Trademarks of DigiBoard Inc.
+
+   This source  is provided for use  in software development
+ for any use with DigiBoard Inc. products.  This software is
+ assumed to be error free, DigiBoard takes no responsibility
+ for any damages  or loss of data  caused by the use of this
+ program or programs made from this source.
+
+   To aid in software development,  please mark changes with
+ your initials at top and bottom of changes,  then into log.
+ Please submit you're corrections to DigiBoard Inc.  to help
+ ensure future bug-free versions.  This should be on a 5.25"
+ DOS formated floppy and a print-out of all changes.  Please
+ include a discription of the computer,  other option cards,
+ and the operating system and it's version.
+
+				Attn Technical Support
+				DigiBoard Inc.
+				6751 Oxford Street
+				St. Louis Park, MN 55426
+
+   To  help us  in  helping you,  All  software questions and
+ technical support questions should be to  Technical Support.
+
+   This will help  our  software engineering  department,  by
+ reducing the number of calls  to our programmers.  Technical
+ Support maintains a log of all problems,  and  bug fixes, to
+ help our  software engineering in the  maintaince and future
+ development of our products.
+
+		We Thank You, for using DigiBoard Products.
+
+
+Commands for creating XAPCM232.PGM
+
+		MASM 	XAPCM232;		         ;MASM 4.0
+		LINK 	XAPCM232 XABIOS XAFEP;
+		EXE2BIN XAPCM232.EXE XAPCM232.PGM		
+
+
+
+
+
+			    REVISION HISTORY
+
+1.1.0	Production Release		                        2-1-89	
+
+1.1.1   In-house pre-release				        3-1-89	
+	Added code to ensure board was no an Xi or Xm
+
+1.2.0   Released v 1.1.1 for production			        5-1-89
+
+1.2.1   Revised to work with FEPOS v 4.3 (old FEPOS v 2.0)      6-05-89
+
+1.2.2   Made INT_14 re-entrant.				        6-14-89	
+        Removed timeout from DOS Read fnc.
+	Fixed INT 14h fnc 0Ah odd byte bug
+	Removed double reads for buffer ptrs
+	Move channel on code to end of init sequence	
+
+1.3.0	Released v 1.2.2 for production				6-26-89
+
+1.4.0   Modified driver to support PC/Xi w/64K.			7-24-89
+	  "         "    "    "    up to 16 chnls/board.
+        Changed IMASK param from 0 to 80h to allow mdm sts 
+	updates
+	Linked FEPOS v 4.4
+
+1.4.1   Added fct_0f					        9-5-89
+
+1.5.0   Released 1.4.1 linked with FEPOS V 4.6			9-26-89
+	Let confpcxa change IMASK to 80h
+
+1.6.0   Linked w/ FEPOS V 4.7					11-16-89
+
+1.7.0   Changed JGE to JAE in FCT_0A				12-08-89
+	Added hdwr rset chk					02-08-90
+	Added support for NEC XM board
+
+1.7.1   Fixed INT 14h fct 4 pop ax bug				03-27-90
+	Fixed INT 14h fct F wrap bug				04-03-90
+	Fixed INT 14h fct F zflag mask bug
+
+1.7.2   Fixed INT 14h fct 12 bug				04-25-90
+	Fixed INT 14h fct 1 infinite loop bug - seen only
+	  if tx buff full and chnl can never tx.
+	Made send_cmd wait for CCB head = tail before rtn.
+          Timeout err if head = tail after 1 sec.	  
+	All INT 14h fcts that use send_cmd rtn 80h if send_cmd
+	  times out.
+	Get_line_sts proc now rtns tx buff empty if not full.
+	  Used to rtn empty only if # of tx chars = 0.
+
+1.8.0   Released 1.7.2						04-27-90
+
+1.8.1	Added code to maximize buffers: 			10-01-90
+	    4 Ports : 8k / Chnl
+	    8 Ports : 4k / Chnl
+	   16 Ports : 2k / Chnl
+
+	Added INT 14h FCT 18h : Send BIOS command
+	
+	Fixed bug in FCT 5h - BL & BH's definitions were backwards.
+           Specified XON chars would be used as XOFF chars and vice-
+           versa. This bug was not reported.
+        
+	Enhanced FCT 5h to allow more than one type of handshaking to
+        be processed. As it was, you could request more than one, but
+        after setting up the first type, the function would return.
+
+	Ensured that RTS was set high if FCT 5h was used to request
+	RTS handshaking.	
+	
+	Added error message for no i/o port found.
+
+1.9.0   Released 1.8.1
+
+1.9.0.1 Added code to ISR to support special char interrupts with     02-05-91
+	flags and counters for each channel.
+	
+1.9.0.2	Fixed bug introduced in 1.9.0.1 code that screwed up upper    02-19-91
+	intrs.
+	
+1.9.0.3	Fixed bug that set buffer sizes after chnl init. If a chnl    02-20-91
+	was on, this CCB command wouldn't work, as per design.
+
+1.9.0.4 Ensured that brds mem was off before displaying messages at   03-08-91
+	init, to eliminate system hangs due to 8-bit / 16-bit video
+	card conflicts.
+	
+	Added code to determine the number of channels on each board,
+	based on what the Bios reports, rather than what the users
+	indicates in confpcxa.
+
+1.9.0.5 Added code to detect when spcl char rxed when buff full	      04-01-91
+
+1.9.1   Added Int 14h fct 19h - Set Special Character Interrupt	      04-24-91
+
+	Added int 14h fct 1Ah - Get pointer to Special Character      
+	 Flag/Counters.
+	
+	Released this version for Jean Baptiste in France		
+
+
+~;
+;	End of Revision History
+					Subttl	Equates
+					Page+
+;
+CR		EQU	0DH		;CARRAGE RETURN
+LF		EQU	0AH		;LINE FEED
+EOT		EQU	'$'		;DOS END OF TEXT STRING
+EOF		EQU	1AH		;^Z
+FALSE_		EQU	'F'
+TRUE_		EQU	'T'
+TX_EMPTY_	EQU	60H
+DATA_RDY_	EQU	01H
+ENBL_OFFS_	EQU	5		;PORT_PARAM ENBL BYTE
+
+
+EXTRN		TOPLEN:BYTE		;END OF APPENDED FEP CODE
+
+;
+;
+;	BIT # BY WORD	111111		 NOTE: BIT 0 IS LEAST SIGNIFICANT BIT
+;			5432109876543210
+ATTRIBUTE	EQU	1010000000000000B	;DEVICE ATTRIBUTE
+;			|   |	|   |
+;	BIT # BY BYTE	7654321076543210
+;			HIGHBYTE LOWBYTE  STORED AS LOWHIGH
+;	111111
+;	5432109876543210
+;0    0	|||||||||||||||`--0=NOT STDIN	1=STDIN
+;1    1	||||||||||||||`---0=NOT STDOUT	1=STDOUT
+;2    2	|||||||||||||`----0=NOT NUL	1=NUL
+;3    3_||||||||||||`-----0=NOT $CLOCK	1=$CLOCK
+;4    4	|||||||||||`------0=NOT STDERR	1=STDERR   (RESERVED)
+;5    5	||||||||||`-------
+;6    6	|||||||||`--------0=NO GENIOCTL	1=GENIOCTL
+;7____7_||||||||`---------
+;0    8	|||||||`----------
+;1    9	||||||`-----------
+;2   10	|||||`------------
+;3   11_||||`-------------0=NOT O,C,RM	1=O,C,RM
+;4   12	|||`--------------
+;5   13	||`---------------0=FAT ID	1=NO FAT ID   1=OUT UNTIL BUSY (CHAR)
+;6   14	|`----------------0=NO IOCTL	1=IOCTL
+;7   15	`-----------------0=BLOCK	1=CHARACTER
+;
+					SUBTTL	REQUEST HEADER EQUATES
+					PAGE+
+;
+REQUESTHEADERLENGTH	EQU	0	;BYTE 1 LENGTH OF HEADER AND DATA
+REQUESTEDUNIT		EQU	1	;BYTE 2 SUBUNIT OPERATION IS FOR
+REQUESTEDCMD		EQU	2	;BYTE 3 COMMAND CODE (SEE FUNCTION TABLE )
+RETURNSTATUS		=	3	;BYTES 4 & 5 WORD (STATUS)
+RESERVEDAREA		EQU	5	;BYTES 6,7,8,9,10,11,12 & 13 (RESERVED FOR DOS) 
+;
+;INITIALIZATION		COMMAND CODE = 0
+;
+DEVICEUNITS        	EQU	13	;BYTE 14 BYTE (NUMBER OF DISK UNITS)
+ENDINGOFFSET  		EQU 	14	;BYTES 15 & 16 WORD
+ENDINGSEGMENT		EQU	16	;BYTES 17 & 18 WORD
+BPBOFFSET		=	18	;BYTES 19 & 20 WORD
+BPBSEGMENT		=	20	;BYTES 21 & 22 WORD
+;
+;MEDIA CHECK		COMMAND CODE = 1 
+;
+MEDIADESCRIPTOR		=	13	;BYTE 14 MEDIA DESCRIPTOR FROM DOS
+MEDIASTATUS		EQU	14	;BYTES 15 & 16 WORD (RETURN STATUS)
+;
+;BUILD BPB		COMMAND CODE = 2
+;
+MEDIADESCRIPTOR		=	13	;BYTE 14 MEDIA DESCRIPTOR FROM DOS
+DTAOFFSET		EQU	14	;BYTES 15 & 16
+DTASEGMENT		EQU	16	;BYTES 17 & 18
+BPBOFFSET		=	18	;BYTES 19 & 20
+BPBSEGMENT		=	20	;BYTES 21 & 22
+;
+;INPUT OR OUTPUT	COMMAND CODES = 3,4,8,9 AND 12
+;
+INOUTMEDIADISCRIPTOR	EQU	13	;BYTE 14
+BUFFEROFFSET		EQU	14	;BYTES 15 & 16
+BUFFERSEGMENT		EQU	16	;BYTES 17 & 18
+TRANSFERCOUNT	       	EQU	18	;BYTES 19 & 20 WORD (SECTORS TO TRANSFER)
+STARTINGSECTOR		EQU	20	;BYTES 21 & 22 WORD (LOGICAL SECTOR)
+;
+;NONDESTRUCTIVE INPUT NO WAIT     COMMAND CODE = 5
+;
+BYTEREAD		EQU	13	;BYTE 14 (BYTE READ FROM DEVICE)
+;
+;STATUS			COMMAND CODES = 6 AND 10
+;FLUSH			COMMAND CODES = 7 AND 11
+;
+RETURNSTATUS		=	3	;SAME AS RETURNSTATUS
+;
+;	     15 14 13 12 11 10  9  8  7  6  5  4  3  2  1  0
+;             E  |  |  |  |  |  B  D  |  |  |  |  |  |  |  |
+;             R  -------------  U  O  ----------------------
+;             R    RESERVED     S  N  ERROR CODE IF BIT 15=1
+;             O                 Y  E  00=WRITE PROTECT VIOLATION
+;             R                       01=UNKOWN UNIT
+;                                     02=DEVICE NOT READY
+;				      03=UNKOWN COMMAND
+;				      04=CRC ERROR
+;	BIT 9 IS ONLY SET	      05=BAD DRIVE REQUEST STRUCTURE LENGTH
+;	BY STATUS CALLS AND	      06=SEEK ERROR
+;	REMOVABLE MEDIA CALLS	      07=UNKOWN MEDIA
+;				      08=SECTOR NOT FOUND
+;				      09=PRINTER OUT OF PAPER
+;				      0A=WRITE FAULT
+;				      0B=READ FAULT
+;				      0C=GENERAL FAILURE
+;				      0D=RESERVED
+;				      0E=RESERVED
+;				      0F=INVALID DISK CHANGE
+;
+
+
+					SUBTTL	DUMMY DEVICE HEADER
+					PAGE+
+CODE	SEGMENT PARA PUBLIC 'CODE'
+	ASSUME CS:CODE, DS:CODE   
+		ORG	0000H		;DEVICE DRIVERS MUST ORG AT 0
+;
+;The following header is for dummy device ~DOSXAP~ that is always installed
+;and used to pass info stored in MSG_STATUS to CONFPCXA. Writing to this
+;device rewinds the MSG_STATUS and reading fetches the MSG_STATUS contents.
+;The headers for the com devices may or may not be linked in, depending on
+;the success of initialization or users choice (INT 14 only vs DOS support).
+;---------------------------------------
+START:					; WARNING !  DO NOT CHANGE THIS
+DRIVER		PROC			;	    HEADER OR DATA TABLE.
+NEXTHEADER00	DW	OFFSET COMA1   	;OFFSET OF NEXT HEADER
+		DW	-1		;SEGMENT 'LET DOS FILL IN'
+		DW	08000H		;ATTRIBUTE
+		DW	DEVICESTRATEGY	;
+		DW	DEVICEINTERRUPT	;
+		DB	'~DOSXAM~'	;DEVICE NAME 'MUST BE UPPER CASE'
+;---------------------------------------;
+HDRLINK		DW	OFFSET A1PTR	;POINTERS AND DATA FOR CONFIGMC
+		DW	OFFSET PORT_PARAMS
+		DW      OFFSET COM_NAMES
+		DW	OFFSET BD_TBL_TBL
+BRD_SEG		DW	0D000h
+DXLOW		DW	4		;ASSUMES 4(0-3) PORTS INSTALLED
+I14_ONLY	DW	0		;0 = DOS SUPPORT  , 1 = INT14 ONLY
+NUM_BRDS	DW	4
+		DW	OFFSET BD_1
+DXHIGH		DW	67   		;DXLOW + CHNLS - 1 
+;---------------------------------------
+
+SUBTTL BOARD VARS AND EQUS
+PAGE+
+
+CURRENTCHANNEL	DW	?
+TX_STRT		DW	?		;INT_14 STRCOPY VARS
+TX_MAX		DW	?		;
+NUM_SENT	DW	?		;
+TOT_CHNLS	DB	0		;filled in by driver
+STRT_INDX	DW	0
+MEM_ON_IO_PORT	DW	?
+LAST_LOC    	DW	?
+NUM_PORTS	DW	?		;used in init 
+;-----------------------------------------------------------------------
+BD_TBL_TBL	LABEL	WORD
+		DW	OFFSET	BD_1
+		DW	OFFSET	BD_2
+		DW	OFFSET	BD_3
+		DW	OFFSET	BD_4
+;------------------------------------------------------------------------
+IRQ_ENTRY_TBL	LABEL   WORD
+		DW	OFFSET	IRQA_ENTRY
+		DW	OFFSET	IRQB_ENTRY
+		DW	OFFSET	IRQC_ENTRY
+		DW	OFFSET	IRQD_ENTRY
+;------------------------------------------------------------------------
+;
+;	BD_TBL STORAGE AREA 
+;		STARTS WITH DEFAULT - CHANGED BY PARAMETER ENTRIES
+EVEN
+BD_1		DW	0110h			;BD_IO_        default 110h
+		DW	?			;BD_IRQ_ENTRY_OFS_
+		DW	0			;BD_STRT_INDX_ default 0
+		DW	8			;BD_PORTS_     default 8
+		DW	3			;BD_IRQ_       default 3
+		DW	?			;BD_PIC_
+
+BD_2		DW	200h			;BD_IO_        default 200h
+		DW	?			;BD_IRQ_ENTRY_OFS_
+		DW	8			;BD_STRT_INDX_ default 8
+		DW	8			;BD_PORTS_     default 8
+		DW	4			;BD_IRQ_       default 4
+		DW	?			;BD_PIC_
+
+BD_3		DW	220h			;BD_IO_         default 220h
+		DW	?			;BD_IRQ_ENTRY_OFS_
+		DW	16			;BD_STRT_INDX_  default 16
+		DW	8			;BD_PORTS_      default 8
+		DW	10			;BD_IRQ_	default 10
+		DW	?			;BD_PIC_
+
+BD_4		DW	300h			;BD_IO_		default 300h
+		DW	?			;BD_IRQ_ENTRY_OFS_
+		DW	24			;BD_STRT_INDX_  default 24
+		DW	8			;BD_PORTS_      default 8
+		DW	11			;BD_IRQ_	default 11
+		DW	?			;BD_PIC_
+;
+;------------------------------------------------------------------------
+;
+; -----	TABLE EQUATES 
+;		- INDEX VALUES FOR BOARD TABLES
+;
+BD_IO_		EQU	0		; BOARDS I/O PORT
+BD_IRQ_OFS_	EQU	2		; IRQ ROUTINE ENRTY 
+BD_STRT_INDX_	EQU	4		; BRDS CHNL0 DX VALUE
+BD_PORTS_	EQU	6		; # OF PORTS ON BOARD (2/4/8)
+BD_IRQ_		EQU	8 		; IRQ 
+BD_PIC_         EQU     10               ; PIC OFFSET
+;
+PIC_1_		EQU	020H		; LOW PIC
+PIC_2_		EQU	0A0H		; HIGH PICK VALUE
+IRUP_MASK_      EQU     03H             ; RX INTS/INT ON RX NOT EMPTY & MW
+;---------------------------------------------------------------------------
+FEP_CH_TBL	LABEL	WORD		; CHAN STRUCTURE OFFSETS (WINDOW+)
+;		DW	0D80H		; CHANNEL 0
+;		DW	0DC0H
+;		DW	0E00H
+;		DW	0E40H
+;		DW	0E80H
+;		DW	0EC0H
+;		DW	0F00H
+;		DW	0F40H		; CHANNEL 7
+
+
+		DW	1800H		; ~1.2.1~ CHANNEL 0
+		DW	1840H	
+		DW	1880H	
+		DW	18C0H	
+		DW	1900H	
+		DW	1940H	
+		DW	1980H	
+		DW	19C0H	
+
+		DW	1A00H		; CHANNEL 8
+		DW	1A40H	
+		DW	1A80H	
+		DW	1AC0H	
+		DW	1B00H	
+		DW	1B40H	
+		DW	1B80H	
+		DW	1BC0H	
+; -----	BAUD RATE TABLE FOR FEP
+;		LEGAL CHECKS ARE MADE FROM 1 TO 18 (110 - 38400) * MORE LATER
+;
+BAUD_TBL	DW	56000		; **TOO FAST** SKIP, START INDEX AT 2
+		DW	110		; CODE TO FEP = 1 
+		DW	150		;	"	2
+		DW	300
+		DW	600
+		DW	1200
+		DW	2400
+		DW	4800		;	"	7
+		DW	9600		; FIRST 8 AS PER IBM(0-7 = 1-8)
+		DW	50		;	"	9
+		DW	75,134,200,1800,2000
+		DW	3600,7200,19200 ; 19.2=17 TO FEP
+     		DW	38400		; 18 TO FEP 
+;
+BAUD_TBL_LEN_	EQU	($-BAUD_TBL)/2	; # ACCEPTED ENTRIES
+;--------------------------------------------------------------------
+;       FEP CHANNEL BUFFER TABLE - THIS TABLE REPEATS FOR EACH CHANNEL ON 
+;				   THE BOARD AND BEGINS AT WINDOWBASE + 0D80H
+;               
+;		INDEX:	AS SEEN BY THE HOST DRIVER
+;                               R/W - READ / WRITE
+;			        R   - READ ONLY
+;			        F   - READ ONLY FIXED
+;			        C   - CHANGED BY COMMANDS ONLY
+;			        U   - UNKNOWN (INTERNAL TO FEP)
+;			        RES - RESERVED
+;		
+F_TX_HEAD_	EQU	0		; R/W - TX HEAD POINTER
+F_TX_TAIL_	EQU	2		; R   - TX TAIL POINTER
+F_TX_STRT_	EQU	4		; F   - TX STARTING OFFSET
+F_TX_MAX_	EQU	6		; F   - TX ENDING OFFSET
+F_RX_HEAD_	EQU	8		; R   - RX
+F_RX_TAIL_	EQU	10		; R/W - RX TAIL
+F_RX_STRT_	EQU	12		; F   - RX
+F_RX_MAX_	EQU	14		; C   - RX
+;
+F_CPORT_	EQU	16		; F   - CMD PORT / 0 IF 8530 NOT FOUND
+F_CH_SEG_       EQU     18              ; F   - SEGMENT FOR RX/TX BUFFERS
+F_RX_MW_	EQU	20		; C   - MID WATER / RESUME RX
+F_RX_HW_	EQU	22		; C   - HIGH WATER / PAUSE RX
+F_TX_MW_ 	EQU	24		; C   - INFORM HOST OF MID LEVEL TX
+F_BRK_POS_      EQU     26              ; R   - RX HEAD AT TIME OF LAST BREAK
+F_FLWCNTL_	EQU	28		; U   - INTERNAL CONTROL
+F_MSTAT_	EQU	29		; U   - INTERNAL MODEM STATUS
+F_LSTAT_	EQU	30		; U   - INTERNAL LINE STATUS
+F_STATUS_       EQU     31              ; U   - FEP INTERNAL STATUS/FLAGS
+;
+F_IMASK_	EQU	32		; C   - INTERRUPT HOST MASK
+F_BAUD_		EQU	33		; C   - BAUD INDEX SELECTED
+F_DTYPE_	EQU	34		; C   - DATA TYPE SELECTED
+F_HNDSHK_	EQU	35		; C   - HANDSHAKE SELECTED
+F_XOFF_		EQU	36		; C   - XOFF CHAR
+F_XON_ 		EQU	37		; C   - XON CHAR
+F_HFLSH_	EQU	38		; W   - HOST CLEARED RX
+F_BRK_CNT_	EQU	39		; C   - BREAK COUNT SELECTED
+F_BRK_CTR_	EQU	40		; U   - INTERNAL BREAK COUNTER
+F_CHAN_NUM_     EQU     41              ; F   - BOARD'S CHAN NUMBER (1-9)
+
+;------------------------------------------------
+;        CCB COMMAND EQUATES
+
+F_C_RX_MW_ 	EQU	40H		; SET RX MID WATER MARK
+F_C_RX_HI_ 	EQU	41H		; SET RX HIGH WATER MARK
+F_C_FLSH_RX_	EQU	42H		; FLUSH RX BUFFER (FCT 9)
+F_C_FLSH_TX_	EQU	43H		; FLUSH TX BUFFER (FCT 9)
+F_C_TX_PAUSE_	EQU	44H		; TX PAUSE
+F_C_TX_RESUME_	EQU	45H		; TX RESUME
+F_C_SET_INT_	EQU	46H		; SET INT HOST MASK (INITIALIZATION)
+F_C_BD_DATA_	EQU	47H		; SET BAUD & DATA (FCT 0 & 4)
+F_C_BREAK_	EQU	48H		; SEND BREAK (FCT 7)
+F_C_MODEM_	EQU	49H		; SET MODEM LINES
+F_C_BRK_TIM_	EQU	4AH		; SET BREAK TIMING
+F_C_HNDSHK_	EQU	4BH		; SET HANDSHAKE (FCT 5)
+F_C_XON_XOFF_	EQU	4CH		; SET XON & XOFF CHARS (FCT 5)
+F_C_TX_MW_   	EQU	4DH		; SET TX MID WATER MARK
+F_C_IRQ_TIM_    EQU     4EH             ; IRQ TIMER FOR POLLING HOST
+;
+;------------------------------------------------
+PROT_SW_  	EQU	03H		; DEFAULT FOR S/W HANDSHAKE PROTOCOL
+PROT_HW_  	EQU	0CH		; DEFAULT FOR H/W HANDSHAKE PROTOCOL
+PROT_DSR_	EQU	80H		; MONITOR DSR FOR TX HANDSHAKE
+SET_RTS_	EQU	0002H		; BIT TO SET RTS HIGH
+RSET_HW_HSHK_	EQU	0C00H		; BITS TO RESET H/W HANDSHAKE
+
+F_EPROM_SIG_    EQU     0C00H           ; EPROM SIG IS 1ST WORD IN FEP DATA
+F_OS_VER_	EQU	0C0EH
+F_BRD_TYPE_	EQU	0C10H		; EPROM DETERMINED BRD TYPE 5 = NEC XM
+F_ASYNC_MSK_    EQU     0C20H
+F_BD_CONFIG_	EQU	0C24H		; EPROM PORT BOARD CONFIG BYTE
+F_EPROM_VER_    EQU     0C0EH           ; EPROM VER # IN FEP DATA TBL
+OS_SIG_		EQU	'SO'		; OPERATING SYSTEM / FEP SIGNATURE
+EOS_VER_        EQU     0C06H           ; OFFSET FOR EPROM O/S VERSION
+;                                       ;  0FFFFH = -1 IF NOT INSTALLED
+BIOS_BASE_	EQU	0F80H		; HOST WINDOW
+DATA_BASE_	EQU	00C0H		; DATA SEGMENT VIEWED FROM HOST
+FEP_BASE_	EQU	0200H		; DOWNLOAD FEP O/S SEGMENT
+FIVE_SCNDS_	EQU	100		;100 * 55ms = 5.5 SECONDS
+HEADER_SIZE_	EQU	18
+NAME_FIELD_	EQU	10
+WORDS_1K_ 	EQU	1024		; 1K WORDS / 2K BYTE
+NECXM_		EQU	5
+NMI_BIT_	EQU	8
+
+VERSION_	EQU	'       Version 1.9.1' ; SETS VERSION NUMBER
+COPYRIGHT_DB_   EQU     '    (C) Copyright DigiBoard, Inc. 1989,90'
+;
+PU_SIG_         EQU     'DG'            ; POWER-UP SIG FROM EPROM
+DG_SIG_         EQU     'GD'            ; EPROM FLAG TO JUMP TO 22004H
+FCT_ERR_        EQU     80H             ; EPROM FCT ERROR RETURNS BIT 7 SET
+RAM_VER_        EQU     0EH             ; OFFSET FOR RAM VERSION
+;--------------------------------------------------------------------
+;       FEP COMMAND BUFFER TABLE - RESIDES AT FEP DATA - WINDOW + FE0H
+;		
+;~1.2.1~
+;F_CMD_HEAD_	EQU	0FE0H		; R/W - COMMAND HEAD POINTER
+;F_CMD_TAIL_	EQU	0FE2H		; R   - COMMAND TAIL POINTER
+;F_CMD_STRT_	EQU	0FE4H		; F   - START OFFSET OF BUFFER
+;F_CMD_MAX_	EQU	0FE6H		; F   - MAX BUFFER SIZE
+;F_CMD_ADJUST_  EQU     0C00H           ; ADJUST VALUE FOR FEP SEGMENT
+
+
+F_CMD_HEAD_	EQU	0D10H		; R/W - COMMAND HEAD POINTER
+F_CMD_TAIL_	EQU	0D12H		; R   - COMMAND TAIL POINTER
+F_CMD_STRT_	EQU	0D14H		; F   - START OFFSET OF BUFFER
+F_CMD_MAX_	EQU	0D16H		; F   - MAX BUFFER SIZE
+F_CMD_ADJUST_   EQU     0C00H           ; ADJUST VALUE FOR FEP SEGMENT
+;
+; ----- FEP EQUATES - ALL ARE OFFSETS FROM FEP DATA BASE SEGMENT (WINDOW)
+;
+F_PROG_         EQU     2000H           ; DOWNLOAD CODE = 2000H OFFSET
+;                                       ;  SYSTEM ADDR = 22000H
+F_CHAN_DATA_    EQU     0C10H           ; 8 WORDS, IF CHAN AVAIL = CMD PORT
+                                        ;          IF NOT AVAIL = 0
+F_TO_H_MB_      EQU     0C30H           ; FEP TO HOST MAILBOX ADDRESS
+H_TO_F_MB_      EQU     0C40H           ; HOST TO FEP MAILBOX ADDRESS
+;------------------------------------------------------------------------
+;
+; -----	INTERRUPT 14H VECTOR STORAGE
+;
+SEGZERO	SEGMENT AT 0		; INTERRRUPT 14H VECTOR
+		ORG	014H*4
+INT14_V		DW	2 DUP(?)
+SEGZERO	ENDS
+;-------------------------------------------------------------------------
+EVEN
+CH_KEY_RDY	DB	64 DUP (0H)		; CHARACTER READY FLAGS
+
+SPCL_CHAR_FLG	DB	64 DUP (0H)		; SPECIAL CHARACTER FLAGS
+SPCL_CHAR_CNT	DW	64 DUP (0H)		; SPECIAL CHARACTER COUNT
+
+PORT_PARAMS	DB	64 DUP(0,8H,3,0,0)     ;ENBL,BAUD,MODE,IMASK,HNDSHK
+ZERO		DW	0		; SEGMENT 0 REFERENCE
+;-------------------------------------------------------------------------
+
+SUBTTL IRQ ROUTINE
+PAGE+
+
+
+;------------------------------------------------------------------------
+;	BOARD INTERRUPT ROUTINE - FEP INTERRUPTS USING SELECTED IRQ
+;               ENTRY - FEP HAS ALREADY LOADED FEP TO HOST MAILBOX WITH INFO
+;                       FEP SET BIT 7 ON ITS PORT 0 TO GENERATE IRQ #
+;                       HOST SEES BIT 5 ON PORT F?F0
+;               PROC -  CHECK IF THE INT IS FOR ME (NO - EXIT)
+;                       PERFORM NECESSARY SERVICE
+;                       CLEAR FEP TO HOST MAILBOX TO 0 (4 BYTES)
+;                       CHECK TO SEE THAT HOST TO FEP MAILBOX IS EMPTY(BYTE 0)
+;                               NO - WAIT
+;                               YES - LEAVE BYTE 0 = 0 (FUNCTION 0)
+;                                     INT FEP VIA PORT F?F0 BIT 7 (NMI IN FEP)
+;                                     FEP EXECUTES A NMI FUNCTION 0
+;                                       WHICH LOWERS IRQ # LINE (PORT0/BIT 7)
+;                                     DO EOI IN HOST
+;               EXIT -  ALL REGISTERS RESTORED
+;---------------------------------------
+BD_IRQ_ROUT	PROC
+
+IRQA_ENTRY:
+	PUSH	BX
+	MOV	BX,CS:BD_TBL_TBL[0]
+	JMP	IRQ_COMMON
+IRQB_ENTRY:
+	PUSH	BX
+	MOV	BX,CS:BD_TBL_TBL[2]
+	JMP	IRQ_COMMON
+IRQC_ENTRY:
+	PUSH	BX
+	MOV	BX,CS:BD_TBL_TBL[4]
+	JMP	IRQ_COMMON
+IRQD_ENTRY:
+	PUSH	BX
+	MOV	BX,CS:BD_TBL_TBL[6]
+IRQ_COMMON:
+	STI				;NO IRQ'S WHEN IN ROUTINE DUE TO 
+	PUSH	AX			;POSSIBLE MEMORY CONTENTION BETWEEN 
+	PUSH	CX			;MULTIPLE BRDS
+	PUSH	DX
+	PUSH	DI
+	PUSH	SI
+	PUSH	DS
+	PUSH	ES
+	PUSH	CS
+	POP	DS
+
+;If an irq occured while an Xa's memory was enabled, it must be turned off
+;before this routine can enable the irqing brds memory. MEM_ON_IO_PORT contains 
+;0 if no Xa memory is enabled, and the I/O port # if an Xa brds memory is on.
+
+	MOV	DX,MEM_ON_IO_PORT	;MEM_ON_IO_PORT = PORT WITH MEMORY ON
+	PUSH	DX			; SAVE MEM_ON_IO_PORT ON STACK
+	CMP	DX,0			; IF = 0, NO MEMORY ON
+	CLI				;NO INTRS WHILE SWITCHING MEMORY
+	JE	NO_MEM_ON
+	IN	AL,DX			;TURN OFF MEM_ON_IO_PORT'S MEMORY
+	AND	AL,0FDH
+	OUT	DX,AL
+NO_MEM_ON:
+	MOV	DX,[BX+BD_IO_]		;GET I/O PORT OF IRQing BRD
+	MOV	MEM_ON_IO_PORT,DX	;NEW MEM_ON_IO_PORT
+MEM_ON:					;TURN ON IRQing BRDS MEMORY
+	IN	AL,DX
+	OR	AL,02
+	OUT	DX,AL
+	STI				;MEMORY GAMES ARE DONE! INTRS OK
+;
+; ----- GET FEP TO HOST MAILBOX DATA
+;
+BD_DOIT_1:
+        MOV     ES,BRD_SEG  
+	MOV	DI,F_TO_H_MB_
+        MOV     CX,ES:[DI]		; READ FEP'S MSG / CL=CMD, CH CHAN
+        MOV     DX,ES:[DI+2]    	; DX=OTHER DATA
+        XOR     AX,AX
+        STOSW                           ; TELL FEP THAT MSG WAS RECEIVED
+        STOSW                           ; BY CLEARING 4 BYTES IN MAILBOX
+;
+; -----	PROCESS IRQ INTERRUPT (CX & DX HAVE DATA)
+;
+	CMP	CL,46H
+	JNE	SPCL_CHAR
+	TEST	DL,IRUP_MASK_ 		; BITS 0 OR 1/BUFFER NOT EMPTY/LOW ?
+	JNZ	NO_HOP
+	JMP	MEM_OFF_HOP		;  NO - DONE
+NO_HOP:
+	LEA	DI,CH_KEY_RDY		; YES - TELL HOST VIA KEY READY FLAG
+	ADD	DI,[BX+BD_STRT_INDX_]	; STRT OF BRDS CH_KEY_RDY FLGS
+	MOV	CL,CH			; CL <- CHANNEL
+	XOR	CH,CH			; CX = CHNL # (0-7)
+	ADD	DI,CX			; POINT TO CHNLS KEY_RDY FLG
+	MOV	BYTE PTR [DI],0FFH	; SET FLAG
+        JMP     MEM_OFF	        	; EXIT
+;
+; ----- CHECK IF THIS IS A SPECIAL CHAR INTR
+;
+SPCL_CHAR:
+	CMP	CL,53H
+	JNE	POLL1_HOP		;BD_POLL_1
+	LEA	DI,SPCL_CHAR_FLG	; YES - TELL HOST VIA FLAG
+	ADD	DI,[BX+BD_STRT_INDX_]	; STRT OF BRDS SPCL CHAR FLGS
+	MOV	CL,CH			; CL <- CHANNEL
+	XOR	CH,CH			; CX = CHNL # (0-7)
+	ADD	DI,CX			; POINT TO CHNLS FLG
+	MOV	BYTE PTR [DI],0FFH	; SET FLAG
+
+	LEA	DI,SPCL_CHAR_CNT	; 
+	ADD	DI,[BX+BD_STRT_INDX_]	; STRT OF BRDS SPCL CHAR FLGS
+	ADD	DI,[BX+BD_STRT_INDX_]	;   2 TIMES FOR WORDS
+	SHL	CX,1			; MAKE WORD INDEX FOR CHNL #
+	ADD	DI,CX			; POINT TO CHNLS CNT
+
+GET_BUFF_CNT:
+
+	MOV	SI,OFFSET FEP_CH_TBL
+	ADD	SI,CX
+	PUSH	BX			; SAVE ORIG BX
+	MOV	BX,[SI]			; BX POINTS TO CHANNEL/PORT STRUCTURE
+	PUSH	BX			; SAVE CHANNEL BASE
+	MOV	SI,ES:[BX+F_CH_SEG_]	; GET BUFFER SEG
+	AND	SI,0FFFH		; MASK OFF FEP SEG DIFFERENCE
+	MOV	AX,ES			; ES HAS BRDS WINDOW ON ENTRY
+	ADD	SI,AX			; ADD IN HOST SEGMENT ADJUST
+	MOV	DS,SI
+	MOV	SI,ES:[BX+F_RX_TAIL_]
+	MOV	CX,ES:[BX+F_RX_HEAD_]   ; GET HEAD OF RX BUFFER
+	PUSH	CX			; SAVE HEAD VALUE
+	CMP	CX,SI			; IS HEAD >= TAIL ?
+	JAE	SPC0			; 
+	MOV	AX,ES:[BX+F_RX_MAX_]	; NO - GET SIZE
+	INC	AX			;
+	SUB	AX,SI			; COMPUTE FROM TAIL TO END
+	MOV	SI,ES:[BX+F_RX_STRT_]	; GET START
+	SUB	CX,SI			; COMPUTE FROM START TO HEAD
+	ADD	CX,AX			; COMBINE
+	JMP	SHORT SPC1
+
+MEM_OFF_HOP:
+	JMP	MEM_OFF
+POLL1_HOP:
+	JMP	BD_POLL_1
+SPC0:
+	SUB	CX,SI			; COMPUTE # IN BUFFER
+SPC1:
+	SHR	CX,1			; DIV BY 2 TO DISCOUNT STATUS BYTE
+	POP	SI			; SI <- SAVED HEAD VALUE
+	SUB	SI,2			; PNT TO LAST RXED CHAR
+F53_LOOP:
+	CMP	SI,ES:[BX+F_RX_STRT_]	;
+ 	JAE	DONT_WRAP
+	MOV	SI,ES:[BX+F_RX_MAX_]	; 
+	DEC	SI			; ADJST FOR ODD MAX VALUE
+DONT_WRAP:
+	CMP	DL,DS:[SI]		; IS IT THE SPCL CHAR?
+	JE	SEARCH_DONE		; YES
+	DEC	CX			; NO, DECR COUNT
+	SUB	SI,2			; NEXT BUFFER LOC
+	CMP	SI,ES:[BX+F_RX_TAIL_]	; LAST CHAR TO TEST?
+	JNE	F53_LOOP		; NO
+	CMP	DL,DS:[SI]		; YES - IS IT THE SPCL CHAR
+	JE	SEARCH_DONE		; YES
+	DEC	CX			; NO 
+SEARCH_DONE:
+	POP	BX			; RESTORE CHANNEL BASE
+	CMP	CX,0			; IS THE COUNT 0?
+	JNE	SPC2			;   NO, JUST STORE IT
+	MOV	SI,ES:[BX+F_RX_HEAD_]	; YES - BUFFER OVERRUN
+
+	MOV	AX,0			; CLR OVERWRITE LOCATION
+	MOV	DS:[SI],AX		; 
+	MOV	AL,DL			; SPCL CHAR
+	MOV	AH,62H			; OVERRUN ERR
+	SUB	SI,2			; LAST BUFFER LOC <- OVERRUN ERR
+	CMP	SI,ES:[BX+F_RX_STRT_]	; WRAP?
+	JAE	SPC3			; NO
+	MOV	SI,ES:[BX+F_RX_MAX_]	; YES
+SPC3:
+	MOV	DS:[SI],AX		; STORE IT
+	MOV	CX,ES:[BX+F_RX_MAX_]	; CALCULATE SPCL CHAR COUNT
+	DEC	CX			;
+	MOV	SI,ES:[BX+F_RX_STRT_]	;
+	SUB	CX,SI			;
+	SHR	CX,1			; DISCOUNT STATUS BYTE
+SPC2:					;
+	MOV	CS:[DI],CX		; STORE COUNT
+	POP	BX			; RESTORE ORIG BX
+ 	PUSH	CS
+	POP	DS
+	JMP     SHORT MEM_OFF	        ; EXIT
+;
+; ----- CHECK IF THIS IS A TIMER IRQ FOR POLLED MODE
+;
+BD_POLL_1:
+        CMP     CL,4EH                  ; FCT 4E FOR POLLED ?
+        JNE     MEM_OFF              	; NO - EXIT
+        MOV     CX,[BX+BD_PORTS_]      	; # OF PORTS ON BRD 
+        XOR     DI,DI			; FEP_CH_TBL INDEX
+        LEA     SI,CH_KEY_RDY           ; BOARD'S KEY READY PTR
+	ADD	SI,[BX+BD_STRT_INDX_]
+	PUSH	BX			; STORE BRD_TBL PTR
+BD_LOOP_1:
+        MOV     BX,FEP_CH_TBL[DI]       ; CHANNEL STRUCTURE START
+BD_RTRY:
+        MOV     AX,ES:[BX+F_RX_HEAD_]   
+	CMP	AX,ES:[BX+F_RX_HEAD_]	; VALID READ?
+	JNZ	BD_RTRY			; RETRY
+        CMP     AX,ES:[BX+F_RX_TAIL_]   ; HEAD = TAIL ?
+        JE      BD_NEXT_1               ; YES - NO CHAR (ASSUME KEY_RDY_FLG = 0)
+        MOV     BYTE PTR [SI],0FFH      ; NO - SET KEY READY FOR HOST TO SEE
+BD_NEXT_1:
+        INC     SI                      ; NEXT KEY READY TABLE ENTR
+        ADD     DI,2                    ; STRUCTURE TABLE INDEX
+        LOOP    BD_LOOP_1               ; 8 TIMES
+	POP	BX			; RESTORE BD_TBL PTR
+MEM_OFF:
+	MOV	DX,MEM_ON_IO_PORT	; GET IRQing BRDS I/O PORT
+	CLI				; NO INTRS DURING MEMORY GAMES
+	IN	AL,DX
+	AND	AL,0FDH
+	OUT	DX,AL
+BD_DONE_1:
+	POP	DX 			; GET MEM_ON_IO_PORT FROM STACK
+	MOV	MEM_ON_IO_PORT,DX
+	CMP	DX,0			; 
+	JE	NO_TURN_ON
+
+	IN	AL,DX
+	OR	AL,02H
+	OUT	DX,AL
+NO_TURN_ON:
+	STI				;MEMORY GAMES DONE
+	MOV	DX,[BX+BD_PIC_]		; GET BOARD'S PIC ADDR
+        MOV     AL,20H
+        OUT     DX,AL
+        CMP     DX,20H                  ; WAS IT THE SLAVE PIC ?
+        JE      BD_EXIT_1              	;  NO
+        OUT     20H,AL                  ;  YES - SEND MASTER TOO
+;
+; -----	EXIT IRQ HANDLER
+BD_EXIT_1:
+	POP	ES
+	POP	DS
+	POP	SI
+	POP	DI
+	POP	DX
+	POP	CX
+	POP	AX
+	POP	BX
+	IRET
+BD_IRQ_ROUT	ENDP
+
+SUBTTL DUMMY DEVICE INTERRUPT AND STRATEGY
+PAGE+
+
+;-----------------------------------------------
+REQUESTHEADERPOINTER	LABEL DWORD		;COMMON STRATEGY HANDLER FOR
+REQUESTHEADEROFFSET	DW	?		;ALL DEVICES
+REQUESTHEADERSEGMENT	DW	?		;
+
+;-----------------------------------------------
+DEVICESTRATEGY	PROC FAR			;
+	MOV	CS:REQUESTHEADERSEGMENT,ES	;SAVE CALLERS SEGMENT OF REQUEST HEADER
+	MOV	CS:REQUESTHEADEROFFSET,BX	;SAVE CALLERS OFFSET OF REQUEST HEADER
+	RET					;RETURN TO CALLER AND WAIT FOR INTERUPT
+DEVICESTRATEGY	ENDP				;
+;-----------------------------------------------
+DEVICEINTERRUPT		PROC FAR		;STATUS DEVICE DRIVER
+	CLD					;INTERRUPT ENTRY
+	STI					;
+	PUSH	ES				
+	PUSH	DS				
+	PUSH	AX				
+	PUSH	CX				
+	PUSH	DX				
+	PUSH	DI				
+	PUSH	SI				
+	PUSH	CS				
+	POP	DS				;USE CODE SEGMENT FOR DATA
+	LES	BX,DS:REQUESTHEADERPOINTER	;
+	MOV	WORD PTR ES:RETURNSTATUS[BX],0	;CLEAR RETURN STATUS
+	MOV	AL,ES:REQUESTEDCMD[BX]		;GET FUNCTION REQUEST NUMBER
+	OR	AL,AL				;
+	JNZ	ISITREAD			;
+	JMP	INITIALIZE			;ONLY 1ST TIME DRIVER CALLED
+ISITREAD:					;
+	CMP	AL,4				;READ
+	JZ	READ_FILE			;
+	CMP	AL,8				;WRITE (RESET MESSAGE)
+	JZ	WRITE_FILE			;
+	OR	ES:WORD PTR RETURNSTATUS[BX],08003H	;UNKNOWNCOMMAND
+EXITDONE:					;
+	MOV	ES,CS:REQUESTHEADERSEGMENT	;RESTORE CALLERS ES
+	MOV	BX,CS:REQUESTHEADEROFFSET	;RESTORE CALLERS BX
+	OR	ES:WORD PTR RETURNSTATUS[BX],0100H
+	POP	SI				;RESTORE REGISTERS FROM STACK 
+	POP	DI				;
+	POP	DX				;
+	POP	CX				;
+	POP	AX				;
+	POP	DS				;
+	POP	ES				;
+	RET					;
+DEVICEINTERRUPT		ENDP			;
+;-----------------------------------------------				
+;						;
+;	READ SIMPLE MESSAGE LOOP		;
+;						;
+;  THIS DRIVER JUST RETURNS A STRING OF DATA	;
+;  TO SHOW CONFIGURATION AFTER INITIALIZATION	;DISCRIPTION OF STRING, FILLED
+;						;IN BY DRIVER INITIALIZATION,
+; BYTE 1  '*' = CHNLS SUPPORTED			;AT SYSTEM BOOTUP
+;	  '!' = 0 CHNLS SUPPORTED 		;
+; BYTE 2,3   OFFSET NEXTHEADER00    	 	;
+; BYTE 4,5   SEGMENT NEXTHEADER00		;
+; BYTE 6     EOF
+;-----------------------------------------------
+READ_FILE:					;REQUEST 04
+	MOV	SI,DS:POSITION_MSG		;
+SKIP_EOT:					;
+	LODSB					;
+	CMP	AL,EOF				;END OF MESSAGE ?
+	JNZ	NOT_EOF_YET			;
+	MOV	SI,OFFSET MSG_STATUS		;YES RESTART MESSAGE
+NOT_EOF_YET:					;
+	MOV	CS:POSITION_MSG,SI		;
+	MOV	SI,ES:BUFFEROFFSET[BX]		;GET ADDRESS OF DATA BUFFER
+	MOV	DS,ES:BUFFERSEGMENT[BX]		;FROM REQUEST HEADER
+	MOV	DS:[SI],AL			;PUT CHARACTER IN BUFFER
+	JMP	EXITDONE			;
+;-----------------------------------------------
+;						;
+;   RESET STATUS STRING TO START OF MESSAGE	;
+;						;
+;-----------------------------------------------
+WRITE_FILE:					;REQUEST 03
+	MOV	AX,OFFSET MSG_STATUS		;RESTART MESSAGE
+	MOV	DS:POSITION_MSG,AX		;
+	JMP	EXITDONE			;
+;-----------------------------------------------
+MSG_STATUS	DB	'!'		        ;DEVICE STATUS STRING
+NXTHDR_OFFS     DW	NEXTHEADER00			;
+NXTHDR_SEG      DW	0				;
+		DB      EOF
+POSITION_MSG	DW	OFFSET MSG_STATUS	;POSITION IN MESSAGE
+;-----------------------------------------------
+STATDEVONLY	LABEL WORD		
+
+INITIALIZE:
+	CALL	DN_LOAD
+	JZ	TWEAK_HDRS			;NO BRDS LOADED 
+	CALL	PORTS_INIT
+	CALL	SET_VECTS
+TWEAK_HDRS:
+	CALL	ADJST_HDRS
+ 	CALL	SET_STS
+	JMP	EXITDONE
+
+SUBTTL INTERRUPT 14H
+PAGE+
+;  INT 14 CODE GOES HERE
+;**********************************************************
+;
+;	OLD INTERRUPT 14H VECTORS SAVED FOR DX HI/LO CHECKS
+;		THIS DRIVER WILL JUMP TO HERE IF THE DX ENTRY
+;		(PORT NUMBER) IS SUPPOSED TO USE THE OLD ROUTINE.
+;
+;	NOTE: THE DRIVER IS INITIALIZED TO SUPPORT COM5-COM12,
+;	      LEAVING ROOM FOR DOS SUPPORTED COM1 - COM4.
+;	      THE SUPPORTED COM NAMES (AND PORT #'S)
+;	      MAY BE CHANGED VIA CONFPCXA.EXE
+;**********************************************************
+;
+NOT_MINE:
+		DB	0EAH		; JMP FAR TO OLD INT 14H ROUTINE
+OLD_14_OFF	DW	0		; IF PORT# IS OUTSIDE DXLOW-DXHIGH
+OLD_14_SEG	DW	0		; RANGE
+					;
+;**********************************************************
+;	INTERRUPT 14H HANDLER
+;**********************************************************
+;
+;	INT 14H HAS THE FOLLOWING PARAMETERS & ARE PASSED TO THE FUNCTION
+;		AH = FUNCTION CODE (0-16H ARE VALID)
+;		DX = PORT ADDRESS (0-287 ARE VALID)
+;		AL = PARAMETERS (OPTIONAL)
+;		BX = PARAMETERS (OPTIONAL - KEPT ON THE STACK)
+;		CX = PARAMETERS (OPTIONAL - KEPT ON THE STACK)
+;		BP = POINTS TO STACK DATA
+;
+;	DRIVER SETS THE FOLLOWING BEFORE CALLING THE FUNCTION
+;	THESE VALUES CORRESPOND TO THE BOARD & CHANNEL REQUESTED
+;		DX = RESETS TO A CHANNEL VALUE FROM 0 TO 15
+;		ES = BOARD'S FEP DATA SEGMENT/WINDOW (0C000H)
+;		BX = POINTS TO CHANNEL TABLE IN FEP DATA (1800H,1840H,..)
+;--------------------------------------------------------------------
+INT_14		LABEL	NEAR
+
+
+	CMP	DX,CS:DXLOW	;ENSURE WE SUPPORT REQUESTED PORT#
+	JB	NOT_MINE	
+	CMP	DX,CS:DXHIGH	
+	JA	NOT_MINE	
+	
+	STI		;SS:[BP+30] FLAGS
+	CLD				;
+	PUSH	BX	;SS:[BP+24]	 WARNING DO NOT CHANGE THIS
+	PUSH	CX	;SS:[BP+22]	 STACK SEQUENCE OR LENGTH !
+	PUSH	DX	;SS:[BP+20]
+	PUSH	SI	;SS:[BP+18]	 
+	PUSH	DI	;SS:[BP+16]	 
+	PUSH	ES	;SS:[BP+14]	 
+	PUSH	DS	;SS:[BP+12]	 
+
+
+	MOV	CX,CS:TX_MAX		;~1.2.2~ SAVE ENVIRONMENT
+	PUSH	CX	;SS:[BP+10]
+	MOV	CX,CS:TX_STRT
+	PUSH	CX	;SS:[BP+8]
+	MOV	CX,CS:NUM_SENT
+	PUSH	CX	;SS:[BP+6]
+	MOV	CX,CS:STRT_INDX
+	PUSH	CX	;SS:[BP+4]
+	MOV	CX,CS:MEM_ON_IO_PORT
+	PUSH	CX	;SS:[BP+2]
+
+	PUSH	BP	;SS:[BP]	
+	MOV	BP,SP			
+
+	ASSUME	DS:CODE,ES:NOTHING,SS:NOTHING
+	PUSH	CS
+	POP	DS
+;
+; -----	CHECK FUNCTION # FOR LEGAL ENTRY
+;
+	MOV 	CX,AX			;SAVE FNC#
+	MOV	AL,AH			;AL <- FNC #		
+	XOR	AH,AH			;AH <- 0
+	MOV	SI,AX
+	SHL	SI,1			;MAKE WORD OFFSET
+	MOV	AX,CX			;RESTORE AX
+	CMP	SI,MAX_FCT_LEN		; LEGAL FUNCTION ?
+	PUSH	SI			;SAVE WORD OFFSET
+	JAE	BAD_FCT			;NO - ABORT
+; ---------------------------------------------------------
+	SUB	DX,DXLOW		; DX = BD_STRT_INDX + CHNL #(0-7)
+BRD_ENBL:
+	PUSH	DX
+	PUSH	AX
+	MOV	CX,NUM_BRDS		;CALC BD_TBL_TBL'S LAST VALID ENTRY
+	MOV	BX,CX
+	DEC	BX
+	SHL	BX,1
+	ADD	BX,OFFSET BD_TBL_TBL	
+FIND_TBL:				;FIND BD_X TBL FOR REQUESTD CHNL
+	MOV	SI,[BX]			;1ST TBL WITH DX >= BD_STRT_INDX
+	CMP	DX,[SI+BD_STRT_INDX_]   ;	      IS THE CORRECT TBL
+	JGE	TBL_FND
+	SUB	BX,2			;NEXT BD_TBL_BL ENTRY
+	LOOP	FIND_TBL
+TBL_FND:
+	MOV	DX,[SI+BD_STRT_INDX_]
+	MOV	STRT_INDX,DX
+	MOV	DX,MEM_ON_IO_PORT	;~1.2.2~
+	CMP	DX,0			;WAS A BRDS MEMORY ON WHEN WE ENTERED?
+	CLI				;IN CASE WE DECIDE TO SUPPORT IRQ'S
+	JE	NEW_ON			;NO, TURNS OURS ON
+	IN	AL,DX			;NO, TURN IT OFF
+	AND	AL,0FDH
+	OUT	DX,AL
+NEW_ON:
+	MOV	DX,[SI+BD_IO_]		;GET OUR IO PORT
+	MOV	MEM_ON_IO_PORT,DX	;SAVE IT
+	IN	AL,DX			;TURN OUR MEM ON
+	OR	AL,02H			;MEM_ON
+	OUT	DX,AL
+LEAVE_ON1:
+;	MOV	DX,[SI+BD_IO_]		;~1.2.2~
+;	MOV	AL,2	
+;	CLI				;NO IRQ'S
+;	MOV	MEM_ON_IO_PORT,DX	;SAVE IO PORT
+;	IN	AL,DX
+;	OR	AL,02
+;	OUT	DX,AL
+	STI				;IRQ'S OK NOW
+
+	POP	AX			;RESTORE FCT# AND PARAM
+	POP	DX			;RESTORE DX VALUE
+	SUB	DX,[SI+BD_STRT_INDX_]
+BRD_ENBL_DONE:	
+	MOV	BX,BRD_SEG  		; GET BOARDS WINDOW SEGMENT
+	MOV	ES,BX
+	MOV	CX,DX			; SAVE
+	SHL	DX,1			; WORD
+	MOV	SI,OFFSET FEP_CH_TBL
+	ADD	SI,DX
+	MOV	BX,[SI]			; BX POINTS TO CHANNEL/PORT STRUCTURE
+	MOV 	DX,CX			; RESTORE PORT & CHNL INFO
+;
+; -----	CALL FUNCTION 
+;	
+	POP	SI			; FETCH FCT WORD OFFSET
+	JMP	[FCT_LIST+SI]		; PERFORM REQUESTED FUNCTION
+					;  NEVER RETURNS TO HERE 
+BAD_FCT:
+	POP	SI
+	MOV	AH,0FFH			; EXIT FOR BAD PORT NUMBER OR
+	JMP	EXIT_IRET		;  INVALID FUNCTION
+
+		EVEN
+FCT_LIST	LABEL	WORD
+		DW	FCT_0,FCT_1,FCT_2,FCT_3,FCT_4,FCT_5,FCT_6,FCT_7
+		DW	FCT_8,FCT_9,FCT_0A,FCT_0B,FCT_0C,FCT_0D,FCT_0E
+		DW      FCT_0F,FCT_10,FCT_11,FCT_12,FCT_13,FCT_14,FCT_15
+		DW	FCT_16,FCT_17,FCT_18,FCT_19,FCT_1A
+MAX_FCT_LEN	EQU	$-FCT_LIST
+
+PAGE
+;**********************************************************
+;	INT 14H DEFINED FUNCTIONS 
+;**********************************************************
+;--------------------------------------------------------------------
+;		FUNCTION 0  - INITIALIZE A PORT
+;
+;	   FCT ENTRY:  AH=0, AL=PORT PARAMETERS
+;		       DX=PORT NUMBER (0-36)
+;
+;	RETURNS: AH=0FFH IF ERROR, OTHERWISE : 
+;		 AH=PORT STATUS, AL=MODEM STATUS REGISTER 
+;--------------------------------------------------------------------
+FCT_0:	
+	MOV	CH,AL
+	MOV	CL,AL
+	ROL	CL,3
+	AND	CL,7			; BAUD IS IN CL (0-2)
+	INC	CL			; +1 FOR FEP VALUE
+	AND	CH,1FH			; PARITY/STOP/LENGTH IN CH(0-4)
+	MOV	AL,F_C_BD_DATA_ 	; SET BAUD & DATA COMMAND
+	CALL	SEND_CMD
+	JNC	FCT0_GOOD		;~1.7.2~
+	MOV	AH,0FFH			;TIMEOUT ERROR TRYING TO SND CCB CMD
+	JMP	EXIT_IRET
+;
+FCT0_GOOD:
+	CALL	GET_LINE_STATUS
+	CALL	GET_MODEM_STATUS
+	JMP	EXIT_IRET
+;--------------------------------------------------------------------
+;		FUNCTION 1H  - OUTPUT A CHARACTER
+;
+;	   FCT ENTRY:  AH=01H, AL=CHARACTER
+;		       DX=CHANNEL ON BOARD(0-7) 
+;
+;	RETURNS:  AH=PORT STATUS, AL= CHARACTER SENT
+;		  AH=80H IF TIMEOUT ERROR
+;--------------------------------------------------------------------
+FCT_1:
+	MOV	DX,ES				; SAVE ES
+	MOV	DI,WORD PTR ES:[BX+F_TX_HEAD_]  ; GET HEAD OF BUFFER
+	MOV	CX,WORD PTR ES:[BX+F_CH_SEG_]	; GET SEG OF BUFFER
+	AND	CX,0FFFH			; ADJST FOR HOST/FEP 
+	ADD	CX,BRD_SEG			; SEG DIFFERENCES
+	MOV	ES,CX
+	STOSB					; WRITE CHAR IN TX BUFFER
+	MOV	ES,DX
+;
+; -----	DO POINTER ADJUSTMENTS FOR TRANSMIT BUFFER
+;
+	CMP	DI,ES:[BX+F_TX_MAX_]	; UPPER LIMIT OF THE BUFFER ?
+	JBE 	F1_A 			;  NO 
+	MOV	DI,ES:[BX+F_TX_STRT_]	;  YES - WRAP HEAD
+F1_A:
+	CMP	DI,ES:[BX+F_TX_TAIL_]	; NEW HEAD = TAIL ?
+	JNE	F1_STO_HEAD		;~1.7.2~
+	MOV	CX,540			;TIME OUT IN 30 SECS (540*55MS)
+F1_FAST_WAIT:				;      	SLOW WAIT
+	PUSH	CX
+	MOV	CX,7000H		;FAST WAIT
+F1_STILL_FULL:				;
+	CMP	DI,ES:[BX+F_TX_TAIL_]	; NEW HEAD = TAIL ?
+	JNE	F1A_STO_HEAD		; BUFF EMPTIED ENOUGH 
+	LOOP	F1_STILL_FULL		; WAIT SOME MORE
+;JMP	F1_A
+	POP	CX
+	CALL	WAIT_55MS
+	LOOP	F1_FAST_WAIT
+	MOV	AH,80H			; POST TIMEOUT ERROR
+	JMP	EXIT_IRET		; AND RETURN
+F1A_STO_HEAD:
+	POP	CX
+F1_STO_HEAD:
+	MOV	ES:[BX+F_TX_HEAD_],DI	; UPDATE NEW HEAD
+	CALL	GET_LINE_STATUS
+	JMP	EXIT_IRET
+;--------------------------------------------------------------------
+;		FUNCTION 2H  - INPUT A CHARACTER
+;
+;	   FCT ENTRY:  AH=02H, DX=CHANNEL ON BOARD(0-7)
+;
+;	RETURNS:  AH=PORT STATUS, AL=RECEIVED CHARACTER
+;
+;--------------------------------------------------------------------
+FCT_2:
+	MOV	DI,ES:[BX+F_RX_HEAD_]	;GET HEAD POINTER
+;	CMP	DI,ES:[BX+F_RX_HEAD_]	;VALID READ ? ~1.2.2~
+;	JNZ	FCT_2   		;RETRY
+	MOV	SI,ES:[BX+F_RX_TAIL_]	; GET RX TAIL
+	CMP	SI,DI                	; HEAD=TAIL ?
+        JE      F2_TIMEOUT              ; YES - SET TIMEOUT & EXIT
+	PUSH	DS
+	MOV	CX,ES:[BX+F_CH_SEG_]	; GET BUFFER SEG
+	AND	CX,0FFFH		; MASK OFF FEP SEG DIFFERENCE
+	MOV	AX,ES			; ES HAS BRDS WINDOW ON ENTRY
+	ADD	CX,AX			; ADD IN HOST SEGMENT ADJUST
+	MOV	DS,CX
+	LODSW	
+	POP	DS
+;
+; -----	DO POINTER ADJUSTMENTS FOR RECEIVE BUFFER
+;
+	CMP	SI,ES:[BX+F_RX_MAX_]	; UPPER LIMIT OF THE BUFFER ?
+	JB  	F2_B 			; NO 
+	MOV	SI,ES:[BX+F_RX_STRT_]	; YES - WRAP TAIL
+F2_B:
+	MOV	ES:[BX+F_RX_TAIL_],SI	; STORE NEW TAIL
+        CMP     SI,DI                   ; NEW TAIL = HEAD ?
+        JNE     F2_C                    ; NO
+	MOV	SI,DX
+	ADD 	SI,STRT_INDX
+	MOV     CH_KEY_RDY[SI],0
+	MOV	SPCL_CHAR_FLG[SI],0
+        MOV     BYTE PTR ES:[BX+F_HFLSH_],0FFH ; TELL FEP I EMPTIED RX BUFFER
+F2_C:
+	MOV	SI,DX
+	ADD 	SI,STRT_INDX
+	SHL	SI,1
+	DEC     SPCL_CHAR_CNT[SI]
+	JNZ	F2_D
+	SHR	SI,1
+	MOV	SPCL_CHAR_FLG[SI],0
+F2_D:
+	PUSH	AX                      ; SAVE CHAR & STATUS FROM FEP
+	CALL	GET_LINE_STATUS		; UPDATE STATUS
+	POP	CX                      ; RESTORE
+        MOV     AL,CL                   ; CHAR INTO AL
+	OR	AH,CH			; COMBINE STATUS FROM BUFFER & DRIVER
+	JMP	EXIT_IRET
+F2_TIMEOUT:
+	MOV	SI,DX
+	ADD 	SI,STRT_INDX
+	MOV     CH_KEY_RDY[SI],0
+
+	ADD	SI,SI			; MAKE BYTE INDEX A WORD INDEX
+	MOV	SPCL_CHAR_CNT[SI],0
+
+	MOV	AX,8000H		; INDICATE TIMEOUT & NULL CHAR
+	JMP	EXIT_IRET
+
+
+;--------------------------------------------------------------------
+;		FUNCTION 3H  - RETURN PORT STATUS
+;
+;	   FCT ENTRY:  AH=03H, DX=CHANNEL ON BOARD(0-7)                        
+;
+;	RETURNS:  AH=PORT STATUS, AL=MODEM STATUS REGISTER
+;--------------------------------------------------------------------
+FCT_3:
+	CALL	GET_LINE_STATUS
+	CALL	GET_MODEM_STATUS
+	JMP	EXIT_IRET
+
+;--------------------------------------------------------------------
+;		FUNCTION 4H  - CHANGE BAUD RATE
+;
+;	   FCT ENTRY:  AH=04H, AL= PORT PARAMETERS, 
+;		       BX=BAUD RATE DIVISOR
+;		       DX=CHANNEL ON BOARD(0-7)
+;
+;	RETURNS:  AH=0 NO ERROR, AH=0FFH FOR ERROR
+;--------------------------------------------------------------------
+FCT_4:
+	PUSH    AX			;SAVE AX
+	MOV	BX,2			; INDEX TO BAUD TABLE
+	MOV	CX,BAUD_TBL_LEN_	; LOOP MAX
+	MOV	DI,[BP+24]		; GET BAUD DIVISOR(BX ON STACK)
+F4_0:
+	LEA	SI,BAUD_TBL[BX]		; GET TABLE LENGTH
+	MOV	AX,[SI]
+	CMP	DI,AX			; MATCH ?
+	JE	F4_MATCH		; YES 
+	INC	BX			; NO - AGAIN
+	INC	BX			; OFFSET
+	LOOP	F4_0
+	JMP	SHORT F4_1		; BAD BPS / INVALID
+F4_MATCH:
+	SHR	BL,1			; BL NOW HAS FEP BAUD CODE (1-MAX)
+	POP	AX			; RESTORE AX
+	XOR	AH,AH			; ASSUME NO ERROR
+	MOV	CH,AL
+	AND	CH,1FH			; PARITY/STOP/LENGTH
+	MOV	CL,BL  			; BAUD INDEX
+	MOV	AL,F_C_BD_DATA_
+	CALL	SEND_CMD
+	JNC	SHORT F4_EXIT		;~1.7.2~
+;	JMP	SHORT F4_EXIT		; CMD COMPLPETED
+	MOV	AH,0FFH			;CCB TIMEOUT ERROR
+	JMP	EXIT_IRET
+F4_1:
+	POP	AX			;~1.7.1~
+	MOV	AH,0FFH			; SEND ERROR BACK
+F4_EXIT:
+	JMP	EXIT_IRET
+
+;--------------------------------------------------------------------
+;		FUNCTION 5H  - CHANGE PROTOCOL
+;
+;	   FCT ENTRY:   AH=05H, AL=PROTOCOL SELECTION CODE
+;			AL : 0 = NO PROTOCOL
+;			   : PROTOCOL
+;			     7 6 5 4 3 2 1 0
+;			     | | | | | | | | 
+;			     | | | | | | `-`-- XON/XOFF
+;			     | | | | | `------ DSR (Tx flow cntrl) 
+;			     | | | | `-------- RTS (Rx) / CTS (Tx)
+;			     `-`-`-`---------- NOT USED
+;			BL=NEW XON 
+;			BH=NEW XOFF 
+;			   IF BX IS NON ZERO, BL AND BH WILL BE USED AS CHARS
+;			   IF BX IS 0, THE CURRENT XON/XOFF CHARS WILL BE USED.
+;			DL=CHANNEL ON BOARD(0-7)
+;
+;	RETURNS:  AH=0FFH FOR INVALID PROTOCOL OR CCB TIMEOUT ERROR
+;	          AH=0 FUNCTION SUCCESSFUL		
+;--------------------------------------------------------------------
+FCT_5:
+	MOV	AH,0FFH			;ASSUME ERROR
+	MOV	CL,0			; CLEAR P1
+	CMP	AL,0			; NO PROTOCOL ?
+	JE	F5_SEND			; YES - STORE IT
+	TEST	AL,3			; XON/XOFF ? (1,2,3)
+	JZ	F5_A			; NO, CHECK FOR HWR
+;
+; -----	DO XON/XOFF CMD
+;
+	OR	CL,PROT_SW_		; XON/XOFF
+	CMP	WORD PTR [BP+24],0	; NEW CHARS SENT ?
+	JE	F5_A 			; NO - USE CURRENT VALUES
+F5_0:
+	PUSH	AX
+	PUSH	CX
+	MOV	AL,F_C_XON_XOFF_	; CCB 4Ch - SET XON/XOFF CHARS
+	MOV	CX,[BP+24]		; GET NEW CHARS FROM STACK
+	XCHG	CH,CL
+	CALL	SEND_CMD		; SEND TO FEP
+	POP	CX		
+	POP	AX
+	JC	F5_EXIT			; ERROR
+F5_A:
+	TEST	AL,4			; DSR ?
+	JZ 	RTS_CTS?		; YES - STORE IT
+	OR	CL,PROT_DSR_
+RTS_CTS?:
+	TEST	AL,8			; RTS/CTS ?	
+	JZ	F5_SEND
+	OR	CL,PROT_HW_
+SET_RTS:				;TO SET RTS HSHK, MUST ENSURE RTS IS HI.
+	PUSH	AX			; TO DO THIS, MUST ENSURE HWR HSHK 
+	PUSH	CX			; IS DISABLED
+
+	MOV	AL,F_C_HNDSHK_		;CCB 4Bh - DISABLE HWR HSHK
+	MOV	CX,RSET_HW_HSHK_	;SET NONE, RSET HW HSK
+	CALL	SEND_CMD
+
+	MOV	AL,F_C_MODEM_		;CCB 49h - SET RTS HIGH
+	MOV	CX,SET_RTS_		;SET RTS, RSET NONE
+	CALL	SEND_CMD
+
+	POP	CX
+	POP	AX
+F5_SEND:
+	MOV	CH,0BFH			; P2 - CLR OLD BITS (DONT TOUCH BIT 6)
+	MOV	AL,F_C_HNDSHK_   	; SEND TO HEAD IN CMD BUFFER
+	CALL	SEND_CMD		
+	JC	F5_EXIT			;EXIT WITH ERROR 
+	XOR	AH,AH			;EXIT WITH NO ERROR
+F5_EXIT:
+	JMP	EXIT_IRET
+PAGE
+;--------------------------------------------------------------------
+;		FUNCTION 6H  - FUNCTION NOT SUPPORTED
+;
+;		RETURNS:   AH = 0FFH
+;
+;--------------------------------------------------------------------
+FCT_6:
+	MOV	AH,0FFH
+	JMP	EXIT_IRET
+;--------------------------------------------------------------------
+;		FUNCTION 7H  - FUNCTION NOT SUPPORTED
+;
+;		RETURNS:   AH = 0FFH
+;
+;--------------------------------------------------------------------
+FCT_7:
+	MOV	AH,0FFH
+	JMP	EXIT_IRET
+
+;--------------------------------------------------------------------
+;		FUNCTION 8H  - ALTERNATE STATUS CHECK
+;
+;	   FCT ENTRY:  AH=08H, DX=CHANNEL ON BOARD(0-7)                        
+;
+;	RETURNS:  ZF=0 THEN AL=CHAR IN QUEUE, ZF=1 THEN NO CHAR QUEUED
+;--------------------------------------------------------------------
+FCT_8:   				
+
+	OR	WORD PTR SS:[BP+30],0040H	;SET ZERO FLAG
+GETHEAD8:
+	MOV	DI,ES:[BX+F_RX_HEAD_]	;GET HEAD POINTER
+;	CMP	DI,ES:[BX+F_RX_HEAD_]	;VALID READ ? ~1.2.2~
+;	JNZ	GETHEAD8   		;RETRY
+	MOV	SI,ES:[BX+F_RX_TAIL_]
+	CMP	DI,SI			;HEAD AND TAIL THE SAME (EMPTY)
+	JNZ	GETCHAR   		;
+	XOR	AX,AX			;ZERO RETURN INFO
+	JMP	END8     		;RETURN NO CHARACTER READY
+GETCHAR:       				;
+	MOV	CX,ES:[BX+F_CH_SEG_]
+	AND	CX,0FFFH
+	ADD	CX,BRD_SEG
+	PUSH	DS
+	MOV	DS,CX
+	MOV	AX,DS:[SI]
+	POP 	DS
+	AND	WORD PTR SS:[BP+30],0FFBFH	;CLEAR ZERO FLAG
+	OR	AH,61H			;SET TSRE,THRE,DAV BITS
+END8:
+	JMP	EXIT_IRET  		
+;--------------------------------------------------------------------
+;		FUNCTION 9H  - CLEAR BUFFERS
+;
+;	   FCT ENTRY:  AH=09H, DX=CHANNEL ON BOARD(0-7)
+;
+;	RETURNS:  AH=0    FCT GOOD
+;		  AH=0FFH FCT BAD (CCB TIMEOUT ERROR)	
+;--------------------------------------------------------------------
+FCT_9:
+	MOV	AH,0FFH			; ASSUME ERROR
+	XOR	CX,CX			; P1/P2 NOT USED
+	MOV	AL,F_C_FLSH_TX_		; FLUSH TRANSMIT BUFFER
+	CALL	SEND_CMD
+	JC	F9_EXIT
+;
+	MOV	AL,F_C_FLSH_RX_		; FLUSH RECEIVE BUFFER
+	CALL	SEND_CMD
+	JC	F9_EXIT
+;
+	MOV	SI,DX
+	ADD 	SI,STRT_INDX
+	MOV     CH_KEY_RDY[SI],0
+	MOV	SPCL_CHAR_FLG[SI],0
+	ADD	SI,SI
+	MOV     SPCL_CHAR_CNT[SI],0
+	MOV	AH,0			;RTN WITH NO ERROR
+;
+F9_EXIT:
+	JMP	EXIT_IRET
+;--------------------------------------------------------------------
+;		FUNCTION 0AH - INPUT QUEUE CHECK
+;
+;	   FCT ENTRY:  AH=0AH, DX=CHANNEL ON BOARD(0-7)
+;
+;	RETURNS:  AX=NUMBER OF QUEUED CHARACTERS
+;--------------------------------------------------------------------
+FCT_0A:
+;	XOR	AX,AX			; ASSUME NONE
+	MOV	SI,ES:[BX+F_RX_TAIL_]
+GETHEADA:
+	MOV	AX,ES:[BX+F_RX_HEAD_]   ; GET HEAD OF RX BUFFER
+;	CMP	AX,ES:[BX+F_RX_HEAD_]	; VALID READ?  ~1.2.2~
+;	JNZ	GETHEADA
+	CMP	AX,SI			; IS HEAD >= TAIL ?
+;	JGE	FA_0			; YES
+	JAE	FA_0			; YES	~1.7.0~
+	MOV	CX,ES:[BX+F_RX_MAX_]	; NO - GET SIZE
+	INC	CX			;
+	SUB	CX,SI			; COMPUTE FROM TAIL TO END
+	MOV	SI,ES:[BX+F_RX_STRT_]	; GET START
+	SUB	AX,SI			; COMPUTE FROM START TO HEAD
+	ADD	AX,CX			; COMBINE
+	JMP	SHORT FA_EXIT
+FA_0:
+	SUB	AX,SI			; COMPUTE # IN BUFFER
+FA_EXIT:
+	SHR	AX,1			; DIV BY 2 TO DISCOUNT STATUS BYTE
+	JMP	EXIT_IRET
+;--------------------------------------------------------------------
+;		FUNCTION 0BH  - FUNCTION NOT SUPPORTED
+;
+;		RETURNS:   AH = 0FFH
+;
+;--------------------------------------------------------------------
+FCT_0B:
+	MOV	AH,0FFH
+	JMP	EXIT_IRET
+;--------------------------------------------------------------------
+;		FUNCTION 0CH  - FUNCTION NOT SUPPORTED
+;
+;		RETURNS:   AH = 0FFH
+;
+;--------------------------------------------------------------------
+FCT_0C:
+	MOV	AH,0FFH
+	JMP	EXIT_IRET
+;--------------------------------------------------------------------
+;		FUNCTION 0DH - GET POINTER TO CH_KEY_RDY FLAG
+;
+;	   FCT ENTRY:  AH=0DH, DX=CHANNEL ON BOARD(0-7)
+;
+;	RETURNS:  ES:BX POINTS TO THE FLAG  
+;                       FLAG = 0    : RX BUFFER EMPTY
+;		        FLAG = 0FFH : CHAR AVIALABLE IN RX BUFFER 	
+;
+;	NOTE : INTERRUPTS MUST BE ENABLED FOR THE CH_KEY_RDY FLAG 
+;              INFORMATION TO BE VALID.
+;--------------------------------------------------------------------
+					
+FCT_0D:			
+	ADD	DX,OFFSET CH_KEY_RDY	;INDEX INTO TABLE
+	ADD	DX,STRT_INDX		;PLUS BD_STRT_INDX_
+	MOV	SS:[BP+24],DX		;SAVE BX FOR RETURN
+	MOV	SS:[BP+14],CS		;SAVE ES FOR RETURN
+	XOR	AH,AH			;
+	JMP	EXIT_IRET		;RETURN
+
+
+;--------------------------------------------------------------------
+;		FUNCTION 0EH  -  WRITE STRING
+;
+;     FCT ENTRY:  AH=0EH, DX=CHANNEL ON BOARD(0-7)
+;                 CX=# OF CHARS IN STRING (THIS IS ON THE STACK)
+;	          ES:BX=POINTER TO STRING (THIS IS ON THE STACK)
+;	RETURNS:  AX = # CHARS TRANSMITTED
+;                 ZF = 0 : NO ERRORS  
+;                 ZF = 1 : IF ERRORS  
+;--------------------------------------------------------------------
+FCT_0E:
+	MOV	NUM_SENT,0
+	AND	WORD PTR SS:[BP+30],0FFBFH; CLEAR ZF ASSUME NO ERRORS
+	MOV	AX,ES:[BX+F_TX_MAX_]	; GET AND STORE TXMAX AND TXSTRT
+	MOV	TX_MAX,AX		;   THEY DONT CHANGE LIKE 
+	MOV	AX,ES:[BX+F_TX_STRT_]	;   HEAD AND TAIL
+	MOV	TX_STRT,AX
+ 	MOV	DI,ES:[BX+F_TX_HEAD_]	; ES:DI <- DESTINATION PTR
+	MOV	DX,ES:[BX+F_CH_SEG_]	; GET BUFFER SEG
+	AND	DX,0FFFH		; MASK OFF FEP SEG DIFFERENCE
+	MOV	AX,ES			; AX GETS WINDOW SEG
+	ADD	DX,AX			; DX GETS TX BUFF SEG 
+	MOV	ES,DX			; ES GETS TX BUFF SEG
+	MOV	CX,SS:[BP+14]		; LOAD DS:SI WITH SOURCE PTR
+	MOV	DS,CX
+	MOV	SI,SS:[BP+24]	
+XMIT:					; XFER CHAR TO TX BUFFER
+	MOVSB	
+	CMP	DI,CS:TX_MAX
+	JLE	NOWRAP
+	MOV	DI,CS:TX_STRT		; WRAP HEAD PTR
+NOWRAP:					;
+	MOV	ES,AX			; RESTORE WINDOW SEG	
+	MOV	CX,0			;
+BUFF_FULL_QUERY:			;
+	CMP	DI,ES:[BX+F_TX_TAIL_]	; HEAD = TAIL (BUFFER FULL) ?
+	JNZ	NEWHEAD			; NO
+	LOOP	BUFF_FULL_QUERY		;
+	JMP	ERROR			; BUFFER NOT EMPTYING!
+NEWHEAD:				;
+	MOV	ES:[BX+F_TX_HEAD_],DI	; UPDATE HEAD PTR
+	MOV	CX,CS:NUM_SENT		;
+	INC	CX			;
+	CMP	CX,SS:[BP+22]		; # TX CHARS ON STACK
+	MOV	CS:NUM_SENT,CX		;
+	JZ	DONE			;
+	MOV	ES,DX			; BACK TO BUFFER SEG
+	JMP	XMIT			;
+ERROR:					;
+	OR	WORD PTR SS:[BP+30],0040H; SET ZF
+DONE:					;
+	MOV	AX,CS:NUM_SENT		;
+	PUSH	CS			;RESTORE DS
+	POP	DS			;
+	JMP	EXIT_IRET		;
+;--------------------------------------------------------------------
+;		FUNCTION 0FH  - READ STRING
+;
+;     FCT ENTRY:  AH=0FH, DX=CHANNEL ON BOARD(0-7)
+;                 CX=# OF CHARS TO READ            (THIS IS ON THE STACK)
+;	          ES:BX=POINTER TO CALLERS BUFFER  (THIS IS ON THE STACK)
+;	RETURNS:  AX = # CHARS READ
+;                 ZF = 0 : NO ERRORS  
+;                 ZF = 1 : IF ERRORS  (LINE STS OR WRONG # CHARS RTND) 
+;--------------------------------------------------------------------
+FCT_0F:
+	AND	WORD PTR SS:[BP+30],0FFBFH	;~V 1.7.1~
+;	AND	WORD PTR SS:[BP+30],0FFBH	;CLR ZFLAG
+	PUSH	DX
+
+	MOV	SI,ES:[BX+F_RX_TAIL_]		;GET TAIL
+	MOV	AX,ES:[BX+F_RX_MAX_]		;GET MAX
+	INC	AX
+	MOV	TX_MAX,AX
+	MOV	AX,ES:[BX+F_RX_STRT_]		;GET STRT
+	MOV	TX_STRT,AX
+	MOV	AX,ES:[BX+F_CH_SEG_]		;GET CHNL BUFFER SEG
+	AND	AX,0FFFH			;MASK OFF FEP SEG DIFFERENCE
+	MOV	DX,ES				;DX GETS BRDS WINDOW
+	OR	DX,AX				;OR IN BUFFER SEG DIFFERENCE
+	MOV	DS,DX				;DS HAS CHNLS BUFFER SEG
+
+	MOV	DX,[BP+14]			;GET CALLERS BUFFER SEG ,ES
+	MOV	DI,[BP+24]			;GET CALLERS BUFFER OFFSET, BX
+	MOV	CX,[BP+22]			;GET NUM_READ, CX
+BACK_HERE:
+	JCXZ	GO_HOME				;ALL REQUESTED CHARS FETCHED?
+	MOV	AX,ES:[BX+F_RX_HEAD_]		;GET HEAD
+	CMP	AX,SI				;HEAD = TAIL?
+	JE	GO_HOME				;YES, QUIT
+	PUSH	ES
+	MOV	ES,DX				;ES GETS CALLERS BUFF SEG
+	PUSH	BX
+	JG	HT				;HEAD > TAIL?
+TH:
+	MOV	BX,CS:TX_MAX
+	JMP	LOOPF
+HT:
+	MOV	BX,AX 
+LOOPF:
+	CMP	SI,BX 				;TAIL @ LIMIT?
+	JE	QUIT				;YES, EXIT
+	LODSW					;GET CHAR AND STS
+	TEST	AH,1EH				;STS ERRS?
+	JZ	NO_ERR				;NO
+	OR	WORD PTR SS:[BP+30],0040H	;YES, SET ZFLAG
+NO_ERR:	
+	STOSB					;GIVE CHAR TO CALLER
+	LOOP	LOOPF				;EXIT IF NUM_READ = 0
+;	POP	BX				;~V 1.7.1~ wrap check was
+;	POP	ES				;by-passed when cx==0
+;	JMP	BACK_HERE
+QUIT:
+	CMP	SI,CS:TX_MAX			;WRAP TAIL IF NEEDED
+	JL	QUIT1
+	MOV	SI,CS:TX_STRT
+QUIT1:
+	POP	BX				
+	POP     ES
+	JMP	BACK_HERE
+GO_HOME:
+	POP	DI				; GET CHNL #
+	ADD	DI,CS:STRT_INDX
+	SHL	DI,1				;WORD INDEX
+
+	MOV	ES:[BX+F_RX_TAIL_],SI		;STORE NEW TAIL
+	CMP	ES:[BX+F_RX_HEAD_],SI
+	JNE	GO_HOME1
+
+	SHR	DI,1				; BYTE INDEX
+	MOV     CS:CH_KEY_RDY[DI],0
+	MOV	CS:SPCL_CHAR_FLG[DI],0
+	SHL	DI,1				; BACK TO WORD INDEX
+        MOV     BYTE PTR ES:[BX+F_HFLSH_],0FFH  ;TELL FEP I EMPTIED RX BUFFER
+GO_HOME1:
+	MOV	AX,[BP+22]			;SET NUMBER READ
+	SUB	AX,CX
+	CMP	AX,[BP+22]			;CHARS GOT = CHARS ASKED FOR?
+	JE	QUIT_F				;YES
+	OR	WORD PTR SS:[BP+30],0040H	;NO, SET ZFLAG FOR ERROR
+QUIT_F:
+	SUB	CS:SPCL_CHAR_CNT[DI],AX
+	JNZ	FF_A
+	SHR	DI,1
+	MOV	CS:SPCL_CHAR_FLG[DI],0
+FF_A:
+	PUSH	CS
+	POP	DS
+	JMP	EXIT_IRET
+
+;--------------------------------------------------------------------
+;		FUNCTION 10H  - CLEAR RX BUFFER
+;
+;	   FCT ENTRY:  AH=10H, DX=CHANNEL ON BOARD(0-7)
+;
+;	RETURNS:  AH = 0FFH FCT ERROR (CCB TIMEOUT)
+;		  AH = 0    FCT GOOD
+;--------------------------------------------------------------------
+FCT_10:
+	MOV	AH,0FFH			;ASSUME ERROR
+	XOR	CX,CX			; P1/P2 NOT USED
+	MOV	AL,F_C_FLSH_RX_		; FLUSH RECEIVE BUFFER
+	CALL	SEND_CMD		;
+	JC	F10_EXIT		;EXIT WITH ERROR
+					;				
+	MOV	BL,DL			; PORT # (0-7)
+	XOR	BH,BH			;
+	MOV	AX,0 			; SET NO ERR (AH = 0)
+	LEA	SI,CH_KEY_RDY[BX]	;
+	MOV	[SI],AL			; SET KEY READY FLAG = 0
+	LEA	SI,SPCL_CHAR_FLG[BX]	;
+	MOV	[SI],AX
+	SHL	BX,1
+	LEA	SI,SPCL_CHAR_CNT[BX]	;
+	MOV	[SI],AX
+
+F10_EXIT:				;
+	JMP	EXIT_IRET		;
+;--------------------------------------------------------------------
+;		FUNCTION 11H  - CLEAR TX BUFFER
+;
+;	   FCT ENTRY:  AH=11H, DX=CHANNEL ON BOARD(0-7)
+;
+;	RETURNS:  AH = 0FFH FCT ERROR (CCB TIMEOUT)
+;		  AH = 0    FCT GOOD
+;--------------------------------------------------------------------
+FCT_11:
+	MOV	AH,0FFH			;ASSUME ERROR
+	XOR	CX,CX			; P1/P2 NOT USED
+	MOV	AL,F_C_FLSH_TX_		; FLUSH TRANSMIT BUFFER
+	CALL	SEND_CMD
+	JC	F11_EXIT		;EXIT WITH ERROR
+	MOV	AH,0			;EXIT WITH NO ERROR
+F11_EXIT:
+	JMP	EXIT_IRET
+
+;--------------------------------------------------------------------
+;		FUNCTION 12H  - GET TX BUFFER FREE SPACE
+;
+;	   FCT ENTRY:  AH=12H, DX=CHANNEL ON BOARD(0-7)
+;
+;	RETURNS:  AX=# 0F FREE BYTES
+;--------------------------------------------------------------------
+FCT_12:	   				 
+	MOV	AX,ES:[BX+F_TX_TAIL_]	;GET TAIL POINTER
+;	CMP	AX,ES:[BX+F_TX_TAIL_]	;READ IT OK ? ~1.2.2~
+;	JNZ	FCT_12			;
+	MOV	CX,ES:[BX]		;GET HEAD POINTER
+	CMP	CX,AX			;
+	JE	F12_EMPTY		;HEAD = TAIL (EMPTY BUFFER) 
+	JA	F12_NOWRAP		;HEAD > TAIL
+	SUB	AX,CX			;HEAD < TAIL (WRAP CONDITION)
+	DEC	AX			;(TAIL-HEAD)-1
+	JMP	EXIT_IRET
+F12_NOWRAP:				;NO, OPEN SPACE IS
+;	MOV	CX,ES:[BX+F_TX_MAX_]	;(MAX-TAIL)+(HEAD-START)
+;	SUB	CX,AX			;~V 1.7.2~
+;	MOV	AX,ES:[BX]		
+;	SUB	AX,ES:[BX+F_TX_STRT_]		
+;	ADD	AX,CX			
+;
+;~V 1.7.2~	RETURN (MAX-HEAD)+(TAIL-STRT) == (TAIL-HEAD)+MAX-STRT
+;
+	SUB	AX,CX			;(TAIL-HEAD)
+	ADD	AX,ES:[BX+F_TX_MAX_]	;(TAIL-HEAD)+MAX
+	SUB	AX,ES:[BX+F_TX_STRT_]	;(TAIL-HEAD)+MAX-STRT
+	JMP	EXIT_IRET
+F12_EMPTY:				
+	MOV	AX,ES:[BX+F_TX_MAX_]	;(MAX-START)
+	SUB	AX,ES:[BX+F_TX_STRT_]	
+;	DEC	AX			;~V 1.7.2~
+	JMP	EXIT_IRET
+;--------------------------------------------------------------------
+;		FUNCTION 13H  - FUNCTION NOT SUPPORTED
+;
+;		RETURNS:   AH = 0FFH
+;
+;--------------------------------------------------------------------
+FCT_13:
+	MOV	AH,0FFH
+	JMP	EXIT_IRET
+;--------------------------------------------------------------------
+;		FUNCTION 14H  - FUNCTION NOT SUPPORTED
+;
+;		RETURNS:   AH = 0FFH
+;
+;--------------------------------------------------------------------
+FCT_14:
+	MOV	AH,0FFH
+	JMP	EXIT_IRET
+
+;--------------------------------------------------------------------
+;		FUNCTION 15H  - FUNCTION NOT SUPPORTED
+;
+;		RETURNS:   AH = 0FFH
+;
+;--------------------------------------------------------------------
+FCT_15:
+	MOV	AH,0FFH
+	JMP	EXIT_IRET
+;--------------------------------------------------------------------
+;		FUNCTION 16H  - SEND CCB COMMAND
+;
+;	FCT ENTRY:  AH=16H, AL=CCB CMD #
+;                   DX=CHANNEL ON BOARD(0-7)
+;                   BL=BYTE2,BH=BYTE3 (BX ON STACK)
+;		    CL=BYTE1 PARAMS FOR ALL-CHNL FNCS(SEE NOTE) (CX ON STACK)
+;
+;	NOTE: CCB FNCS 4EH & 4FH REQUIRE NO CHNL#, SINCE THEY OPERATE ON ALL
+;             CHNLS,BUT DX MUST STILL CONTAIN A VALID CHNL #(DXLOW-DXHIGH) 
+;             TO MAKE IT PAST THE INT_14 VALID PORT CHECK. FOR ALL-CHNL FNCS,
+;	      PUT BYTE1 PARAMS IN CL BEFORE CALLING INT 14H
+;
+;	     RETURNS:  AH = 0FFH FCT ERROR (CCB TIMEOUT)
+;		       AH = 0    FCT GOOD 
+;
+;--------------------------------------------------------------------
+FCT_16:
+	MOV	AH,0FFH			;ASSUME ERROR
+	CMP	AL,4EH			;ALL-CHNL FNC?
+	JZ      LOADX
+	CMP	AL,4FH			;ALL-CHNL FNC?
+	JZ	LOADX
+	JMP	SEND
+LOADX:
+	MOV	DX,SS:[BP+22]		;DX <- PARAMS PASSED IN CX
+SEND:
+	MOV	CX,SS:[BP+24]		;CX <- PARAMS PASSED IN BX
+	CALL	SEND_CMD
+	JC	F16_EXIT		;EXIT WITH ERROR
+	MOV	AH,0			;EXIT WITH NO ERROR
+F16_EXIT:
+	JMP	EXIT_IRET
+
+;--------------------------------------------------------------------
+;		FUNCTION 17H  - FUNCTION NOT SUPPORTED
+;
+;		RETURNS:   AH = 0FFH
+;
+;--------------------------------------------------------------------
+FCT_17:
+	MOV	AH,0FFH
+	JMP	EXIT_IRET
+;--------------------------------------------------------------------
+;		FUNCTION 18H  -  SEND BIOS COMMAND
+;
+;     FCT ENTRY:  AH    = 18H
+;	          ES:BX = POINTER TO 16 BYTE MAILBOX STRING
+;	RETURNS:  AH    = FCT 18H STATUS
+;			    0 : NO ERRORS
+;			  80H : TIMEOUT ERROR
+;		  AL    = MAILBOX STATUS (BYTE 1)
+;			  0   : NO ERRORS
+;			  8XH : BIOS ERROR (MAILBOX BYTE 1 - SEE BIOS SPEC)
+;                 ZF    = 0 : NO ERRORS  
+;                 ZF    = 1 : IF ERRORS  (ERROR IN EITHER STATUS BYTE)
+;	          16 BYTE MAILBOX STRING RETURNED TO ES:[BX]
+;--------------------------------------------------------------------
+FCT_18:
+	PUSH	DI
+	PUSH	SI
+	AND	WORD PTR SS:[BP+30],0FFBFH	;CLEAR ZF ASSUME NO ERRORS
+	MOV	SI,[BP+24]		;GET BX
+	MOV	CX,[BP+14]		;GET ES
+	MOV	DS,CX			;DS:[SI] PNTS TO CALLERS CMD STRING
+	MOV	CX,16			;16 BYTES TO MOVE
+	MOV	DI,H_TO_F_MB_		;MAKE ES:[DI] PNT TO H_2_F MBOX
+	REP	MOVSB			;ES:[DI++] <- DS:[SI++]
+	MOV	DX,CS:MEM_ON_IO_PORT	;NMI TO CARD
+	IN	AL,DX
+	OR	AL,NMI_BIT_
+	OUT	DX,AL
+	MOV	CX,20			;WAIT 20 * 55 msecs
+F18_DONE_YET?:
+	CMP	BYTE PTR ES:[H_TO_F_MB_],0	;IS IT DONE ?
+	JE	F18_WAIT_DONE
+	CALL	WAIT_55MS
+	LOOP	F18_DONE_YET?
+F18_WAIT_DONE:
+	IN	AL,DX			;RESET NMI BIT
+	AND	AL,NOT NMI_BIT_
+	OUT	DX,AL
+	MOV	AX,0			;CLEAR AX
+	MOV	AL,ES:[H_TO_F_MB_+1]	;GET STATUS
+	CMP	CX,0			;DID LOOP CNT EXPIRE ? (TIMEOUT)
+	JNE	NO_F18_TIMEOUT		;NO
+	MOV	AH,80H			;NMI DIDN'T COMPLETE IN TIME
+NO_F18_TIMEOUT:
+	CMP	AX,0H			;TIMEOUT OR BIOS ERROR?
+	JE	NO_F18_ERR
+	OR	WORD PTR [BP+30],0040H	; SET ZF
+NO_F18_ERR:
+       	MOV	CX,ES			;RETURN MBOX STRING TO USERS ES:BX
+       	MOV	DX,DS			;ES:[DI] PNTS TO USERS ES:[BX]
+	MOV	ES,DX		
+	MOV	DI,[BP+24]		;BX FROM STACK
+	MOV	DS,CX			;DS;[SI] PNTS TO MAILBOX
+	MOV	SI,H_TO_F_MB_
+	MOV	CX,16			;XFER 16 BYTES
+	REP	MOVSB			;ES:[DI++] <- DS:[SI++]
+	MOV	CX,DS			;GET THE REAL ES
+	MOV	DX,CS			;GET THE REAL DS
+	MOV	DS,DX
+	MOV	ES,CX
+	POP	SI
+	POP	DI
+	JMP	EXIT_IRET		;
+;					;
+;--------------------------------------------------------------------------
+;		FUNCTION 19H - SET SPECIAL CHARACTER INTERRUPT
+;
+;       FCT ENTRY:  AH=19H, DX=CHANNEL ON BOARD (0-7)
+;		    BL : 0    - DISABLE SPECIAL CHARACTER INTERRUPT
+;		    BH : 0FFH - ENABLE SPECIAL CHARACTER INTERRUPT
+;
+;	RETURNS:    AH : 0    - FUNCTION GOOD
+;		    AL : 0FFH - FUNCTION FAILED		
+;
+;--------------------------------------------------------------------
+;					;					
+FCT_19:					;	
+	MOV	AL,53H			; CCB FCT 53H
+	PUSH	CX			;
+	MOV	CX,[BP+24]		; GET BX FROM STACK
+	CALL	SEND_CMD		;
+	POP	CX			;
+	MOV	AH,0			; ASSUME NO TIMEOUT ERROR
+	JNC	FCT191			; CARRY CLEARED IF NO TIMEOUT
+	MOV	AH,0FFH			; RETURN TIMEOUT ERROR
+FCT191:					;
+ 	JMP	EXIT_IRET		; RETURN
+;					;
+;--------------------------------------------------------------------------
+;		FUNCTION 1AH - GET POINTER TO SPECIAL CHARACTER FLAG/COUNTER
+;
+;       FCT ENTRY:  AH=1AH, DX=CHANNEL ON BOARD (0-7)
+;		    BX : 0 - RETURN POINTER TO SPECIAL CHARACTER FLAG (BYTE)
+;		    BX : 1 - RETURN POINTER TO SPECIAL CHARACTER COUNTER (WORD)
+;
+;	RETURNS:  ES:BX POINTS TO THE FLAG  
+;
+;	NOTE : SPECIAL CHARACTER INTERRUPTS MUST BE ENABLED FOR THE 
+;	       FLAGS AND COUNTERS TO PROVIDE VALID INFORMATION 
+;--------------------------------------------------------------------
+;					;					
+FCT_1A:					;	
+	ADD	DX,STRT_INDX		; PLUS BD_STRT_INDX_
+	CMP	WORD PTR [BP+24],0	; REQUEST PTR TO FLAG?
+	JNE	FCT1A1			; NO
+	ADD	DX,OFFSET SPCL_CHAR_FLG	; INDEX INTO TABLE
+	JMP	FCT1A2			;
+FCT1A1:					; MAKE PTR TO COUNT
+	SHL	DX,1			; MAKE WORD PTR
+	ADD	DX,OFFSET SPCL_CHAR_CNT	;
+FCT1A2:					;
+	MOV	SS:[BP+24],DX		; SAVE BX FOR RETURN
+	MOV	SS:[BP+14],CS		; SAVE ES FOR RETURN
+	XOR	AH,AH			;
+ 	JMP	EXIT_IRET		; RETURN
+;					;
+;**********************************************************
+;	INT 14H COMMON RETURN POINT FOR ALL FUNCTIONS
+;**********************************************************
+;
+; ----- COMMON RETURN CODE FOR ALL FUNCTIONS
+;
+EXIT_IRET:
+	PUSH	AX				;~1.2.2~
+	MOV	CX,SS:[BP+2]			;OLD     MEM_ON_IO_PORT
+	MOV	DX,MEM_ON_IO_PORT		;CURRENT  "  "  "  "
+	CMP	CX,DX				;OLD = CURRENT ?
+	CLI
+	JE	LEAVE_IT			;YES - LEAVE MEM ON THEN
+	IN	AL,DX				;NO - TURN CURRENT MEM OFF
+	AND	AL,0FDH
+	OUT	DX,AL
+	CMP	CX,0				;WAS OLD MEM OFF ?
+	JE	LEAVE_IT			;YES - DO NOTHING
+	MOV	DX,CX				;NO TURN IT BACK ON
+	IN	AL,DX
+	OR	AL,02H				;MEM ON 
+	OUT	DX,AL
+LEAVE_IT:
+;	MOV	DX,MEM_ON_IO_PORT		;~1.2.2~
+;	XOR	AX,AX
+;	CLI					;NO IRQ'S
+;	MOV	MEM_ON_IO_PORT,AX		;NO I/O PORT MEM ENBLD
+;	IN	AL,DX
+;	AND	AL,0FDH
+;	OUT	DX,AL				;TURN MEMORY OFF
+	STI					;IRQ'S OK NOW
+	POP	AX
+	POP	BP
+	POP	DX				;~1.2.2~
+	MOV	MEM_ON_IO_PORT,DX
+	POP	DX
+	MOV	STRT_INDX,DX
+	POP	DX
+	MOV	NUM_SENT,DX
+	POP	DX
+	MOV	TX_STRT,DX
+	POP	DX
+	MOV	TX_MAX,DX
+	
+;	RESTORE ALL THE REGISTERS (EXCEPT AX)
+	POP	DS
+	POP	ES
+	POP	DI
+	POP	SI
+	POP	DX
+	POP	CX
+	POP	BX
+	IRET
+
+;************************************************
+
+
+;------------------------------------------------
+;
+; -----	GET PRESENT LINE STATUS AND RETURN IT IN AH
+;		ENTRY:  BX = POINTS TO CHANNEL STRUCTURE
+;
+;		EXIT:   AH = LINE STATUS
+;
+GET_LINE_STATUS		PROC
+        CLI
+	XOR	AH,AH			; CLEAR LINE STATUS	
+	MOV	DI,ES:[BX+F_TX_HEAD_]	; GET HEAD OF TRANSMIT BUFFER
+NEWHEADGLS:				;~1.7.2~
+	INC	DI			;BUFF EMPTY IF HEAD+1 != TAIL
+	CMP	DI,ES:[BX+F_TX_MAX_]	;HEAD > MAX
+	JBE	GLS_NO_WRAP		;NO, NO WRAP NEEDED
+	MOV	DI,ES:[BX+F_TX_STRT_]	;YES, WRAP HEAD 
+GLS_NO_WRAP:
+	CMP	DI,ES:[BX+F_TX_TAIL_]	;HEAD = TAIL
+	JE	GLS_BUFF_FULL
+	OR	AH,TX_EMPTY_		;  YES - SET BITS 5/6 FOR BUFFER EMPTY					
+GLS_BUFF_FULL:
+
+;~1.7.2	MOV	SI,ES:[BX+F_TX_TAIL_]	; GET PRESENT TAIL
+;	CMP	SI,ES:[BX+F_TX_TAIL_]	; VALID READ? ~1.2.2~
+;	JNZ	GETTAILGLS
+;	CMP	SI,DI 			; TAIL EQUAL HEAD ?
+;	JNZ	GLS_0			;  NO - NOT EMPTY
+;	OR	AH,TX_EMPTY_		;  YES - SET BITS 5/6 FOR BUFFER EMPTY					
+;                                        ; ITS ALWAYS GOOD TO TX
+;GLS_0:
+
+	MOV	SI,ES:[BX+F_RX_TAIL_]	; GET RX TAIL
+GETHEADGLS:
+	MOV	DI,ES:[BX+F_RX_HEAD_]   ; GET HEAD OF RX BUFFER
+;	CMP	DI,ES:[BX+F_RX_HEAD_]	; VALID READ? ~1.2.2~
+;	JNZ	GETHEADGLS
+	CMP	DI,SI 			; TAIL = HEAD ?
+	JE	GLS_1			;  YES - RX BUFFER IS EMPTY
+	OR 	AH,DATA_RDY_		;  NO - SET DATA READY IN STATUS
+GLS_1:
+	RET
+GET_LINE_STATUS		ENDP
+
+;----------------------------------
+;
+; -----	GET PRESENT MODEM STATUS AND RETURN IT IN AL
+;		ENTRY:  BX = POINTS TO CHANNEL STRUCTURE
+;		EXIT:   AL = MODEM STATUS
+;
+GET_MODEM_STATUS	PROC
+	MOV	AL,ES:[BX+F_MSTAT_]
+	RET
+GET_MODEM_STATUS	ENDP
+
+PAGE
+;----------------------------------
+;
+; -----	SEND COMMAND TO THE FEP (CMD,CHANNEL,P1,P2)
+;	ENTRY:
+;		AL = COMMAND (40H-51H)
+;		DL = CHANNEL/PORT (0-7)
+;		CL = PARAMETER 1
+;		CH = PARAMETER 2
+;		ES = BOARD'S WINDOW
+;
+;	EXITS AFTER COMMAND IS PUT IN BUFFER (WAITS IF NECESSARY)
+;
+;	RETURN : CARRY SET IF TIME OUT ERROR
+;	       : CARRY CLEAR IF OK
+;
+
+SEND_CMD	PROC
+	PUSH	AX
+        PUSH    SI
+	PUSH	DI
+SC_0:
+	MOV	DI,ES:[F_CMD_HEAD_]	; SEND TO HEAD IN CMD BUFFER
+        ADD     DI,F_CMD_ADJUST_        ;  & ADJUST FOR DIFF HOST/FEP SEGMENTS
+	MOV	AH,DL			; SEND PORT (0-7)
+	STOSW				; SEND AX TO ES:DI
+	MOV	AX,CX
+	STOSW
+        SUB     DI,F_CMD_ADJUST_        ; ADJUST FOR DIFF HOST/FEP SEGMENTS
+;
+; -----	DO POINTER ADJUSTMENTS FOR COMMAND BUFFER
+;
+        CMP     DI,ES:[F_CMD_MAX_]      ; UPPER LIMIT OF BUFFER ?
+	MOV	CX,10			;WAIT 0.55 SECS MAX(10*55ms) IF CCB FULL
+	JB  	SC_1 			;  NO 
+	MOV	DI,ES:[F_CMD_STRT_]	;  YES - WRAP HEAD
+SC_1:
+        CMP     DI,ES:[F_CMD_TAIL_]     ; GET TAIL OF CMD BUFFER
+;	JE	SC_0			;  YES - NO ROOM / LOOP & TRY AGAIN
+;~1.7.2~
+	JNE	STO_HEAD		;OK TO STORE NEW HEAD
+	CALL	WAIT_55MS		;GOTTA WAIT TO STORE HEAD
+	LOOP	SC_1			;TRY AGAIN
+	STC				;CANT WAIT ANY LONGER - TIMEOUT ERROR
+	JMP	SND_RTN
+STO_HEAD:
+	MOV	ES:[F_CMD_HEAD_],DI     ;  NO - UPDATE NEW HEAD
+	MOV	CX,10			;SLOW WAIT LOOP (0.55 MSEC BEFORE TOUT)
+CCB_NOT_EMPTY:				; 
+	PUSH	CX			;FAST WAIT LOOP 
+	MOV	CX,7000H
+WAIT_FAST:	
+	CMP	DI,ES:[F_CMD_TAIL_]
+	CLC
+	JE	SND_RTNA
+	LOOP	WAIT_FAST  			
+	POP	CX			;FAST LOOP TOO SHORT -
+WAIT_SLOW:   
+        CMP     DI,ES:[F_CMD_TAIL_]     ; GET TAIL OF CMD BUFFER
+	CLC				;ASSUME NO TIMEOUT ERROR
+	JE	SND_RTN			;CCB EMPTY - RTN TO CALLER
+	CALL	WAIT_55MS		;NOT EMPTY - WAIT
+	LOOP	CCB_NOT_EMPTY
+	STC				;TIMEOUT ERROR
+	JMP	SHORT SND_RTN
+SND_RTNA:
+	POP	CX
+SND_RTN:	
+	POP	DI
+        POP     SI
+	POP	AX
+	RET
+SEND_CMD	ENDP
+
+;----------------------------------------------
+;
+;CREATES A WAIT FOR 55 MSECS BASED ON DOS CLOCK
+;
+;
+
+WAIT_55MS	PROC	NEAR
+
+	PUSH	ES
+	PUSH	AX
+	PUSH	BX
+	MOV	AX,0
+	MOV	ES,AX
+
+	MOV	AX,ES:[046CH]		;GET DOS CLCK CNT
+	ADD	AX,1			;ADD 1 TTIC CNTS
+	AND	AX,000FH		;KEEP LAST 4 BITS
+WWAIT:	
+	MOV	BX,ES:[046CH]		;GET CURRENT DOS CLOCK
+	AND	BX,000FH		;KEEP LAST 4 BITS
+	CMP	AX,BX			;HAS 2 TICS MAX PASSED?
+	JNE	WWAIT			;NO KEEP WAITING
+
+	POP	BX
+	POP	AX
+	POP	ES
+	RET
+
+WAIT_55MS	ENDP
+
+INT14ONLY	LABEL WORD
+;------------------------------------------------
+;	END OF INT 14H CODE
+;------------------------------------------------
+
+SUBTTL DOS FUNCTIONS
+PAGE+
+
+;************************************************
+;  	DOS CODE GOES HERE
+;-----------------------------------------------
+					PAGE+
+;
+FUNCTIONSTABLE		LABEL WORD	;
+	DW	OFFSET COMINIT		;0  INITIALIZE (ONLY AT BOOTUP)
+	DW	OFFSET EXITDONE		;1  MEDIA CHECK (BLOCK ONLY)
+	DW	OFFSET EXITDONE		;2  BUILD BPB (BLOCK ONLY)
+	DW	OFFSET UNKNOWNCMD	;3  IOCTL IN (IOCTL = 1)
+	DW	OFFSET READ		;4  INPUT (READ)
+	DW	OFFSET NDREAD		;5  NONDESTRUCTIVE INPUT NO WAIT (CHAR ONLY)
+	DW	OFFSET STATUSIN		;6  INPUT STATUS (CHAR ONLY)
+	DW	OFFSET FLUSHIN		;7  INPUT FLUSH (CHAR ONLY)
+	DW	OFFSET WRITE		;8  OUTPUT (WRITE)
+	DW	OFFSET WRITE		;9  OUTPUT WITH VERIFY (WRITE)
+	DW	OFFSET STATUSOUT	;A  OUTPUT STATUS (CHAR ONLY)
+	DW	OFFSET FLUSHOUT		;B  OUTPUT FLUSH (CHAR ONLY)
+	DW	OFFSET UNKNOWNCMD	;C  IOCTL OUT (IOCTL = 1)
+	DW	OFFSET UNKNOWNCMD	;D  DEVICE OPEN (OPEN/CLOSE/RM = 1)
+	DW	OFFSET UNKNOWNCMD	;E  DEVICE CLOSE (OPEN/CLOSE/RM = 1)
+	DW	OFFSET UNKNOWNCMD	;F  REMOVABLE MEDIA (OPEN/CLOSE/RM = 1)
+	DW	OFFSET OUTBUSY  	;10 OUTPUT TIL BUSY (CHAR ONLY)
+	DW	OFFSET UNKNOWNCMD	;11 ???
+	DW	OFFSET UNKNOWNCMD	;12 ???
+	DW	OFFSET UNKNOWNCMD	;13 GENERIC IOCTL REQUEST
+	DW	OFFSET UNKNOWNCMD	;14 ???
+	DW	OFFSET UNKNOWNCMD	;15 ???
+	DW	OFFSET UNKNOWNCMD	;16 ???
+	DW	OFFSET UNKNOWNCMD	;17 GET LOGICAL DEVICE
+	DW	OFFSET UNKNOWNCMD	;18 SET LOGICAL DEVICE
+DRIVERFUNCTIONS	EQU	($-OFFSET FUNCTIONSTABLE)/2
+;----------------------------------------------------------
+COMINTERRUPT	PROC 				;
+	CLD					;
+	STI					;
+	PUSH	ES				;
+	PUSH	DS				;
+	PUSH	AX				;
+	PUSH	CX				;
+	PUSH	DX				;
+	PUSH	DI				;
+	PUSH	SI				;
+	PUSH	CS				;
+	POP	DS				;
+	LES	BX,REQUESTHEADERPOINTER		;
+
+
+	MOV	AL,ES:REQUESTEDCMD[BX]		;GET FUNCTION REQUEST NUMBER
+	CMP	AL,DRIVERFUNCTIONS		;
+	JNC	UNKNOWNCMD			;
+	CBW					;
+	SHL	AX,1				;
+	MOV	SI,OFFSET FUNCTIONSTABLE	;
+	ADD	SI,AX				;
+	MOV	WORD PTR ES:RETURNSTATUS[BX],0	;CLEAR ALL STATUS BITS
+	JMP	[SI]				;
+
+COMINTERRUPT	ENDP				;
+;
+;------------------------------------------------
+
+COMINIT:
+
+	MOV	AX,LAST_LOC
+	MOV	ES:ENDINGOFFSET[BX],AX
+	MOV	AX,CS
+	MOV	ES:ENDINGSEGMENT[BX],AX
+
+	JMP	EXITDONE
+
+;-----------------------------------------------
+;						;
+;	SET STATUS UNKNOWN COMMAND		;
+;						;
+UNKNOWNCMD:					;
+	OR	ES:WORD PTR RETURNSTATUS[BX],08003H
+	JMP	EXITDONE			;RETURN UNKNOWNCOMMAND ERROR
+;-----------------------------------------------
+;						;
+;	READ REQUESTED NUMBER OF CHARACTERS	;
+;						;
+READ:						;
+
+	MOV	CX,ES:TRANSFERCOUNT[BX]		;HOW MANY DOES DOS WANT
+	JCXZ	CANTREAD0			;CAN'T MEAN 64K
+	MOV	DX,CURRENTCHANNEL		;GET CURRENT CHANNEL
+	MOV	AX,ES:BUFFERSEGMENT[BX]		;
+	MOV	SI,ES:BUFFEROFFSET[BX]		;
+	MOV	DS,AX				;
+;	MOV	AH,3H				;~1.2.2~
+;	INT	14H				;
+;	TEST	AH,01H				;DATA READY ?
+;	JNZ	READLOOP			;
+;	XOR	AX,AX				;
+;	MOV	DS:[SI],AL			;CLEAR BUFFER FOR SOME SOFTWARE
+;	MOV	ES:TRANSFERCOUNT[BX],AX		;NOTHING READ
+;	OR	WORD PTR ES:RETURNSTATUS[BX],0200H ;SET BUSY STATUS
+;	JMP	EXITDONE			;
+;READLOOP:					;
+;	MOV	AH,2				;
+;	INT	14H				;
+;	TEST	AH,0EH				;ANY ERRORS ?
+;	JZ	NOREADERRORS			;
+;	OR	WORD PTR ES:RETURNSTATUS[BX],800BH;SET ERROR READFAULT
+
+READLOOP:					;~1.2.2~
+	MOV	AH,2				;
+	INT	14H				;
+	TEST	AH,1EH				;ANY ERRORS ?
+	JNZ	ERRORS				;
+	TEST	AH,80H				;TIMEOUT?
+	JZ	NOREADERRORS			;
+	JMP	READLOOP			;WAIT FOR CHAR
+ERRORS:						;
+	OR	WORD PTR ES:RETURNSTATUS[BX],800BH;SET ERROR READFAULT
+CANTREAD0:					;
+	JMP	EXITDONE			;
+NOREADERRORS:					;
+	MOV	DS:[SI],AL			;SAVE CHARACTER READ
+	INC	SI				;
+	LOOP	READLOOP			;
+	JMP	EXITDONE			;
+;-----------------------------------------------
+;						;
+;	WRITE REQUESTED NUMBER OF CHARACTERS	;
+;						;
+WRITE:						;
+
+	MOV	CX,ES:TRANSFERCOUNT[BX]		;HOW MANY DOES DOS WANT
+	JCXZ	CANTWRITE0			;CAN'T MEAN 64K
+	MOV	DX,CURRENTCHANNEL		;GET CURRENT CHANNEL
+	MOV	AX,ES:BUFFERSEGMENT[BX]		;
+	MOV	SI,ES:BUFFEROFFSET[BX]		;
+	MOV	DS,AX				;
+WRITELOOP:					;
+	LODSB					;GET CHARACTER TO TX
+	MOV	AH,1				;
+	INT	14H
+	TEST	AH,80H				;ANY ERRORS ?
+	JZ	DOWRITEOUT			;
+	OR	WORD PTR ES:RETURNSTATUS[BX],800AH;SET ERROR WRITEFAULT
+CANTWRITE0:					;
+	JMP	EXITDONE			;
+DOWRITEOUT:					;
+	LOOP	WRITELOOP			;
+	JMP	EXITDONE			;
+;-----------------------------------------------
+;
+					PAGE
+;-----------------------------------------------
+;						;
+;	READ 1 CHARACTER NONDISTRUCTIVE		;
+;						;
+NDREAD:						;
+	MOV	DX,CURRENTCHANNEL		;GET CHANNEL
+	MOV	AH,8				;ALTERNATE STATUS CHECK
+	INT	14H				;
+	JZ	NDREADBUSY			;
+	MOV	ES:BYTEREAD[BX],AL		;RETURN CHARACTER READ
+	JMP	EXITDONE			;BACK TO DOS
+NDREADBUSY:					;
+	OR	WORD PTR ES:RETURNSTATUS[BX],0200H ;SET BUSY STATUS
+	JMP	EXITDONE			;AND BACK TO DOS
+;-----------------------------------------------
+;						;
+;   SETS BUSY IF NO CHARACTERS IN RX BUFFER	;
+;						;
+STATUSIN:					;
+
+	MOV	DX,CURRENTCHANNEL		;         
+	MOV	AH,3H				;
+	INT	14H				;            
+	TEST	AH,01H				;DATA READY ?         
+	JNZ	STATINHAS			;
+	OR	WORD PTR ES:RETURNSTATUS[BX],0200H ;SET BUSY STATUS
+STATINHAS:					;
+	JMP	EXITDONE			;
+;-----------------------------------------------
+;						;
+;	SETS BUSY IF NO ROOM IN TX BUFFER	;
+;						;
+STATUSOUT:					;
+	MOV	DX,CURRENTCHANNEL		;
+	MOV	AH,3H				;
+	INT	14H				;
+	TEST	AL,20H				;DSR SET ?
+	JZ	STATUSBUSY			;
+	TEST	AH,20H				;BUFFER EMPTY ?
+	JZ	STATUSBUSY			;
+	JMP	EXITDONE			;
+STATUSBUSY:					;
+	OR	WORD PTR ES:RETURNSTATUS[BX],0200H ;SET BUSY STATUS
+	JMP	EXITDONE			;
+;-----------------------------------------------
+;
+					PAGE
+;-----------------------------------------------
+;						;
+;	FLUSH RX BUFFER				;
+;						;
+FLUSHIN:					;FLUSH CHANNELS RX BUFFER
+	MOV	DX,CURRENTCHANNEL		;
+	MOV	AH,10H				;FLUSH RX BUFFER
+	INT	14H				;
+	JMP	EXITDONE			;
+;-----------------------------------------------
+;						;
+;	FLUSH TX BUFFER				;
+;						;
+FLUSHOUT:					;FLUSH CHANNELS TX BUFFER
+	MOV	DX,CURRENTCHANNEL		;
+	MOV	AH,11H				;FLUSH TX BUFFER
+	INT	14H				;
+	JMP	EXITDONE			;
+;------------------------------------------------
+;
+;-----------------------------------------------
+;						;
+;	OUTPUTS TIL BUFFER FULL OR CX = 0	;
+;						;
+OUTBUSY:					;
+	MOV	CX,ES:TRANSFERCOUNT[BX]		;
+	JCXZ	CANTBUSY0			;
+	MOV	DX,CURRENTCHANNEL		;
+	ADD	DX,DXLOW			;
+	MOV	AH,12H				;GET TX BUFFER ROOM
+	INT	14H				;
+	OR	AX,AX				;
+	JNZ	DOBUSYOUT			;
+	MOV	WORD PTR ES:TRANSFERCOUNT[BX],0	;SET WE DID'NT TRANSFER ANY
+	OR	WORD PTR ES:RETURNSTATUS[BX],0200H	;SET BUSY STATUS
+CANTBUSY0:					;
+	JMP	EXITDONE			;
+DOBUSYOUT:					;
+	PUSH	ES				;
+	PUSH	BX				;
+	MOV	CX,ES:TRANSFERCOUNT[BX]		;
+	MOV	AX,ES:BUFFERSEGMENT[BX]		;
+	MOV	BX,ES:BUFFEROFFSET[BX]		;
+	MOV	ES,AX				;
+	MOV	AH,0EH				;TRANSFER STRING ES:BX CX BYTES
+	INT	14H				;
+	POP	BX				;
+	POP	ES				;
+	JNZ	OUTBUSYNOERROR			;
+	OR	WORD PTR ES:RETURNSTATUS[BX],800AH;SET ERROR WRITEFAULT
+	MOV	ES:TRANSFERCOUNT[BX],AX		;SHOW HOW MANY TRANSFERED
+	JMP	EXITDONE			;AND RETURN ERROR
+OUTBUSYNOERROR:					;
+	CMP	AX,ES:TRANSFERCOUNT[BX]		;
+	JZ	CANTBUSY0			;ALL TRANSFERED SO NORMAL EXIT
+	MOV	ES:TRANSFERCOUNT[BX],AX		;SET TRANSFER COUNT
+	OR	WORD PTR ES:RETURNSTATUS[BX],0200H	;SET BUSY STATUS
+	JMP	EXITDONE			;
+;-----------------------------------------------
+;  END OF DOS CODE
+;------------------------------------------------
+
+SUBTTL DEVICE HEADERS
+PAGE+
+
+CHAIN	LABEL	NEAR
+;---------------------------------------
+COMA1INTRP	PROC 			;
+	MOV	AX,DXLOW
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMA1INTRP	ENDP			;
+;---------------------------------------
+COMA2INTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,1
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMA2INTRP	ENDP			;
+;----------------------------------------
+COMA1		DW	OFFSET COMA2	; WARNING !  DO NOT CHANGE ANY OF
+		DW	-1		;	    THE HEADERS, THEY ALSO
+		DW	ATTRIBUTE	;	    ARE USED BY  AT16CONF
+		DW	DEVICESTRATEGY	;
+		DW	COMA1INTRP	;
+		DB	'COMA1   '	;
+A1PTR		DW	OFFSET A2PTR	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMA2		DW	OFFSET COMA3	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMA2INTRP	;
+		DB	'COMA2   '	;
+A2PTR		DW	OFFSET A3PTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;---------------------------------------
+END2PORTS	LABEL NEAR
+;---------------------------------------
+COMA3INTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,2
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMA3INTRP	ENDP			;
+;---------------------------------------
+COMA4INTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,3
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMA4INTRP	ENDP			;
+
+;------------------------------------------------
+COMA3		DW	OFFSET COMA4	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMA3INTRP	;
+		DB	'COMA3   '	;
+A3PTR		DW	OFFSET A4PTR 	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMA4		DW      OFFSET COMA5	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMA4INTRP	;
+		DB	'COMA4   '	;
+A4PTR		DW	OFFSET A5PTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;------------------------------------------------
+END4PORTS	LABEL NEAR
+;---------------------------------------
+COMA5INTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,4
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMA5INTRP	ENDP			;
+;---------------------------------------
+COMA6INTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,5
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMA6INTRP	ENDP			;
+;---------------------------------------
+COMA5		DW	OFFSET COMA6	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMA5INTRP	;
+		DB	'COMA5   '	;
+A5PTR		DW	OFFSET A6PTR  	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMA6		DW	OFFSET COMA7	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMA6INTRP	;
+		DB	'COMA6   '	;
+A6PTR		DW	OFFSET A7PTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;---------------------------------------
+END6PORTS	LABEL NEAR
+;---------------------------------------
+COMA7INTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,6
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMA7INTRP	ENDP			;
+;---------------------------------------
+COMA8INTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,7
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMA8INTRP	ENDP			;
+;------------------------------------------------
+
+COMA7		DW	OFFSET COMA8	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMA7INTRP	;
+		DB	'COMA7   '	;
+A7PTR		DW	OFFSET A8PTR  	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMA8		DW	OFFSET COMA9	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMA8INTRP	;
+		DB	'COMA8   '	;
+A8PTR		DW	OFFSET A9PTR	;
+;------------------------------------------------
+END8PORTS	LABEL NEAR
+;---------------------------------------
+COMA9INTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,8
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMA9INTRP	ENDP			;
+;---------------------------------------
+COMAAINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,9
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMAAINTRP	ENDP			;
+;---------------------------------------
+COMA9		DW	OFFSET COMAA	; WARNING !  DO NOT CHANGE ANY OF
+		DW	-1		;	    THE HEADERS, THEY ALSO
+		DW	ATTRIBUTE	;	    ARE USED BY  AT16CONF
+		DW	DEVICESTRATEGY	;
+		DW	COMA9INTRP	;
+		DB	'COMA9   '	;
+A9PTR		DW	OFFSET AAPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMAA		DW	OFFSET COMAB	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMAAINTRP	;
+		DB	'COMAA   '	;
+AAPTR		DW	OFFSET ABPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;---------------------------------------
+END10PORTS	LABEL NEAR
+;---------------------------------------
+COMABINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,10
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMABINTRP	ENDP			;
+;---------------------------------------
+COMACINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,11
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMACINTRP	ENDP			;
+
+;------------------------------------------------
+
+COMAB		DW	OFFSET COMAC	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMABINTRP	;
+		DB	'COMAB   '	;
+ABPTR		DW	OFFSET ACPTR 	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMAC		DW      OFFSET COMAD	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMACINTRP	;
+		DB	'COMAC   '	;
+ACPTR		DW	OFFSET ADPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;------------------------------------------------
+END12PORTS	  	LABEL NEAR
+;---------------------------------------
+COMADINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,12
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMADINTRP	ENDP			;
+;---------------------------------------
+COMAEINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,13
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMAEINTRP	ENDP			;
+;---------------------------------------
+COMAD		DW	OFFSET COMAE	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMADINTRP	;
+		DB	'COMAD   '	;
+ADPTR		DW	OFFSET AEPTR  	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMAE		DW	OFFSET COMAF	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMAEINTRP	;
+		DB	'COMAE   '	;
+AEPTR		DW	OFFSET AFPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;---------------------------------------
+END14PORTS	LABEL NEAR
+;---------------------------------------
+COMAFINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,14
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMAFINTRP	ENDP			;
+;---------------------------------------
+COMAGINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,15
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMAGINTRP	ENDP			;
+;------------------------------------------------
+
+COMAF		DW	OFFSET COMAG	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMAFINTRP	;
+		DB	'COMAF   '	;
+AFPTR		DW	OFFSET AGPTR  	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMAG		DW	OFFSET COMAH	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMAGINTRP	;
+		DB	'COMAG   '	;
+AGPTR		DW	OFFSET AHPTR	;
+;------------------------------------------------
+END16PORTS		LABEL NEAR
+;---------------------------------------
+COMAHINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,16
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMAHINTRP	ENDP			;
+;---------------------------------------
+COMAIINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,17
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMAIINTRP	ENDP			;
+;---------------------------------------
+COMAH		DW	OFFSET COMAI	; WARNING !  DO NOT CHANGE ANY OF
+		DW	-1		;	    THE HEADERS, THEY ALSO
+		DW	ATTRIBUTE	;	    ARE USED BY  AT16CONF
+		DW	DEVICESTRATEGY	;
+		DW	COMAHINTRP	;
+		DB	'COMAH   '	;
+AHPTR		DW	OFFSET AIPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMAI		DW	OFFSET COMAJ	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMAIINTRP	;
+		DB	'COMAI   '	;
+AIPTR		DW	OFFSET AJPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;---------------------------------------
+END18PORTS	LABEL NEAR
+;---------------------------------------
+COMAJINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,18
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMAJINTRP	ENDP			;
+;---------------------------------------
+COMAKINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,19
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMAKINTRP	ENDP			;
+;------------------------------------------------
+
+COMAJ		DW	OFFSET COMAK	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMAJINTRP	;
+		DB	'COMAJ   '	;
+AJPTR		DW	OFFSET AKPTR 	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMAK		DW      OFFSET COMAL	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMAKINTRP	;
+		DB	'COMAK   '	;
+AKPTR		DW	OFFSET ALPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;------------------------------------------------
+END20PORTS		LABEL NEAR
+;---------------------------------------
+COMALINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,20
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMALINTRP	ENDP			;
+;---------------------------------------
+COMAMINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,21
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMAMINTRP	ENDP			;
+;---------------------------------------
+COMAL		DW	OFFSET COMAM	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMALINTRP	;
+		DB	'COMAL   '	;
+ALPTR		DW	OFFSET AMPTR  	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMAM		DW	OFFSET COMAN	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMAMINTRP	;
+		DB	'COMAM   '	;
+AMPTR		DW	OFFSET ANPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;---------------------------------------
+END22PORTS	LABEL NEAR
+;---------------------------------------
+COMANINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,22
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMANINTRP	ENDP			;
+;---------------------------------------
+COMAOINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,23
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMAOINTRP	ENDP			;
+;------------------------------------------------
+
+COMAN		DW	OFFSET COMAO	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMANINTRP	;
+		DB	'COMAN   '	;
+ANPTR		DW	OFFSET AOPTR  	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMAO		DW	OFFSET COMAP	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMAOINTRP	;
+		DB	'COMAO   '	;
+AOPTR		DW	OFFSET APPTR	;
+;------------------------------------------------
+END24PORTS		LABEL NEAR
+;---------------------------------------
+COMAPINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,24
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMAPINTRP	ENDP			;
+;---------------------------------------
+COMAQINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,25
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMAQINTRP	ENDP			;
+;---------------------------------------
+COMAP		DW	OFFSET COMAQ	; WARNING !  DO NOT CHANGE ANY OF
+		DW	-1		;	    THE HEADERS, THEY ALSO
+		DW	ATTRIBUTE	;	    ARE USED BY  AT16CONF
+		DW	DEVICESTRATEGY	;
+		DW	COMAPINTRP	;
+		DB	'COMAP   '	;
+APPTR		DW	OFFSET AQPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMAQ		DW	OFFSET COMAR	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMAQINTRP	;
+		DB	'COMAQ   '	;
+AQPTR		DW	OFFSET ARPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;---------------------------------------
+END26PORTS	LABEL NEAR
+;---------------------------------------
+COMARINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,26
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMARINTRP	ENDP			;
+;---------------------------------------
+COMASINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,27
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMASINTRP	ENDP			;
+
+;------------------------------------------------
+
+COMAR		DW	OFFSET COMAS	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMARINTRP	;
+		DB	'COMAR   '	;
+ARPTR		DW	OFFSET ASPTR 	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMAS		DW      OFFSET COMAT	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMASINTRP	;
+		DB	'COMAS   '	;
+ASPTR		DW	OFFSET ATPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;------------------------------------------------
+END28PORTS		LABEL NEAR
+;---------------------------------------
+COMATINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,28
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMATINTRP	ENDP			;
+;---------------------------------------
+COMAUINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,29
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMAUINTRP	ENDP			;
+;---------------------------------------
+COMAT		DW	OFFSET COMAU	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMATINTRP	;
+		DB	'COMAT   '	;
+ATPTR		DW	OFFSET AUPTR  	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMAU		DW	OFFSET COMAV	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMAUINTRP	;
+		DB	'COMAU   '	;
+AUPTR		DW	OFFSET AVPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;---------------------------------------
+END30PORTS	LABEL NEAR
+;---------------------------------------
+COMAVINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,30
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMAVINTRP	ENDP			;
+;---------------------------------------
+COMAWINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,31
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMAWINTRP	ENDP			;
+;------------------------------------------------
+
+COMAV		DW	OFFSET COMAW	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMAVINTRP	;
+		DB	'COMAV   '	;
+AVPTR		DW	OFFSET AWPTR  	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMAW		DW	OFFSET COMB1	;END OF CHAIN FOR DOS
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMAWINTRP	;
+		DB	'COMAW   '	;
+AWPTR		DW	OFFSET B1PTR	;END OF CHAIN FOR CONFIG
+;------------------------------------------------
+END32PORTS		LABEL NEAR
+;---------------------------------------
+COMB1INTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,32
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMB1INTRP	ENDP			;
+;---------------------------------------
+COMB2INTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,33
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMB2INTRP	ENDP			;
+;----------------------------------------
+COMB1		DW	OFFSET COMB2	; WARNING !  DO NOT CHANGE ANY OF
+		DW	-1		;	    THE HEADERS, THEY ALSO
+		DW	ATTRIBUTE	;	    ARE USED BY  AT16CONF
+		DW	DEVICESTRATEGY	;
+		DW	COMB1INTRP	;
+		DB	'COMB1   '	;
+B1PTR		DW	OFFSET B2PTR	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMB2		DW	OFFSET COMB3	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMB2INTRP	;
+		DB	'COMB2   '	;
+B2PTR		DW	OFFSET B3PTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;---------------------------------------
+END34PORTS	LABEL NEAR
+;---------------------------------------
+COMB3INTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,34
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMB3INTRP	ENDP			;
+;---------------------------------------
+COMB4INTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,35
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMB4INTRP	ENDP			;
+
+;------------------------------------------------
+COMB3		DW	OFFSET COMB4	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMB3INTRP	;
+		DB	'COMB3   '	;
+B3PTR		DW	OFFSET B4PTR 	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMB4		DW      OFFSET COMB5	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMB4INTRP	;
+		DB	'COMB4   '	;
+B4PTR		DW	OFFSET B5PTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;------------------------------------------------
+END36PORTS	LABEL NEAR
+;---------------------------------------
+COMB5INTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,36
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMB5INTRP	ENDP			;
+;---------------------------------------
+COMB6INTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,37
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMB6INTRP	ENDP			;
+;---------------------------------------
+COMB5		DW	OFFSET COMB6	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMB5INTRP	;
+		DB	'COMB5   '	;
+B5PTR		DW	OFFSET B6PTR  	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMB6		DW	OFFSET COMB7	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMB6INTRP	;
+		DB	'COMB6   '	;
+B6PTR		DW	OFFSET B7PTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;---------------------------------------
+END38PORTS	LABEL NEAR
+;---------------------------------------
+COMB7INTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,38
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMB7INTRP	ENDP			;
+;---------------------------------------
+COMB8INTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,39
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMB8INTRP	ENDP			;
+;------------------------------------------------
+
+COMB7		DW	OFFSET COMB8	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMB7INTRP	;
+		DB	'COMB7   '	;
+B7PTR		DW	OFFSET B8PTR  	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMB8		DW	OFFSET COMB9	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMB8INTRP	;
+		DB	'COMB8   '	;
+B8PTR		DW	OFFSET B9PTR	;
+;------------------------------------------------
+END40PORTS	LABEL NEAR
+;---------------------------------------
+COMB9INTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,40
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMB9INTRP	ENDP			;
+;---------------------------------------
+COMBAINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,41
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMBAINTRP	ENDP			;
+;---------------------------------------
+COMB9		DW	OFFSET COMBA	; WARNING !  DO NOT CHANGE ANY OF
+		DW	-1		;	    THE HEADERS, THEY ALSO
+		DW	ATTRIBUTE	;	    ARE USED BY  AT16CONF
+		DW	DEVICESTRATEGY	;
+		DW	COMB9INTRP	;
+		DB	'COMB9   '	;
+B9PTR		DW	OFFSET BAPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMBA		DW	OFFSET COMBB	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMBAINTRP	;
+		DB	'COMBA   '	;
+BAPTR		DW	OFFSET BBPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;---------------------------------------
+END42PORTS	LABEL NEAR
+;---------------------------------------
+COMBBINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,42
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMBBINTRP	ENDP			;
+;---------------------------------------
+COMBCINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,43
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMBCINTRP	ENDP			;
+
+;------------------------------------------------
+
+COMBB		DW	OFFSET COMBC	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMBBINTRP	;
+		DB	'COMBB   '	;
+BBPTR		DW	OFFSET BCPTR 	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMBC		DW      OFFSET COMBD	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMBCINTRP	;
+		DB	'COMBC   '	;
+BCPTR		DW	OFFSET BDPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;------------------------------------------------
+END44PORTS	  	LABEL NEAR
+;---------------------------------------
+COMBDINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,44
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMBDINTRP	ENDP			;
+;---------------------------------------
+COMBEINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,45
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMBEINTRP	ENDP			;
+;---------------------------------------
+COMBD		DW	OFFSET COMBE	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMBDINTRP	;
+		DB	'COMBD   '	;
+BDPTR		DW	OFFSET BEPTR  	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMBE		DW	OFFSET COMBF	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMBEINTRP	;
+		DB	'COMBE   '	;
+BEPTR		DW	OFFSET BFPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;---------------------------------------
+END46PORTS	LABEL NEAR
+;---------------------------------------
+COMBFINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,46
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMBFINTRP	ENDP			;
+;---------------------------------------
+COMBGINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,47
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMBGINTRP	ENDP			;
+;------------------------------------------------
+
+COMBF		DW	OFFSET COMBG	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMBFINTRP	;
+		DB	'COMBF   '	;
+BFPTR		DW	OFFSET BGPTR  	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMBG		DW	OFFSET COMBH	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMBGINTRP	;
+		DB	'COMBG   '	;
+BGPTR		DW	OFFSET BHPTR	;
+;------------------------------------------------
+END48PORTS		LABEL NEAR
+;---------------------------------------
+COMBHINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,48
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMBHINTRP	ENDP			;
+;---------------------------------------
+COMBIINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,49
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMBIINTRP	ENDP			;
+;---------------------------------------
+COMBH		DW	OFFSET COMBI	; WARNING !  DO NOT CHANGE ANY OF
+		DW	-1		;	    THE HEADERS, THEY ALSO
+		DW	ATTRIBUTE	;	    ARE USED BY  AT16CONF
+		DW	DEVICESTRATEGY	;
+		DW	COMBHINTRP	;
+		DB	'COMBH   '	;
+BHPTR		DW	OFFSET BIPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMBI		DW	OFFSET COMBJ	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMBIINTRP	;
+		DB	'COMBI   '	;
+BIPTR		DW	OFFSET BJPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;---------------------------------------
+END50PORTS	LABEL NEAR
+;---------------------------------------
+COMBJINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,50
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMBJINTRP	ENDP			;
+;---------------------------------------
+COMBKINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,51
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMBKINTRP	ENDP			;
+;------------------------------------------------
+
+COMBJ		DW	OFFSET COMBK	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMBJINTRP	;
+		DB	'COMBJ   '	;
+BJPTR		DW	OFFSET BKPTR 	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMBK		DW      OFFSET COMBL	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMBKINTRP	;
+		DB	'COMBK   '	;
+BKPTR		DW	OFFSET BLPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;------------------------------------------------
+END52PORTS		LABEL NEAR
+;---------------------------------------
+COMBLINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,52
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMBLINTRP	ENDP			;
+;---------------------------------------
+COMBMINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,53
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMBMINTRP	ENDP			;
+;---------------------------------------
+COMBL		DW	OFFSET COMBM	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMBLINTRP	;
+		DB	'COMBL   '	;
+BLPTR		DW	OFFSET BMPTR  	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMBM		DW	OFFSET COMBN	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMBMINTRP	;
+		DB	'COMBM   '	;
+BMPTR		DW	OFFSET BNPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;---------------------------------------
+END54PORTS	LABEL NEAR
+;---------------------------------------
+COMBNINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,54
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMBNINTRP	ENDP			;
+;---------------------------------------
+COMBOINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,55
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMBOINTRP	ENDP			;
+;------------------------------------------------
+
+COMBN		DW	OFFSET COMBO	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMBNINTRP	;
+		DB	'COMBN   '	;
+BNPTR		DW	OFFSET BOPTR  	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMBO		DW	OFFSET COMBP	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMBOINTRP	;
+		DB	'COMBO   '	;
+BOPTR		DW	OFFSET BPPTR	;
+;------------------------------------------------
+END56PORTS		LABEL NEAR
+;---------------------------------------
+COMBPINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,56
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMBPINTRP	ENDP			;
+;---------------------------------------
+COMBQINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,57
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMBQINTRP	ENDP			;
+;---------------------------------------
+COMBP		DW	OFFSET COMBQ	; WARNING !  DO NOT CHANGE ANY OF
+		DW	-1		;	    THE HEADERS, THEY ALSO
+		DW	ATTRIBUTE	;	    ARE USED BY  AT16CONF
+		DW	DEVICESTRATEGY	;
+		DW	COMBPINTRP	;
+		DB	'COMBP   '	;
+BPPTR		DW	OFFSET BQPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMBQ		DW	OFFSET COMBR	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMBQINTRP	;
+		DB	'COMBQ   '	;
+BQPTR		DW	OFFSET BRPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;---------------------------------------
+END58PORTS	LABEL NEAR
+;---------------------------------------
+COMBRINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,58
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMBRINTRP	ENDP			;
+;---------------------------------------
+COMBSINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,59
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMBSINTRP	ENDP			;
+
+;------------------------------------------------
+
+COMBR		DW	OFFSET COMBS	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMBRINTRP	;
+		DB	'COMBR   '	;
+BRPTR		DW	OFFSET BSPTR 	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMBS		DW      OFFSET COMBT	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMBSINTRP	;
+		DB	'COMBS   '	;
+BSPTR		DW	OFFSET BTPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;------------------------------------------------
+END60PORTS		LABEL NEAR
+;---------------------------------------
+COMBTINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,60
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMBTINTRP	ENDP			;
+;---------------------------------------
+COMBUINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,61
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMBUINTRP	ENDP			;
+;---------------------------------------
+COMBT		DW	OFFSET COMBU	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMBTINTRP	;
+		DB	'COMBT   '	;
+BTPTR		DW	OFFSET BUPTR  	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMBU		DW	OFFSET COMBV	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMBUINTRP	;
+		DB	'COMBU   '	;
+BUPTR		DW	OFFSET BVPTR	;POINTER TO NEXT HEADER FOR AT16CONF
+;---------------------------------------
+END62PORTS	LABEL NEAR
+;---------------------------------------
+COMBVINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,62
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMBVINTRP	ENDP			;
+;---------------------------------------
+COMBWINTRP	PROC 			;
+	MOV	AX,DXLOW
+	ADD	AX,63
+	MOV	CS:CURRENTCHANNEL,AX	;
+	JMP	COMINTERRUPT		;
+COMBWINTRP	ENDP			;
+;------------------------------------------------
+
+COMBV		DW	OFFSET COMBW	;
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMBVINTRP	;
+		DB	'COMBV   '	;
+BVPTR		DW	OFFSET BWPTR  	;POINTER TO NEXT HEADER FOR AT16CONF
+ 
+COMBW		DW	-1		;END OF CHAIN FOR DOS
+		DW	-1		;
+		DW	ATTRIBUTE	;
+		DW	DEVICESTRATEGY	;
+		DW	COMBWINTRP	;
+		DB	'COMBW   '	;
+BWPTR		DW	-1		;END OF CHAIN FOR CONFIG
+;------------------------------------------------
+END64PORTS		LABEL NEAR
+;---------------------------------------
+;
+;  ALL THE FOLLOWING CODE WILL BE UNLINKED AFTER 
+;  EXECUTION AT LOAD TIME.       
+;
+
+SUBTTL INIT PROCEDURES
+PAGE+
+
+;************************************************
+;        PROCEDURES
+;************************************************
+;----------------------------------------------------------
+;	DOWNLOAD - PROCEDURE TO DOWNLOAD THE FRONT END PROCESSOR (FEP)
+;		   PROGRAM & CHECK THAT EVERYTHING IS OK
+;		 - CALLED FOR EACH BOARD INSTALLED IN PARAMETER STRING
+;
+;		ENTRY: CUR_BD_PTR POINTS TO A BOARDS PARAMETERS 
+;			NECESSARY TO LOAD FEP CODE
+;		
+;		SEND RESET & WAIT FOR BOARD'S RESPONSE
+;		IF OK THEN
+;		DO
+;			RESET BOARD 
+;			EXECUTE POST DIAGNOSTICS
+;			ENABLE PIC INTERRUPT LINE
+;			TRANSFER FEP MODULE TO BOARD
+;			SEND DIAGNOSTIC EXECUTE COMMAND
+;                       SETUP IRQ
+;			SET CARRY FLAG
+;		ELSE DO
+;			CLEAR CARRY FLAG
+;		END DO
+;	ENDP
+;		
+;************************************************
+
+DN_LOAD		PROC	NEAR
+
+;			;SS:[BP+16] FLAGS
+	PUSH	AX	;SS:[BP+12]
+	PUSH	BX	;SS:[BP+10]
+	PUSH	CX	;SS:[BP+8]
+	PUSH	DX      ;SS:[BP+6]
+	PUSH	DI	;SS:[BP+4]
+	PUSH	SI	;SS:[BP+2]
+	PUSH	BP	;SS:[BP]
+	MOV	BP,SP			;
+
+
+	OR	WORD PTR SS:[BP+16],0040H	;SET ZERO FLAG
+	MOV	SI,OFFSET BD_TBL_TBL		
+	MOV	CX,NUM_BRDS
+	PUSH	SI			;SAVE SI AND CX
+	PUSH	CX			;
+TURN_MEM_OFF:				;ENSURE EACH BRDS MEMORY IS OFF
+	MOV	DI,[SI]
+	MOV	DX,[DI+BD_IO_]		;IO PORT
+	MOV	AL,0			
+	OUT	DX,AL
+	ADD	SI,2			;NXT BRD_TBL PTR
+	LOOP	TURN_MEM_OFF
+	CALL	HOOK_TTIC
+	MOV	SI,OFFSET BD_TBL_TBL + 6 	;LAST BD_TBL_TBL ENTRY
+	MOV	CX,4				;MAX BRDS
+	SUB	CX,NUM_BRDS			;ACTUAL # OF BRDS
+	JCXZ	BRDS4				;ALL BRDS USED
+CHNG_TBL:
+	MOV	WORD PTR[SI],-1		;BD_TBL_TBL <- -1 FOR UNUSED ENTRY
+	SUB	SI,2
+	LOOP	CHNG_TBL
+BRDS4:
+	POP	CX			;RESTORE CX AND SI
+	POP	SI
+	LEA	BX,BRD_NUM_TBL
+	LEA	DX,MSG_OPEN_
+	CALL	DISP_MSG
+DN_LD_1:
+	MOV	AL,BYTE PTR[BX]
+	MOV	INIT_BRD,AL
+	LEA	DX,BRD_OPEN_MSG
+	CALL	DISP_MSG
+	MOV	DI,[SI]
+	MOV	DX,[DI+BD_IO_]		;IO PORT
+
+;~1.4.0~	
+;	IN	AL,DX			;TEST FOR Xe. OUTPUT B0 = 1, IF B0 = 1
+;	OR	AL,01			;   COMES BACK, THE BRD IS AN Xi OR Xm
+;	OUT	DX,AL
+;	NOP
+;	NOP
+;	IN	AL,DX
+;	TEST	AL,01
+;	JZ	XE
+;	LEA	DX,MSG_NOT_XE		;DISPLAY WRONG BOARD MSG
+;	CALL	DISP_MSG
+;	JMP	DWNLD_FAIL	
+;XE:
+;
+	PUSHF				;FLAGS USED AS PARAMETERS
+	CALL	DL_ON_BRD
+	POPF
+	JZ	DWNLD_FAIL
+	ADD	SI,2			;NXT BRD_TBL PTR
+	INC	BX
+	LOOP	DN_LD_1
+	JMP	DN_LD_QUIT
+DWNLD_FAIL:
+	DEC	NUM_BRDS		;ONE LESS BRD
+	DEC	CX			;ONE LESS LOOP NEEDED
+	JCXZ	LAST_BRD		;NO MORE TO DOWN LOADS NEEDED
+	PUSH	CX
+	PUSH	SI
+ADJST_TBL:				;SHFT PTRS UP ONE IN BRD_TBL_TBL
+	MOV	AX,[SI+2]		;GET NXT PTR
+	MOV	[SI],AX			;OVERWRITE CURRENT PTR
+	ADD	SI,2			;NEXT PTR
+	LOOP	ADJST_TBL
+	MOV	WORD PTR[SI],-1		;ELIMINATE DUPLICATION OF LAST PTR
+	POP	SI
+	POP	CX
+	INC	BX
+	JMP	DN_LD_1
+LAST_BRD:
+	MOV	WORD PTR[SI],-1		;LAST BAD PTR DROPPED
+DN_LD_QUIT:
+	CALL	UN_HOOK_TTIC
+	CMP	NUM_BRDS,0
+	JE	DN_LD_BYE		;EXIT WITH ZFLAG SET
+
+					;ENTER IRQ ENTRY POINTS INTO BOARD TBLS
+	MOV	CX,NUM_BRDS
+	MOV	SI,OFFSET IRQ_ENTRY_TBL	
+	MOV	DI,OFFSET BD_TBL_TBL
+NXT_ENTRY:
+	MOV	BX,[DI]
+	MOV	AX,[SI]
+	MOV	[BX+BD_IRQ_OFS_],AX
+	ADD	SI,2
+	ADD	DI,2
+	LOOP	NXT_ENTRY
+
+	AND	WORD PTR SS:[BP+16],0FFBFH	;RESET ZERO FLAG
+DN_LD_BYE:
+	POP	BP
+	POP	SI
+	POP	DI
+	POP	DX
+	POP	CX
+	POP	BX
+	POP	AX
+	RET
+
+DN_LOAD		ENDP
+
+;------------------------------------------------
+
+DL_ON_BRD	PROC
+
+	STI		;SS:[BP+18] FLAGS
+	CLD				;
+	PUSH	AX	;SS:[BP+14]	 WARNING DO NOT CHANGE THIS
+	PUSH	BX	;SS:[BP+12]	 STACK SEQUENCE OR LENGTH !
+	PUSH	CX	;SS:[BP+10]
+	PUSH	DX	;SS:[BP+8]	 THIS COULD, AND WILL FOR SURE
+	PUSH	SI	;SS:[BP+6]	 CAUSE YOUR COMPUTER TO GO BELLY UP,
+	PUSH	ES	;SS:[BP+4]	 AND OR CRASH AND BURN IN AN INFERNO.
+	PUSH	DI	;SS:[BP+2]	 AND MAY CAUSE THE WELL KNOWN
+	PUSH	BP	;SS:[BP]	 SOUND "@#$%^&*" TO BE HEARD.
+	MOV	BP,SP			;
+
+	OR	WORD PTR SS:[BP+18],0040H	;SET ZERO FLAG
+;
+; -----	GET BOARD READY
+;
+	IN	AL,DX
+	CMP	AL,0FFH
+	JNE	SET_RSET
+	JMP	EXIT_NO_PORT
+SET_RSET:
+	OR	AL,6			; RESET PC/Xa CPU (BIT 2) &
+	OUT	DX,AL			;  ENABLE ON-BOARD MEMORY (BIT 1)
+	NOP				;WAIT
+	MOV	TTIC_CNT,0		; ~1.7.0~
+HDWR_RSET:				;CHK THAT HDWR RESETS
+	IN	AL,DX			;READ I/O PORT
+	TEST	AL,4			;DID FEP POST RESET BIT?
+	JNZ	HRSET_GD		;YES	
+;
+; -----	GET TIME FOR LOOP
+;
+	CMP	TTIC_CNT,FIVE_SCNDS_	;NO - IS 5secs UP?
+	JL	HDWR_RSET		;  NO, KEEP READING I/O PORT
+	JMP	EXIT_NO_HRSET		;  YES - NO RSET @ TIMEOUT
+
+HRSET_GD:
+
+;
+; -----	TEST/INITIALIZE UPPER 4K OF DUAL-PORTED RAM
+; 		4K RAM TEST - 4 PATTERNS (FF,AA,55,00)
+;			- ZF = 1 TEST PASSED
+;			- ZF = 0 TEST FAILED
+;
+	MOV	BX,WORDS_1K_	; 1K WORDS / 2K BYTES
+	CLD			; Increment on transfers
+	MOV	AX,BIOS_BASE_
+	ADD	AX,BRD_SEG
+	MOV	ES,AX		; SET SEGMENT TO TEST
+	MOV	AX,0FFFFH	; PATTERN #1
+	MOV	CX,BX
+	XOR	DI,DI		; OFFSET
+	REP	STOSW		; WRITE PATTERN
+	MOV	CX,BX
+	XOR	DI,DI		; OFFSET
+	REPZ	SCASW		; READ & COMPARE PATTERN #1
+	JCXZ	TD_PAT_2
+	JMP	EXIT_SRAM_ERR	; ZF = 0 IS NON-ZERO VALUE (FAIL)
+TD_PAT_2:
+	MOV	AX,0AAAAH	; PATTERN #2
+	MOV	CX,BX
+	XOR	DI,DI		; OFFSET
+	REP	STOSW		; WRITE PATTERN
+	MOV	CX,BX
+	XOR	DI,DI		; OFFSET
+	REPZ	SCASW		; READ & COMPARE PATTERN #2
+	JCXZ	TD_PAT_3
+	JMP	EXIT_SRAM_ERR	; ZF = 0 IS NON-ZERO VALUE (FAIL)
+TD_PAT_3:
+	MOV	AX,05555H	; PATTERN #3
+	MOV	CX,BX
+	XOR	DI,DI		; OFFSET
+	REP	STOSW		; WRITE PATTERN
+	MOV	CX,BX
+	XOR	DI,DI		; OFFSET
+	REPZ	SCASW		; READ & COMPARE PATTERN #3
+	JCXZ	TD_PAT_4
+	JMP	EXIT_SRAM_ERR	; ZF = 0 IS NON ZERO-VALUE (FAIL)
+TD_PAT_4:
+	XOR	AX,AX		; PATTERN #4
+	MOV	CX,BX
+	XOR	DI,DI		; OFFSET
+	REP	STOSW		; WRITE PATTERN
+	MOV	CX,BX
+	XOR	DI,DI		; OFFSET
+	REPZ	SCASW		; READ & COMPARE PATTERN #4
+	JCXZ	BIOS_DL		; ZF = 0 IS NON-ZERO VALUE (FAIL) / ZF = 1 OK
+;
+; -----	SRAM MEMORY TEST ERROR
+;
+SRAM_ERR:
+	JMP	EXIT_SRAM_ERR
+;
+BIOS_DL:
+;
+; ----- SETUP DOWNLOAD HERE - 4K TO DF000H-DFFFFH
+;
+        MOV     AX,BIOS_BASE_           ; DRAM SEG - DF800H
+	ADD	AX,BRD_SEG
+        MOV     ES,AX
+        XOR     DI,DI                   ; DRAM OFFSET
+        MOV     SI,OFFSET FEP_FILE      ; HOST OFFSET / DS IS OK
+        MOV     CX,800h	        	; 4K BYTES TO MOVE TO BOARD
+;
+; ----- DOWNLOAD 4K TO DRAM HERE
+;
+        REP     MOVSB
+;
+; -----	CLEAR BIOS COMPLETE SIGNATURE FROM BOARD
+;
+        MOV     AX,DATA_BASE_
+	ADD	AX,BRD_SEG
+        MOV     ES,AX
+        XOR     DI,DI                   ; FEP ADDR D0C0:0000
+        MOV     WORD PTR ES:[DI],0      ; CLEAR DIAGNOSTIC SIG
+;
+; -----	RELEASE PC/Xa RESET SIGNAL TO ALLOW POWER-UP CODE EXECUTION
+;
+	IN	AL,DX
+	AND	AL,0FBH			; RELEASE PC/Xa CPU (BIT 2) &
+	OUT	DX,AL			;  KEEP THE REST THE SAME
+;
+; ----- BIOS SIGNATURE CHECKER
+;
+        MOV     AX,DATA_BASE_
+	ADD	AX,BRD_SEG
+        MOV     ES,AX
+        XOR     DI,DI                   ; FEP ADDR D0C0:0000
+	MOV	TTIC_CNT,0
+GD_CHK:
+        MOV     AX,ES:[DI]              ; GET DIAGNOSTIC SIG (AX='DG')
+        CMP     AX,'DG'			; BIOS DONE ?
+	JE	BIOS_OK			;  YES - OK TO CONTINUE
+;
+; -----	GET TIME FOR LOOP
+;
+	CMP	TTIC_CNT,FIVE_SCNDS_
+	JL	GD_CHK
+	JMP	EXIT_NO_RESET		;  YES - ERROR - MSG & EXIT
+BIOS_OK:
+;
+; -----	DOWNLOAD FEP O/S (UP TO 8K) - D2000H - D3FFFH
+;
+	PUSH	ES
+        MOV     AX,FEP_BASE_            ; DRAM SEG - 02000H
+	ADD	AX,BRD_SEG
+        MOV     ES,AX
+        XOR     DI,DI                   ; DRAM OFFSET
+        MOV     SI,OFFSET FEP_FILE      ; HOST OFFSET / DS IS OK
+	ADD	SI,800h			; SKIP PASS BIOS CODE
+        MOV     CX,OFFSET TOPLEN       	; MOVE FEP O/S TO BOARD
+;
+; ----- DOWNLOAD FEP O/S TO DRAM HERE
+;
+        REP     MOVSB
+	POP	ES
+;
+; -----	PERFORM BIOS MEMORY MOVE FUNCTION TO MOVE 8K FEP O/S TO LOCAL SRAM
+;		- FROM DUAL-PORTED @ FC000H-FDFFFH (FEP BASED)
+;		- TO LOCAL @ 02000H-03FFFH (FEP BASED)
+;
+
+	MOV	DI,40H			; HOST TO FEP MAILBOX
+	MOV	AX,2     		; FCT 2
+	STOSW
+	MOV	AX,0F200H		; SOURCE SEG
+	STOSW
+	MOV	AX,0			; SOURCE OFFSET
+	STOSW
+	MOV	AX,200H			; DEST SEG
+	STOSW
+	MOV	AX,0			; DEST OFFSET
+	STOSW
+	MOV	AX,2000H		; 8K BYTES TO TRANSFER
+	STOSW
+;
+	IN	AL,DX
+	OR 	AL,08H 			; SEND NMI TO FEP BIOS &
+	OUT	DX,AL			;  KEEP THE REST THE SAME
+
+	MOV	TTIC_CNT,0
+WAIT_NMI:
+	CMP	BYTE PTR ES:[40H],0	; BIOS COMPLETED FCT 2 ?
+	JE	FCT2_DONE		;  NO - WAIT
+	CMP	TTIC_CNT,FIVE_SCNDS_
+	JL	WAIT_NMI
+	JMP	EXIT_NO_FCT_2
+FCT2_DONE:
+	AND	AL,0F7H			; CLEAR NMI TO FEP
+	OUT	DX,AL			;  KEEP THE REST THE SAME
+;
+	MOV	AX,BRD_SEG		;~1.7.0~
+        MOV     ES,AX			; ES <- WINDOW
+
+	CMP	BYTE PTR ES:[F_BRD_TYPE_],NECXM_	; IS BOARD NEC XM?
+
+	JE	NO_FEP_CODE_CLR		; YES, DONT CLR FEP CODE THEN
+					; 'CAUSE THERE AIN'T NO LOCAL MEM
+
+					; NOT NEC XM - CLR FEP FROM DUAL-PORT
+        ADD     AX,FEP_BASE_            ; DRAM SEG - D2000H
+	MOV	ES,AX
+	XOR	DI,DI			; CLEAR 8K (TEMP FEP O/S)
+	MOV	CX,1000H		; 4K WORDS
+	XOR	AX,AX
+	REP	STOSW
+
+NO_FEP_CODE_CLR:
+
+;
+; -----	INVERT SIG TO TRANSFER FROM BIOS TO FEP O/S IN LOCAL MEMORY
+;
+
+        MOV     AX,DATA_BASE_
+ 	ADD	AX,BRD_SEG
+        MOV     ES,AX
+        XOR     DI,DI                   ; FEP ADDR D0C0:0000
+        MOV     AX,'GD'                 ; INVERT
+        STOSW                           ; D0C00H='D' / D0C01H='G'
+;
+; -----	FEP O/S IS NOW EXECUTING INIT PHASE
+; 		- LOOK FOR 'OS' FROM FEP O/S / INIT SUCCESSFUL
+;
+	MOV	TTIC_CNT,0
+        MOV     AX,DATA_BASE_
+	ADD	AX,BRD_SEG
+        MOV     ES,AX
+        XOR     DI,DI               	; FEP ADDR D0C0:0000
+OS_CHK:
+        MOV     AX,ES:[DI]              ; GET FEP O/S SIG (AX='SO')
+        CMP     AX,'SO'			; INIT DONE ?
+	JE	EXIT_GOOD		;  YES - OK TO CONTINUE
+	CMP	TTIC_CNT,FIVE_SCNDS_	; TIME UP ?
+	JL	OS_CHK			;  NO - TRY AGAIN
+	JMP	EXIT_NO_FEP  		;  YES - ERROR - MSG & EXIT
+FEP_OK:
+; ----- COMPLETE / EXIT
+;
+EXIT_GOOD:
+	MOV	AX,BRD_SEG
+        MOV     ES,AX
+	MOV	AX,ES:[F_ASYNC_MSK_]	; GET # CHNLS FROM BRDS ASYNC_MASK
+	MOV	DI,SS:[BP+2]		; GET PTR TO BRDS BD_TBL
+	MOV	DX,[DI+BD_PORTS_]       ; GET USER SPECIFIED BD_PORTS
+	TEST	AX,0FF00H		; ANY UPPER 8 PORTS?
+	JZ	DL_8_PORTS?		; NO, MAYBE IT'S AN 8
+	MOV	DX,16
+	JMP	EXIT_GOOD_DSBL_MEM
+DL_8_PORTS?:
+	TEST	AX,00F0H		; ANY OF UPPER 4 OF LOWER 8?
+	JZ	DL_4_PORTS?		; NO, MAYBE IT'S A 4
+	MOV	DX,8
+	JMP	EXIT_GOOD_DSBL_MEM
+DL_4_PORTS?:
+	TEST	AX,000FH		; ANY OF THE LOWER 4? 
+	JZ	EXIT_GOOD_DSBL_MEM	; ASSUME USER KNOWS BEST
+	MOV	DX,4
+EXIT_GOOD_DSBL_MEM:
+	MOV	[DI+BD_PORTS_],DX	; STORE BD_PORTS
+	MOV	DX,[DI+BD_IO_]		; GET I/O PORT
+
+	MOV	AL,0
+	OUT	DX,AL		;DISABLE BRDS MEMORY
+	AND	WORD PTR SS:[BP+18],0FFBFH	;CLEAR ZERO FLAG
+	LEA	DX,MSG_GOOD
+	CALL	DISP_MSG	
+	LEA	DX,MSG_END
+	CALL	DISP_MSG	; NEW LINES 
+EXIT_SYS:
+	POP	BP
+	POP	DI
+	POP	ES
+	POP	SI
+	POP	DX
+	POP	CX
+	POP	BX
+	POP	AX
+	RET
+EXIT_NO_PORT:
+	MOV	AL,0
+	OUT	DX,AL		;DISABLE BRDS MEMORY
+	LEA	DX,MSG_PORT_ERR
+	CALL	DISP_MSG	
+	LEA	DX,MSG_END
+	CALL	DISP_MSG	; NEW LINES 
+	JMP	EXIT_SYS
+EXIT_NO_HRSET:
+	MOV	AL,0
+	OUT	DX,AL		;DISABLE BRDS MEMORY
+	LEA	DX,MSG_HRSET_ERR
+	CALL	DISP_MSG	
+	LEA	DX,MSG_END
+	CALL	DISP_MSG	; NEW LINES 
+	JMP	EXIT_SYS
+EXIT_NO_RESET:
+	MOV	AL,0
+	OUT	DX,AL		;DISABLE BRDS MEMORY
+	LEA	DX,MSG_RESET_ERR
+	CALL	DISP_MSG	
+	LEA	DX,MSG_END
+	CALL	DISP_MSG	; NEW LINES 
+	JMP	EXIT_SYS
+EXIT_NO_FCT_2:
+	MOV	AL,0
+	OUT	DX,AL		;DISABLE BRDS MEMORY
+	LEA	DX,MSG_FCT2_ERR
+	CALL	DISP_MSG	
+	LEA	DX,MSG_END
+	CALL	DISP_MSG	; NEW LINES 
+	JMP	EXIT_SYS
+EXIT_NO_FEP:
+	MOV	AL,0
+	OUT	DX,AL		;DISABLE BRDS MEMORY
+	LEA	DX,MSG_FEP_ERR
+	CALL	DISP_MSG	
+	LEA	DX,MSG_END
+	CALL	DISP_MSG	; NEW LINES 
+	JMP	EXIT_SYS
+EXIT_SRAM_ERR:
+	MOV	AL,0
+	OUT	DX,AL		;DISABLE BRDS MEMORY
+	LEA	DX,MSG_MEM_ERR
+	CALL	DISP_MSG	
+	LEA	DX,MSG_END
+	CALL	DISP_MSG	; NEW LINES 
+	JMP	EXIT_SYS
+DL_ON_BRD	ENDP
+;------------------------------------------------
+HOOK_TTIC	PROC
+
+	PUSH	AX
+	PUSH	ES
+
+	MOV	CX,ES			;SAVE ES
+	XOR	AX,AX			;Timer Tic Int 1Ch
+	MOV	ES,AX			;vector is at 1C * 4
+
+	CLI
+	MOV	AX,ES:[070H]		;SAVE TIMER TIC VECTOR
+	MOV	TTIC_OFS,AX
+	MOV	AX,ES:[072H]
+	MOV	TTIC_SEG,AX
+
+	MOV	WORD PTR ES:070H,OFFSET TTIC
+	MOV	WORD PTR ES:072H,CS		
+	STI
+
+	POP	ES
+	POP	AX
+	RET
+
+HOOK_TTIC	ENDP
+;------------------------------------------------
+TTIC	PROC 	NEAR			;TIMER TIC ROUTINE
+	CLI
+	INC	CS:TTIC_CNT
+	STI
+	IRET
+TTIC	ENDP
+;------------------------------------------------
+UN_HOOK_TTIC	PROC
+
+
+	PUSH	AX
+	PUSH	ES
+
+	XOR	AX,AX
+	MOV	ES,AX
+
+	CLI
+	MOV	AX,TTIC_OFS
+	MOV	ES:[070H],AX
+	MOV	AX,TTIC_SEG
+	MOV	ES:[072H],AX
+	STI
+
+	POP	ES
+	POP	AX
+	RET
+
+UN_HOOK_TTIC	ENDP
+
+;------------------------------------------------
+TTIC_OFS	DW	0
+TTIC_SEG	DW	0
+TTIC_CNT	DW	0
+;--------------------------------
+;
+BRD_NUM_TBL	LABEL	BYTE
+		DB	'1'
+		DB	'2'
+		DB	'3'
+		DB	'4'
+
+BRD_OPEN_MSG	DB	'                                      Board '
+INIT_BRD	DB	' ',EOT
+;
+MSG_PORT_ERR	DB	CR,LF,'                             **  NO I/O PORT FOUND  **',EOT
+;
+MSG_MEM_ERR	DB	CR,LF,'                             **  SRAM MEMORY ERROR  **',EOT
+;
+MSG_HRSET_ERR	DB	CR,LF,'                             **  HDWR RESET ERROR  **',EOT
+;
+MSG_RESET_ERR	DB	CR,LF,'                             **  BIOS RESET ERROR  **',EOT
+;
+MSG_FCT2_ERR	DB	CR,LF,'                           **  FEPOS CODE MOVE ERROR  **',EOT
+;
+MSG_FEP_ERR	DB	CR,LF,'                        **  FEPOS INITIALIZATION ERROR  **',EOT
+;
+MSG_GOOD	DB	CR,LF
+		DB	'                   FEPOS Successfully Down-loaded and Executing'
+                DB      EOT
+
+MSG_END		DB	CR,LF,EOT
+
+
+MSG_NEWLINE_		DB	CR,LF,EOT
+MSG_CNTR_1_		DB	'          '
+MSG_CNTR_2_		DB	'           '
+MSG_CNTR_3_		DB	'           ',EOT
+MSG_OPEN_		DB	CR,LF,'DigiCHANNEL PC/Xa DOS Driver              '
+			DB	'                  ',VERSION_ 
+ 			DB	CR,LF,'                   ',COPYRIGHT_DB_
+			DB	CR,LF,LF,EOT
+PAGE
+;----------------------------------------------------------
+;
+; -----	SETUP IRQ VECTOR FOR THE CURRENT BOARD
+;
+SET_VECTS		PROC
+	PUSH	AX
+        PUSH    BX
+	PUSH	CX
+        PUSH    DX
+	PUSH	DI
+	PUSH	SI
+        PUSH    ES
+
+	ASSUME	ES:SEGZERO
+	MOV	ES,[ZERO]
+	XOR	DX,DX
+	MOV	CX,NUM_BRDS
+	MOV	SI,OFFSET BD_TBL_TBL
+NXT_VECT:
+	MOV	BX,[SI]
+	MOV	AX,[BX + BD_IRQ_]	;AL <- IRQ #
+	XOR	AH,AH
+	CMP	AX,8			; SECOND PIC ?
+	MOV	DL,PIC_1_		; ASSUME IST PIC, 20H
+	JL	PIC1			;  NO
+	ADD	AX,60H			;  YES
+	MOV	DL,PIC_2_		;0A0H
+PIC1:	ADD	AX,8
+	SHL	AX,1
+	SHL	AX,1			; *4
+	MOV	DI,AX
+
+	CLI
+	MOV	AX,[BX+BD_IRQ_OFS_]	;STORE MY IRQ ROUT VECTOR
+	MOV	ES:[DI],AX		; OFFSET
+	MOV	ES:[DI+2],CS		; SEGMENT
+	STI
+;----------------------------------------
+;     ENABLE INTERRUPT LINE TO PIC	;
+;----------------------------------------
+
+	XOR	DH,DH
+	MOV	[BX + BD_PIC_],DX	; STORE PIC ADDR IN TBL
+	INC	DX			; PIC MASK REGISTER
+	MOV	AX,[BX + BD_IRQ_]       ; GET PIC BASE ADDRESS
+	MOV	DI,OFFSET MASKTBL
+	XOR	AH,AH
+	ADD	DI,AX
+	MOV	AX,[DI]			; GET MASK
+	XCHG	AH,AL
+	IN	AL,DX
+	AND	AL,AH			; ENABLE MASK 
+	JMP	$+2
+	OUT	DX,AL
+	ADD	SI,2			;NXT BRD TBL PTR
+	LOOP	NXT_VECT
+
+HOOK_INT14:				;HOOK OUR INT14 VECTOR					
+	CLI
+	MOV	BX,ES:[INT14_V]		; SAVE OLD
+	MOV	OLD_14_OFF,BX		;  VECTOR
+	MOV	BX,ES:[INT14_V+2]
+	MOV	OLD_14_SEG,BX
+;
+	LEA	BX,INT_14		; LOAD NEW VECTOR
+	MOV	ES:[INT14_V],BX
+	MOV	ES:[INT14_V+2],CS
+	STI
+
+	ASSUME	ES:NOTHING
+        POP     ES
+	POP	SI
+	POP	DI
+        POP     DX
+	POP	CX
+        POP     BX
+	POP	AX
+	RET
+SET_VECTS		ENDP
+;--------------------------------
+;       TABLE OF MASK BITS BY IRQ#
+;               OPENENDER IRQ'S ARE 3-7 & 9-11
+;--------------------------------
+MASKTBL	DB	11111110B	; KEYBOARD
+	DB	11111101B	; TIMER
+	DB	11111011B	; RESERVED
+	DB	11110111B	; IRQ3 (AVAILABLE)
+	DB	11101111B	; IRQ4 (AVAILABLE)
+	DB	11011111B	; IRQ5 (AVAILABLE)
+	DB	10111111B	; IRQ6 (AVAILABLE)
+	DB	01111111B	; IRQ7 (AVAILABLE)
+	DB	11111110B	; IRQ8
+	DB	11111101B	; IRQ9 (AVAILABLE)
+	DB	11111011B	; IRQ10 (AVAILABLE)
+	DB	11110111B	; IRQ11 (AVAILABLE)
+	DB	11101111B	; IRQ12
+	DB	11011111B	; IRQ13
+	DB	10111111B	; IRQ14
+	DB	01111111B	; IRQ15
+
+;************************************************
+PORTS_INIT	PROC
+
+	CLD
+	PUSH	AX
+	PUSH	BX
+	PUSH	CX
+	PUSH	DX
+	PUSH	DI
+	PUSH	SI
+	PUSH	ES
+	PUSH	DS
+	PUSH	CS
+	POP	DS
+
+
+	MOV	SI,BRD_SEG
+	MOV	ES,SI
+	MOV	SI,OFFSET PORT_PARAMS
+	MOV	BX,OFFSET BD_TBL_TBL
+	MOV	CX,NUM_BRDS
+	JCXZ	BYE_PINIT
+BRD_LOOP:
+	PUSH	BX			;STORE INDEX INTO BRD_TBL_TBL 
+	MOV	DX,[BX]			;GET OFFSET OF NXT BRD_TBL IN BX
+	MOV	BX,DX			;
+	MOV	DX,[BX+BD_IO_]		;DX <- BRD IO PORT
+	IN	AL,DX			;ENBL BRDS MEMORY
+	OR	AL,02H			;
+	OUT	DX,AL			;
+	MOV	DI,WORD PTR ES:[F_CMD_HEAD_]	;GET CCB HEAD PTR
+	ADD	DI,F_CMD_ADJUST_		;ADJST FOR HOST SEGMENT
+	PUSH	CX			;STORE BRD_LOOP LOOP CNTR
+	PUSH	DX			;STORE IO PORT
+	MOV	CL,TOT_CHNLS
+	XOR	CH,CH
+	MOV	[BX+BD_STRT_INDX_],CX	;SET BD_STRT_INDX_
+	MOV	CX,[BX+BD_PORTS_]	;SET CHNL_LOOP LOOP CNTR
+	ADD	TOT_CHNLS,CL
+	XOR	CH,CH
+	MOV	DX,0
+
+	CALL	INIT_THEM
+
+	SUB	DI,F_CMD_ADJUST_	;READJST FOR FEP SEG
+	MOV	ES:[F_CMD_HEAD_],DI	;STORE NEW CCB HEAD PTR
+	POP	DX			;RESTORE IO PORT
+	IN	AL,DX			;DSBL BRDS MEMORY
+	AND	AL,0FDH			;
+	OUT	DX,AL			;
+	POP	CX			;RESTORE BRD_LOOP LOOP CNT
+	POP	BX			;BX GETS NXT BRD_TBL PTR
+	ADD	BX,2			;
+	LOOP	BRD_LOOP
+BYE_PINIT:
+	MOV	AX,DXLOW
+	XOR	DX,DX
+	MOV	DL,TOT_CHNLS
+	ADD	AX,DX
+	DEC	AX
+	MOV	DXHIGH,AX
+	POP	DS
+	POP	ES	
+	POP	SI
+	POP	DI
+	POP	DX
+	POP	CX
+	POP	BX
+	POP	AX
+	RET
+
+PORTS_INIT	ENDP
+;************************************************
+
+INIT_THEM	PROC
+
+;					~1.2.2~
+;CHNL_LOOP:
+;	LODSB				;GET ENABLE ON OR OFF PARAM
+;	DEC	SI
+;	OR	AL,AL			;TURN CHNL ON?
+;	MOV	AL,50H			;
+;	JNZ	FNC50			;YES
+;FNC51:
+;	ADD	AL,1			;NO, TURN IT OFF
+;FNC50:        
+;	MOV	AH,DL			;AH <- CHNL#
+;	STOSW				;CMD CHANNEL
+;	XOR	AX,AX			;P1=P2=0
+;	STOSW				; 
+
+	MOV	NUM_PORTS,CX
+	PUSH	BX			;~1.2.0 
+
+FNC4F:					;SET BUFFER SIZE ~1.9.0.3 OUTSIDE LOOP
+	CMP	CX,16			;KEEP BUFS @ DEFAULT / 2K PER CHANNEL
+	JE	FNC49			;
+	MOV	AX,004Fh		;CCB FCT 4FH
+	STOSW				;
+	MOV	AX,3			;ASSUME 4 PORTS / 8K PER CHANNEL
+	CMP	CX,4			;
+	JE	FOUR_PORTS		;
+	MOV	AX,2			;WELL, IT WAS 8 PORTS / 4K PER CHANNEL
+FOUR_PORTS:
+	STOSW		
+
+FNC49:
+	MOV	AH,DL			;AH <- CHNL #
+	MOV	AL,49H	        	;RTS AND DTR MODEM LINES 
+	STOSW				
+	LODSB
+	MOV	BL,AL			;~1.2.2~ SAVE ENBL INFO FOR LATER
+	XOR	AH,AH
+	CMP	AL,0
+	JE	STORE
+	MOV	AL,3
+STORE:
+	STOSW
+FNC47:
+	MOV	AH,DL			;AH <- CHNL #
+	MOV	AL,47H			;SET BAUD AND MODE
+	STOSW				;CMD CHANNEL
+	LODSW				;BAUD MODE
+	STOSW				;P1 P2
+FNC46:
+	MOV	AH,DL			;AH <- CHNL #
+	MOV	AL,46H			;SET IMASK
+	STOSW				;CMD CHANNEL
+	LODSB				;GET IMASK
+	XOR	AH,AH			;
+	STOSW				;P1 P2=0
+FNC4B:
+	MOV	AH,DL 			;AH <- CHNL #
+	MOV	AL,4BH			;SET HANDSHAKE
+	STOSW				;CMD CHANNEL
+	LODSB				;GET HANDSHAKE
+	XOR	AH,AH			;
+	STOSW				; 
+FNC40:
+	MOV	AH,DL			;AH <- CHNL #
+	MOV	AL,40H			;RXMIDWATERMARK 
+	STOSW				;CMD CHANNEL 
+	MOV	AX,8			;
+	STOSW				;P1 P2 = WATER MARK 
+CHNL_ENBL:
+	OR	BL,BL			;~1.2.2~ TURN CHNL ON? (SAVED ENBL INFO)
+	MOV	AL,50H			;
+	JNZ	FNC50			;YES
+FNC51:
+	ADD	AL,1			;NO, TURN IT OFF
+FNC50:        
+	MOV	AH,DL			;AH <- CHNL#
+	STOSW				;CMD CHANNEL
+	XOR	AX,AX			;P1=P2=0
+	STOSW				; 
+	INC	DL			;NEXT PORT
+	LOOP	FNC49			;
+INIT_QUIT:
+	POP	BX
+	RET
+INIT_THEM	ENDP
+;************************************************
+;ADJUSTS DRIVER CHAIN FOR # DOS PORTS SUPPORTED
+;
+ADJST_HDRS	PROC  NEAR	
+	PUSH	AX
+	PUSH	BX
+	PUSH	DS
+	PUSH	CS
+	POP	DS	
+
+	XOR	BX,BX
+	MOV	BL,TOT_CHNLS
+	CMP	I14_ONLY,1			;INT_14 SUPPORT ONLY?
+	JNE	USE_TBL				;NO,PULL ADDRESS FROM TBL
+	MOV	LAST_LOC,OFFSET INT14ONLY	;YES,SET I14 ONLY END ADDR
+	JMP	NO_HDR_CHAIN			;BYE BYE
+USE_TBL:
+	ADD	BX,OFFSET END_OFFS_TBL		;BX <- ADDRESS LOCATION
+	MOV	AX,[BX]				;AX <- ADDR
+	MOV	LAST_LOC,AX			;STORE FOR LATER
+	CMP	AX,OFFSET STATDEVONLY		;NO PORTS?
+	JE	NO_HDR_CHAIN			;YES, KEEP ONLY STS DEVICE HDR
+SET_CHAIN_END:
+	MOV	BX,LAST_LOC			;SET END-OF-CHAIN MARKER
+	MOV	WORD PTR[BX-2],-1		;CONFIG PTR
+	MOV	WORD PTR[BX-(HEADER_SIZE_+2)],-1;NEXT HDR PTR
+	CALL    ADJST_COM_NAMES			;ENTER COM NAMES IN HDRS
+	JMP	QUIT_ADJST_HDRS
+NO_HDR_CHAIN:
+	MOV	NEXTHEADER00,-1			;STS DEV HDR IS EOC
+QUIT_ADJST_HDRS:
+	LES	BX,REQUESTHEADERPOINTER
+	MOV	AX,LAST_LOC
+	MOV	ES:ENDINGOFFSET[BX],AX
+	MOV	AX,CS
+	MOV	ES:ENDINGSEGMENT[BX],AX
+	POP	DS
+	POP	BX
+	POP	AX
+	RET	
+ADJST_HDRS	ENDP	
+
+;*************************************************
+;
+ADJST_COM_NAMES		PROC	NEAR
+	
+	ASSUME	ES:CODE
+	PUSH	CX
+	PUSH	DI
+	PUSH	SI
+	PUSH	ES
+	PUSH	CS
+	POP	ES
+
+	MOV	DI,OFFSET COMA1		;DEST <- NAME FIELD OF 1ST HEADER
+	ADD	DI,NAME_FIELD_
+	MOV	SI,OFFSET COM_NAMES	;SOURCE <- COM NAME TABLE
+NEXTNAME:
+	MOV	CX,COMNAMELEN_		;LOOP CNT FOR COPYING COM NAME
+	REP	MOVSB			;COPY THE 8 CHAR COM NAME
+	MOV	DI,WORD PTR[DI-HEADER_SIZE_]        
+	CMP	DI,-1			;@ END OF CHAIN?
+	JE	QUIT_COM_NAMES		;YES
+	ADD	DI,NAME_FIELD_		;NEXT HDR NAME FIELD
+	JMP	NEXTNAME
+QUIT_COM_NAMES:
+	ASSUME	ES:NOTHING
+
+	POP	ES
+	POP	SI
+	POP	DI
+	POP	CX
+	RET
+
+ADJST_COM_NAMES		ENDP
+;------------------------------------------------
+END_OFFS_TBL	LABEL WORD
+;
+		DW	OFFSET STATDEVONLY
+		DW	OFFSET END2PORTS		
+		DW	OFFSET END4PORTS
+		DW	OFFSET END6PORTS		
+		DW	OFFSET END8PORTS
+		DW	OFFSET END10PORTS		
+		DW	OFFSET END12PORTS
+		DW	OFFSET END14PORTS		
+		DW	OFFSET END16PORTS
+		DW	OFFSET END18PORTS
+		DW	OFFSET END20PORTS		
+		DW	OFFSET END22PORTS
+		DW	OFFSET END24PORTS		
+		DW	OFFSET END26PORTS
+		DW	OFFSET END28PORTS		
+		DW	OFFSET END30PORTS
+		DW	OFFSET END32PORTS		
+
+;~1.4.0~
+
+		DW	OFFSET END34PORTS
+		DW	OFFSET END36PORTS		
+		DW	OFFSET END38PORTS
+		DW	OFFSET END40PORTS		
+		DW	OFFSET END42PORTS
+		DW	OFFSET END44PORTS		
+		DW	OFFSET END46PORTS
+		DW	OFFSET END48PORTS
+		DW	OFFSET END50PORTS		
+		DW	OFFSET END52PORTS
+		DW	OFFSET END54PORTS		
+		DW	OFFSET END56PORTS
+		DW	OFFSET END58PORTS		
+		DW	OFFSET END60PORTS
+		DW	OFFSET END62PORTS		
+		DW	OFFSET END64PORTS		
+;------------------------------------------------
+COM_NAMES	LABEL BYTE
+	
+DB	'COM5    COM6    COM7    COM8    COM9    COM10   COM11   COM12   '
+DB	'COM13   COM14   COM15   COM16   COM17   COM18   COM19   COM20   '
+DB	'COM21   COM22   COM23   COM24   COM25   COM26   COM27   COM28   '
+DB	'COM29   COM30   COM31   COM32   COM33   COM34   COM35   COM36   '
+
+;~1.4.0~
+
+DB	'COM37   COM38   COM39   COM40   COM41   COM42   COM43   COM44   '
+DB	'COM45   COM46   COM47   COM48   COM49   COM50   COM51   COM52   '
+DB	'COM53   COM54   COM55   COM56   COM57   COM58   COM59   COM60   '
+DB	'COM61   COM62   COM63   COM64   COM65   COM66   COM67   COM68   '
+
+
+COMNAMELEN_	 EQU	8
+;************************************************
+SET_STS		PROC
+
+	PUSH	SI
+	PUSH	AX
+	PUSH	DX
+	PUSH	DS
+	PUSH	CS
+	POP	DS
+	
+	MOV	SI,OFFSET MSG_STATUS		;FILL VALUES INTO MESSAGES
+	MOV	AH,TOT_CHNLS			
+	MOV	AL,'*'				;FULL DRIVER
+	OR	AH,AH				;
+	JNZ	SET_STAT			;
+	MOV	AL,'!'				;STATUS ONLY
+SET_STAT:				
+	MOV	BYTE PTR CS:[SI],AL		
+	MOV	AX,CS
+ 	MOV	NXTHDR_SEG,AX
+
+	POP	DS
+	POP	DX
+	POP	AX
+	POP	SI
+	RET
+
+SET_STS		ENDP
+
+SUBTTL VIDEO ROUTINES
+PAGE+
+;************************************************
+DISP_MSG	PROC
+
+	PUSH	AX
+	MOV	AH,9
+	INT	21H
+	POP	AX
+	RET
+
+DISP_MSG	ENDP
+
+;************************************************
+SHOWAX		PROC			;
+	PUSH	AX			;DISPLAY HEX WORD VALUE IN ASCII
+	PUSH	AX			;AT CURRENT CURSOR POSITION
+	XCHG	AL,AH			;
+	CALL	SHOWAL			;DISPLAY HIGH BYTE FIRST
+	POP	AX			;
+	CALL	SHOWAL			;THEN LOW BYTE
+	POP	AX			;
+	RET				;
+SHOWAX		ENDP			;
+;---------------------------------------
+ASCII_TABLE	DB	'0123456789ABCDEF'
+;---------------------------------------
+SHOWAL		PROC			;
+	PUSH	AX			;DISPLAY HEX BYTE VALUE IN ASCII
+	PUSH	BX			;AT CURRENT CURSOR POSITION
+	PUSH	CX			;
+	MOV	BX,OFFSET ASCII_TABLE	;
+	PUSH	AX			;
+	PUSH	AX			;(FOR 2 LOOPS)
+	MOV	CL,4			;
+	SHR	AL,CL			;HIGH NYBLE 1ST
+	MOV	CX,2			;(MUST BE NUMBER OF PUSH AXS)
+DISP_NYBLE_LOOP:			;
+	AND	AL,0FH			;
+	XLAT				;
+	PUSH	BX			;USE CONSOLE FOR DISPLAY OUTPUT
+	MOV	BX,7			;
+	MOV	AH,14			;
+	INT	10H			;
+	POP	BX			;
+	POP	AX			;
+	LOOP	DISP_NYBLE_LOOP		;
+	POP	CX			;
+	POP	BX			;
+	POP	AX			;
+	RET				;
+SHOWAL		ENDP			;
+;************************************************
+
+ENDDRIVER	LABEL WORD
+;----------------------------------------
+;   PARAGRAPH AREA FOR INTELLIGENT CODE	;
+;----------------------------------------
+IF	($-START) MOD 16		;
+ORG	($-START)+16-(($-START) MOD 16)	;
+ENDIF					;
+FEP_FILE	LABEL	WORD		;WHERE TO LOAD FEP MODULE FROM
+;----------------------------------------
+	DRIVER	ENDP			;
+	CODE	ENDS			;
+	END	START			;DEFINE START AND END OF CODE
+;

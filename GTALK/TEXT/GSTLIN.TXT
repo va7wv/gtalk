@@ -1,0 +1,19 @@
+
+Welcome Guest!  You have reached the Nuclear |*f2Greenhouse!|*r1
+
+The |*h1-only-|*h0 10 line chat system in the North Shore area!
+
+|*f4----- System INFORMATION & RULES ------
+  Please read /syshelp for more information.|*r1
+
+|*f5----- Greenhouse MEETINGS -----
+  Please read /m99 for more information.|*r1
+
+Need help?  See /m1 for who to ask!
+
+Press /? for a list of commands.
+
+Subscription information is in /m0 and /m3.
+
+|*h1|*f5 A gathering has been decided upon! Read /m46 for details!|*r1
+

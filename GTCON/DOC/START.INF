@@ -1,0 +1,62 @@
+
+
+
+************************************************************
+****                                                    ****
+****     GTalk - official Documemtation Release 0.1     ****
+****              System Setup Procedures               ****
+****                                                    ****
+************************************************************
+
+
+System Setup Procedures    - Written 04/05/93 by David W Jeske
+-----------------------      Copyright 1993 by David W. Jeske and
+                                               Daniel L. Marks
+
+
+I. Decide on and Create a gtalk directory. Something like \GTALK will
+   do just fine.
+
+     Type:   cd \
+             mkdir \GTALK
+
+
+II.  UNCOMPRESS THE Distribution
+
+   A. GTFILES.EXE   - a self extracting archive. Simply copy the
+                      archive into the directory you created in (I)
+                      and type "GTFILES<return>". It will ask
+                      if you want to create a directory, type "A" for
+                      always.
+
+   B. GTK<xx>.EXE   - a self extracting archive. Simply copy the file
+                      into your gtalk directory which you created in
+                      (I). Then execute the filename. It will self-extract.
+
+                      This is the actual Gtalk executable file.
+
+   C. Copy the file grun.bat to the root directory with the command
+
+         copy grun.bat \
+
+      then, with your favorite editor, edit the grun file, and substitute
+      the name of the Gtalk directory you created in (I) for the command
+       "cd \gtalk" in the batch file.
+
+       <When you have completely set up your GTalk system, and have it
+        online, you will want to put "grun" as the LAST line of your
+        AUTOEXEC.BAT file.>
+
+   D. Make sure you are in the GTalk directory (which will later be
+      referred to as <gtalk>) and type "GTALK"
+
+      The program will run, and stop. You then have to call DCFG Enterprises
+      and they will activate your copy of gtalk.
+
+III. Set the Passwords!!!
+
+   A. run "gtalk". Press return to bring up a login prompt.
+
+      Login into account number 0, and masterbate all over the keyboard.
+      Next,
+

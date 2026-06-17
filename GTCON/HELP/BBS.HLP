@@ -1,0 +1,15 @@
+
+Bulletin Board Commands
+
+[N] Scan for new messages
+[G] Global new scan
+[J] Jump to other bulletin board
+[L] List messages on bulletin board
+[#,R] Read bulletin #
+[P] Post bulletin
+[D] Delete bulletin
+[E] Edit bulletin
+[T] Toggle global newscan on/off for channel
+
+Or any allowed / command
+

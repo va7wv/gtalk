@@ -1,0 +1,8 @@
+            -> GINSUTALK : NEW SYSTEM <remind the sysop to
+               edit TEXT\LOGIN.TXT > <-
+
+SYSOP: Initlally login with account number 0
+       password : Password    <case sensitive>
+
+ THEN: |*f1|*h1EDIT THIS FILE|*r1 TEXT\LOGIN.TXT
+

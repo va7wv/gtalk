@@ -1,0 +1,10 @@
+      User Classification Types
+      -------------------------
+        Sysop             0
+        Major Co Sysop    10
+        Minor Co Sysop    20
+        User              30
+        Reg. Guest        40
+        Guest             50
+        Ddial Link        60
+

@@ -1,0 +1,47 @@
+File INIT.C:
+      for (loop2=0;loop2<sizeof(struct user_data);loop2++)
+File MAIL.C:
+   struct user_data temp_data;
+File USER.C:
+user_dat far user_lines[MAXPORTS];
+int load_user(int number, struct user_data *user_ptr)
+         (long int)sizeof(struct user_data)*(number+NUMDEFAULT),SEEK_SET);
+        if (!fread(user_ptr, sizeof(struct user_data), 1, fileptr))
+int save_user(int number, struct user_data *user_ptr)
+    struct user_data temp;
+             (long int)sizeof(struct user_data)*(DEF_GUEST+NUMDEFAULT),SEEK_SET);
+           if (!fread(&temp, sizeof(struct user_data), 1, fileptr))
+         (long int)sizeof(struct user_data)*(number_users+NUMDEFAULT),SEEK_SET);
+         if (!fwrite(&temp, sizeof(struct user_data), 1, fileptr))
+         (long int)sizeof(struct user_data)*(number+NUMDEFAULT),SEEK_SET);
+        if (!fwrite(user_ptr, sizeof(struct user_data), 1, fileptr))
+   struct user_data tempdata;
+    struct user_data user_ptr;
+            (long int)sizeof(struct user_data)*(number+NUMDEFAULT),SEEK_SET);
+        if (!fread(&user_ptr, sizeof(struct user_data), 1, fileptr))
+File COMMAND.C:
+void print_stats(struct user_data *usr,struct u_parameters *param, int level);
+void print_user_config_menu(struct user_data *usrptr,unsigned char *toggles)
+  struct user_data usr_ptr;
+    struct user_data usr_ptr;
+void print_stats(struct user_data *usr,struct u_parameters *param, int level)
+  struct user_data temp_data;
+File ROTATOR.C:
+   struct user_data userptr;
+   struct user_data userptr;
+File USEREDIT.C:
+void set_new_expiration_date(struct user_data *edit_data);
+void edit_staple_menu(struct user_data *edituser)
+void get_new_staple(int staple,struct user_data *edituser)
+void edit_staples(struct user_data *edituser)
+    struct user_data user;
+void print_user_time_pri(struct user_data *edituser)
+void priv_time_edit(struct user_data *edituser)
+void print_user_info(struct user_data *edituser,int num)
+  struct user_data from;
+  struct user_data to;
+  struct user_data temp_user;
+    struct user_data edituser;
+  struct user_data newuser;
+  struct user_data userstr;
+void set_new_expiration_date(struct user_data *edit_data)

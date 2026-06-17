@@ -1,0 +1,161 @@
+
+
+************************************************************
+****                                                    ****
+****     GTalk - official Documemtation Release 0.1     ****
+****                    User Commands                   ****
+****                                                    ****
+************************************************************
+
+
+User Commands    - Written 04/05/93 by David W Jeske
+-------------      Copyright 1993 by David W. Jeske and
+                                     Daniel L. Marks
+
+
+The Following is a list of GTalk USER commands:
+
+User Commands:
+
+/AUTOANSI         Set ANSI default for your account  <being reworked>
+/BBS              Enter BBS area
+/Cc <text>        Send message <text> to channel #c
+/INFO             Display information about your account
+/MAIL             Enter MAIL area
+/MESG             Enter message area
+/MON(+,-,=)c,c..  Add/delete/set monitor channels
+/PAGEn            Page node #n
+/PAGE+,-          Allow/disable pages to you
+/PASSWD           Set new password
+/SIn              Silence node #n
+/Tc               Tune to channel #c
+/TS               List channel information
+/USn              Unsilence Node #n
+
+Channel Moderator Commands:
+
+/CA+,-            Set channel anonymous/identified
+/CGn              Give node #n moderator privilege
+/CIn,n..          Invite nodes (n,n) to your channel
+/CKn              Kick node #n off your channel
+/CL+,-            Set channel unlocked/locked
+/CM+,-            Channel messages (/C) allowed/disabled
+/CN<name>         Name current channel
+/CPxx             Set channel priority to xx
+
+
+********************
+*    /AUTOANSI     *
+********************
+
+ This command is going to be rewritten and phased, it's use is
+ unsupported.
+
+  Currently. AutoANSI on will let the system AUTODETECT your ANSI.
+             AutoANSI off will make the system turn ANSI OFF.
+
+
+***************
+*    /BBS     *
+***************
+
+
+ This command puts you into the Bulliten Board System. This system is
+ described in it's own documenation file.
+
+
+*************
+*    /C     *
+*************
+
+ Send Channel Message
+
+ /Cc<message>   This command sends <message> to channel c. This is usefull
+                for when you are monitoring a channel you are not on, and
+                wish to repily to a statement on that channel.
+
+                Ex.
+                /c2I think your right.
+
+                    Will show up on t2 as
+
+                     C2#00{T1:The Sysop) I think your right
+
+                NOTE: channel messages are not currently sent over ddial links
+                      on that channel. This is usefull to print LOCAL messages
+                      to your system. (soon there will be /ps)
+
+
+****************
+*    /INFO     *
+****************
+
+ User information
+
+ /INFO[+]       The /info command will print your current user information.
+
+                This includes the following:
+                       Conception Date
+                       Expiration Date
+                       Last Call Date
+                       Number of calls
+                       Total time online
+                       Average time per call
+                       Total number of kills
+                       Total number of times killed
+                       Priority
+                       User priviliges
+                        -  if the [+] argument was NOT added, you will see
+                           a list of BIT flags which are the privilege flags
+                           (see User Account Information Doc)
+                        -  if the [+] argument was added, you will see a
+                           verbose list of ALL the command names you can
+                           execute
+
+/INFO<line>[+]  This use of the /info command will show you some information
+                about the user who is on line #<line>. The amount of
+                information you see will depend on YOUR access priority.
+                <for more information about this see the User Account
+                 Info Doc, and the SYSOP privilige doc>
+
+                The [+] argument works as described above.
+
+/INFO#<unum>[+] This use of the /info command will show you some information
+                about the user NUMBER <unum>. The amount of information
+                you see will depend on YOUR access priority.
+
+                The [+] argument works as described above.
+
+
+****************
+*    /MAIL     *
+****************
+
+
+ This command puts you into the Mail system. This command is
+ described in it's own documenation file.
+
+
+
+****************
+*    /MESG     *
+****************
+
+/MESG           This command will put the user into the USER LEVEL message
+                box editor. From there the user can edit the messages boxes
+                which belong to him. <see SYSOP COMMAND DOCS : /ROT  for
+                description of how to set up message box priviliges>
+
+                  A user may perform edit the messge box contents or set
+                  whether the message box should be automatically rotated.
+
+                   - An automatically rotated message will be printed to all
+                     users on the system automatically ,at sysop specified
+                     intervals. <See SYSOP COMMAND DOCS : /ROT for more
+                     information>
+
+
+****************
+*    /MAIL     *
+****************
+

@@ -1,0 +1,32 @@
+***************************
+Gtalk Source License Agreement - 03/09/98 - David W. Jeske (jeske@chat.net)
+***************************
+
+You are hereby granted use of the Gtalk source code for personal and/or
+educational use only. All source and associated datafiles and materials
+included are Copyright 1992,1993,1994,1995 by David W. Jeske and
+Daniel L. Marks. You may not sell, in whole or in part, any of the
+Gtalk source code, or any derivative products you produce with
+the Gtalk source code.
+
+The Gtalk Source code is provided "as-is" and thus carries no warrenties
+of fitness for a purpose. We are not responsible for any damage allegedly
+done to computer software or hardware by the use of the files contained.
+
+You must retain the original copyright notice in all source files,
+documentation, and other files, where it appears. You must retain the
+copyright notice printed each time user logs out. You may _add_ a clause
+which includes your name and declares that "additional modifications"
+are owned by you.
+
+Any redistributions of this source code MUST include this original
+License file and you MUST notify us via Internet email at
+"jeske@chat.net".
+
+If you have any questions, or would like to talk to us about terms
+for reselling or redistributing derivative products, please contact
+us at "jeske@chat.net".
+
+
+
+

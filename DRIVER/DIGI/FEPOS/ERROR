@@ -1,0 +1,14 @@
+Borland C++  Version 2.0 Copyright (c) 1991 Borland International
+fepos.c:
+Warning fepos.c 60: Nonportable pointer conversion in function load_bios
+Warning fepos.c 68: Suspicious pointer conversion in function load_bios
+Warning fepos.c 76: 'error' is assigned a value that is never used in function load_bios
+Warning fepos.c 76: Function should return a value in function load_bios
+Turbo Link  Version 4.0 Copyright (c) 1991 Borland International
+Error: Undefined symbol _wait_some_ticks in module fepos.c
+Error: Undefined symbol _outp in module fepos.c
+Error: Undefined symbol _inp in module fepos.c
+Error: Undefined symbol _enable in module fepos.c
+Error: Undefined symbol _disable in module fepos.c
+
+        Available memory 380032

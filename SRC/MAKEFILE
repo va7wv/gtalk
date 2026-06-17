@@ -1,0 +1,290 @@
+.AUTODEPEND
+
+
+# Gtalk
+# Copyright (C) 1993, by David W Jeske, and Daniel L Marks
+# Copying or distributing this source code without written
+# permission of David W Jeske and Daniel L Marks is strictly forbidden
+
+
+
+
+#		*Translator Definitions*
+CC = bcc -2 +GTALK.CFG
+TASM = TASM
+TLIB = tlib
+TLINK = tlink /3 /ye /m /s
+LIBPATH = C:\BORLANDC\LIB
+INCLUDEPATH = C:\BORLANDC\INCLUDE
+
+
+#		*Implicit Rules*
+.c.obj:
+  $(CC) -c {$< }
+
+.cpp.obj:
+  $(CC) -c {$< }
+
+#		*List Macros*
+
+
+EXE_dependencies =  \
+ OBJ\com.obj \
+ OBJ\command.obj \
+ OBJ\io.obj \
+ OBJ\gt.obj \
+ OBJ\task.obj \
+ OBJ\init.obj \
+ OBJ\alloc.obj \
+ OBJ\user.obj \
+ OBJ\useredit.obj \
+ OBJ\input.obj \
+ OBJ\video.obj \
+ OBJ\editor.obj \
+ OBJ\mail.obj \
+ OBJ\rotator.obj \
+ OBJ\gfiles.obj \
+ OBJ\channel.obj \
+ OBJ\schedule.obj \
+ OBJ\sysop.obj \
+ OBJ\bbs.obj \
+ OBJ\link.obj \
+ OBJ\protocol.obj \
+ OBJ\string.obj \
+ OBJ\function.obj \
+ OBJ\glink.obj \
+ OBJ\diags.obj
+
+#		*Explicit Rules*
+gtalk.exe: gtalk.cfg $(EXE_dependencies)
+  $(TLINK) /m/c/P-/L$(LIBPATH) @&&|
+c0l.obj+
+OBJ\com.obj+
+OBJ\command.obj+
+OBJ\io.obj+
+OBJ\gt.obj+
+OBJ\task.obj+
+OBJ\init.obj+
+OBJ\user.obj+
+OBJ\alloc.obj+
+OBJ\useredit.obj+
+OBJ\input.obj+
+OBJ\video.obj+
+OBJ\editor.obj+
+OBJ\mail.obj+
+OBJ\rotator.obj+
+OBJ\gfiles.obj+
+OBJ\channel.obj+
+OBJ\schedule.obj+
+OBJ\sysop.obj+
+OBJ\bbs.obj+
+OBJ\link.obj+
+OBJ\protocol.obj+
+OBJ\string.obj+
+OBJ\function.obj+
+OBJ\glink.obj+
+OBJ\diags.obj
+gtalk
+		# no map file
+emu.lib+
+mathl.lib+
+cl.lib
+|
+
+
+#		*Individual File Dependencies*
+OBJ\com.obj: gtalk.cfg com.c
+        $(CC) -c com.c
+
+OBJ\command.obj: gtalk.cfg command.c
+        $(CC) -c command.c
+
+OBJ\gt.obj: gtalk.cfg gt.c
+        $(CC) -c gt.c
+
+OBJ\task.obj: gtalk.cfg task.c
+        $(CC) -c task.c
+
+OBJ\init.obj: gtalk.cfg init.c
+        $(CC) -c init.c
+
+OBJ\alloc.obj: gtalk.cfg alloc.c
+        $(CC) -c alloc.c
+
+OBJ\user.obj: gtalk.cfg user.c
+        $(CC) -c user.c
+
+OBJ\video.obj: gtalk.cfg video.c
+        $(CC) -c video.c
+
+OBJ\useredit.obj: gtalk.cfg useredit.c
+       $(CC) -c useredit.c
+
+OBJ\input.obj: gtalk.cfg input.c
+       $(CC) -c input.c
+
+OBJ\editor.obj: gtalk.cfg editor.c
+       $(CC) -c editor.c
+
+OBJ\mail.obj: gtalk.cfg mail.c
+       $(CC) -c mail.c
+
+OBJ\rotator.obj: gtalk.cfg rotator.c
+       $(CC) -c rotator.c
+
+OBJ\gfiles.obj: gtalk.cfg gfiles.c
+       $(CC) -c gfiles.c
+
+OBJ\channel.obj: gtalk.cfg channel.c
+       $(CC) -c channel.c
+
+OBJ\schedule.obj: gtalk.cfg schedule.c
+       $(CC) -c schedule.c
+
+OBJ\io.obj: gtalk.cfg io.c
+       $(CC) -c io.c
+
+OBJ\sysop.obj: gtalk.cfg sysop.c
+       $(CC) -c sysop.c
+
+OBJ\bbs.obj: gtalk.cfg bbs.c
+       $(CC) -c bbs.c
+
+OBJ\link.obj: gtalk.cfg link.c
+       $(CC) -c link.c
+
+OBJ\protocol.obj: gtalk.cfg protocol.c
+       $(CC) -c protocol.c
+
+OBJ\string.obj: gtalk.cfg string.c
+       $(CC) -c string.c
+
+OBJ\diags.obj: gtalk.cfg diags.c
+       $(CC) -c diags.c
+
+OBJ\function.obj: gtalk.cfg function.c
+       $(CC) -c function.c
+
+OBJ\glink.obj: gtalk.cfg glink.c
+       $(CC) -c glink.c
+
+
+#		*Compiler Configuration File*
+gtalk.cfg: makefile
+  copy &&|
+
+# These added by dave
+-nOBJ
+-C
+-d
+
+# recent
+#-a-
+#-b-
+
+#-f-
+#-h-
+#-y-
+-zHFSTUFF
+
+# These added by dave
+-nOBJ
+-C
+-d
+# -G- is in favor of size, -G is in favor of speed
+-G
+# -O1 is for SIZE  -O2 is for speed
+-O2
+-O
+-H
+-k-
+-v-
+-Vf
+-vi-
+-N-
+-w-
+-Y-
+-wamb
+-wpro
+-wret
+-wwccc
+-wcln
+-wnci
+-wrng
+#Conversion may lost significant digits
+-wsig
+-wzdi
+-whid
+-wrvl
+-winl
+-wbig
+-wuse
+-waus
+-wext
+-will
+-wpin
+-wbei
+-wmpd
+# signed and unsigned char
+-wucp
+#no declaration
+-wnod
+
+#non portable pointer comparison
+#-wcpt
+#non portable pointer conversion
+#-wrpt
+
+-wpar
+-wdef
+-wpia
+-wdup
+-wstv
+-wofp
+-wamp
+# suspicious pointer conversion
+-wsus
+-wlvc
+-wlin
+-wstu
+-wasm
+#unreachable code
+-wrch
+-wnst
+-wvoi
+
+# These were in here by borland
+-ml
+-G
+-O
+-Ol
+-w-ret
+-w-nci
+-w-inl
+-wpin
+-wamb
+-wamp
+-w-par
+-wasm
+-wcln
+-w-cpt
+-wdef
+-w-dup
+-w-pia
+-wsig
+-wnod
+-w-ill
+-w-sus
+-wstv
+-wucp
+-wuse
+-w-ext
+-w-ias
+-w-ibc
+-w-pre
+-w-nst
+-I$(INCLUDEPATH)
+-L$(LIBPATH)
+| gtalk.cfg
+
+

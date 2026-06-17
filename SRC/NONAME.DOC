@@ -1,0 +1,9 @@
+device=c:\dos\himem.sys
+dos=high
+DEVICE=C:\DOS\SETVER.EXE
+FILES=50
+buffers=20
+SHELL=C:\DOS\COMMAND.COM C:\DOS\  /p
+device=c:\dos\smartdrv.sys 2048
+device=c:\digi\xapcm232.sys
+

@@ -1,0 +1,16 @@
+
+#  Handle               Ch  USER  TON  TAL  PR  X  P  C  M  I  A  Baud  Where
+
+00*Agent_X              01  #001  004  UNL  00  *  Y  Y  N  *  Y  Con   BBS
+01 Flash Gordon         01  #000  012  UNL  00  N  N  Y  N  N  C  2400  Mail
+02 Joe Guest            01  %GST  003  005  40  N  N  *  *  *  C  1200  Chat
+03 //\/\age             04  #100  062  090  10  Y  Y  Y  Y  Y  A  14400 Message
+
+
+
+X - Squelched
+P - Paging
+C - Chat
+M - Monitoring (YOUR CHANNEL)
+I - Invited (YOUR CHANNEL)
+A - ANSI (No, Color, ANSI=N,C,Y)

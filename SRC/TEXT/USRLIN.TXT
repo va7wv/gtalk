@@ -1,0 +1,7 @@
+-
+
+This is the user login text file
+edit the file TEXT\USRLIN.TXT
+
+-
+

@@ -1,0 +1,82 @@
+GINSUTALK !  "The Chat Software For the GODS"
+
+ If you have not already done so, you will need to configure your serial
+ ports, and call GinsuTalk developers to get a validation code which
+ will activate your copy of GinsuTALK..
+
+ AFTER you have done this.
+ ------------------------------------------
+
+ Login to the chat with the following information:
+
+
+Use Account: 0
+   Password: Password
+
+AS SOON AS YOU LOGIN, type
+
+/system
+
+enter (P) at the menu,
+
+set your system Passwords:
+
+  MASTER password : This is required to edit user number < 5
+                      to CHANGE any other system password
+                      to make a user a CO or a SYSOP
+
+  USER EDIT       : This is required to enter the user editor
+
+  COMMAND TOGGLE  : This is required to use the /command utility.
+                    The /command utility will let you disble commands
+                    on a SYSTEM wide basis.
+
+  CONSOLE PAGE    : Will allow you to set the password required to
+                    toggle console paging on or off.
+
+
+ AFTER setting passwords, choose (C) from the /system menu to set your
+ system name. There is a utility included to set the number of calls
+ your system has recieved, this is provided to allow you to restore
+ the number of calls if you have a serious hardware failure.
+
+  (the statistics are SAVED even if there is a system crash or powerdown,
+   unlike the memory based Ddial, there is no need to restore them in
+   case of these events)
+
+This system name appears in the REMOTE /s lists that other systems will
+see when you are linked.
+
+
+------------------------------------------------
+
+Type /passwd
+
+and reset the Sysop Password, then see newuser.doc, on creating users,
+and bbs.doc on creating new bulliten boards.
+
+------------------------------------------------
+NOW.... LOG OUT, and back in...
+
+type /q (or /rl0) and log back in to check that your new password works.
+
+YOU MUST LOG OUT, or your new password will not be saved.
+
+------------------------------------------------
+from console you may type "/quick" to shutdown the system quickly during
+configuration.
+
+THIS WILL ONLY WORK FROM CONSOLE.
+
+you can type /shutdown from ANY node. Be warned though, /shutdown *WILL*
+reboot your computer, so make sure you have a autoexec file setup to
+execute the following:
+
+ cd <gtalk directory>
+ gtalk.exe
+
+-------------------------------------------------
+
+Happy Chatting!
+
+

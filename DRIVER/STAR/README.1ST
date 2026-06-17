@@ -1,0 +1,171 @@
+ACL Software  Ver. 3.10
+
+The ACL Software has been updated to implement enhancements.  This README.1ST
+file contains descriptions of the updates to the programs.  Further 
+information on the ACL Software is provided in ACL User's manual Chapters 4 & 
+5.
+
+
+-----------------------------------------------------------------------------
+ACLOS.EXE  ACL Operating System  Ver. 3.10
+
+The following options have been added to the control blocks.  Further 
+information on the control block structure is provided in ACL User's manual 
+pages 5-4 to 5-14.
+
+
+Parity Type (R/W)
+     Defines the type of parity desired for the channel.  Parameters are 
+     defined as follows:
+
+     0000H     No Parity      0001H     Even Parity
+     0002H     Odd Parity     0003H     Force Parity Space
+     0004H     Force Parity Mark
+
+
+Line Protocol (R/W)
+     Defines the line protocol used for the UART.  Parameters are defined as 
+     follows:
+
+     0000H     None           0001H     XON/XOFF
+     0002H     CTS/RTS        0003H     Modem Control (Handshake & CTS/RTS)
+     0004H     Handshake      0005H     Handshake & XON/XOFF
+
+     Handshake protocol provides control of the DTR output and the ability to
+     read the status of DSR, DCD and RI.  It also allows break to be 
+     transmitted.
+
+     The DTR output is activated by setting bit 0 of the upper byte of the 
+     Modem Control/Status word to Logic 1.  Break is transmitted by setting 
+     bit 4 of the same byte to Logic 1.	 Status of the DSR, DCD and RI lines
+     is read in the lower byte of the Modem Control/Status word.
+
+     Handshake & XON/XOFF protocol provides XON/XOFF protocol in conjunction 
+     with handshake protocol.
+
+
+Modem Control/Status (R/W)
+     This word is divided into two bytes.  The upper byte is the control byte 
+     and the lower byte is the status byte.  The definition of each bit 
+     appears below:
+
+     Control Byte (R/W)
+
+     Bit  Signal
+
+     0    DTR       (0 = Off, 1 = On)
+     1-3  Reserved  (not used)
+     4    Break     (0 = Off, 1 = On)
+     5-7  Reserved  (not used)
+
+     Status Byte (R)
+
+     Bit  Signal
+     
+     0    DSR       (0 = Off, 1 = On)
+     1    DCD       (0 = Off, 1 = On)
+     2    RI        (0 = Off, 1 = On)
+     3-7  Reserved  (not used)
+
+
+Configuration Status (R/W)
+     Setting this word to 0001H alerts the ACL Operating System that one or 
+     more configuration parameters have been changed.  The ACL Operating 
+     System will then reconfigure the channel using the new parameters and 
+     write a 0000H into this location.	Reconfiguring a channel does not 
+     reset the pointers if the buffer sizes remain the same.  If the buffer 
+     sizes change, all pointers on all channels are reset.  
+
+     Setting this word to 0002H resets the pointers on this channel only.
+
+     Setting this word to 0003H reconfigures the channel and resets the 
+     pointers on this channel only.  If the buffer sizes change, all pointers 
+     on all channels are reset.
+
+
+Channel Status (R/W)
+     This word is used to report configuration errors and communication 
+     errors.  Error codes are listed below:
+
+     Configuration Errors
+
+     0000H     No Error
+     0001H     Invalid Channel
+     0002H     Invalid Mode
+     0003H     Invalid Baud Rate
+     0004H     Invalid Number Of Bits Per Character
+     0005H     Invalid Number Of Stop Bits
+     0006H     Invalid Parity Type
+     0007H     Invalid Protocol
+     0008H     Invalid Auto Echo Flag
+     0009H     Invalid Input Buffer Size
+     000AH     Invalid Output Buffer Size
+     000BH     Invalid Interrupt Rate
+     000CH     Non-functional UART
+
+     Communication Errors
+
+     0100H     Framing Error
+     0101H     Parity Error
+     0102H     Overrun Error
+     0200H     Break Received
+
+
+Default Buffer Size
+     The default buffer size is 992 bytes with a 16k Daul Port Memory and 
+     4064 bytes with a 64k Dual Port Memory.
+
+
+Input Buffer
+     The input buffer will not overrun if too many characters are received.
+     An overrun error is reported in the Channel Status Word when the input
+     buffer and the UART FIFO are both full.  Also, if CTS/RTS protocol is in
+     effect, RTS will be dropped when the input buffer and the UART FIFO are 
+     both full.
+
+
+-----------------------------------------------------------------------------
+ACLMODE.EXE  ACL Mode  Ver. 3.10
+
+The following options have been added to the ACLMODE command.  Further 
+information on the ACLMODE command is provided in ACL User's manual pages 4-4
+to 4-5.
+
+
+parity         Either N (none), O (odd), E (even), M (mark) or S (space)
+               (default = N)
+
+
+line protocol  Either N (none), X (XON/XOFF), C (CTS/RTS), M (modem control),
+               H (handshake) or B (both handshake & XON/XOFF)
+
+
+-----------------------------------------------------------------------------
+DL.EXE  ACL Download  Ver. 3.10
+
+The ACL Download program now resets the ACL board.  This eliminates the need 
+to use the ACLRESET command before using the DL command.  The ACL Operating 
+System can be downloaded by typing the following command:
+
+	A>DL ACLOS.EXE
+
+Further information on the ACL Download program is provided in ACL User's 
+manual pages 4-1 to 4-4.
+
+
+-----------------------------------------------------------------------------
+ACLCCP.EXE  ACL Communication Control Program  Ver. 3.10
+
+The ACLCCP command is a new program that downloads the ACL Operating System.
+This command eliminates the need to specify a filename to be downloaded.  To 
+download the ACL Operating System, type the following command:
+
+	A>ACLCCP
+
+This will reset the ACL board and download the ACL Operating System.
+
+The ACLCCP program uses the same environment variables as the DL command.
+Further information on the environment variables is provided in ACL User's 
+manual page 4-2.
+
+

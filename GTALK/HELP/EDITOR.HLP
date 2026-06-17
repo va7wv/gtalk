@@ -1,0 +1,19 @@
+
+|*f4|*h1GinsuTalk |*f1Editor |*f7Commands:|*r1
+
+.r     redo last line
+.eX    edit line number X
+.b     print number of lines and characters in file
+.iX    insert text before line X
+.dX    delete line X
+.dX-Y  delete lines X to Y
+.l     list whole file
+.lX    show line X
+.lX-Y  show line X to Y
+.nl    list with line numbers
+.ml    list with emulation
+.s     save file and quit
+.v     revert to initial
+.a     abort editor
+.c     clear editor
+

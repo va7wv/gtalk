@@ -1,0 +1,293 @@
+Untimed Additions
+late 1.6 early 1.7 - /su now /dqrxy and super.c generates password
+
+late 1.7 (? >a1 ?) - bug crashed the system (1.7a3) after 2 hrs, but
+                     now running again with no problems
+                 (possible culprets would be new additions of:
+                       - / commands from BBS and MAIL (_prompt_get_string)
+                       - revamp of _check_for_privates()
+                       - silence/unsilence code
+                       - X command in BBS
+                       - code to autofix scan pointer in BBS
+                       - special_code(x,y) y,x order wrong (fixed)
+                       - //command (silent)
+                       - /t+ (or associated code)
+                       - account suspension (a2-a5)
+                       -
+
+
+
+
+*********************************************************************
+                       Additions by version
+*********************************************************************
+Gtalk v1.6   - now has Xmodem and Ymodem, as well as the new memory manager.
+             is the MOST stable version we have yet to run.
+
+gt16b                   - VERY stable, some ansi handle problems
+                          and /watch<Return> still does checksum mess up
+                           /term needs to kill task, and /cm+ is broken
+                          also /f/lurk prints the wrong name
+
+gt16c  173,430          - MOST ansi handle problems fixed
+                             = ANSI at end of handle causing extra
+                               characters to be eaten
+                             = ANSI line width problem fixed
+                             = |*r1 is no longer part of the handle itself
+
+                        /cm+ fixed
+                        /watch fixed
+                        /term fixed so it kills the task
+                        Macro PRIV added
+                          = macro limit not functinoing becasuse
+                            of complication with /d
+
+                        all bugs in gt16b fixed
+
+                        Checksum/copy protection implented 80%
+                          * ALMOST ready to ship for beta testers
+
+gt16c2                  - /f/p fixed
+                        more |*r1 problems fixed
+
+gt16c3                  - ^ as first character fixed
+                        background color continuing til next line
+                         problem fixed
+
+gt16c4                  - BACKUP.. works good (pre delete *.*)
+
+gt16c5
+                        - delete *.* now works
+                        - /sm and /sm+ now work right with ansi
+                        - credit installed
+                        - passwords no longer hard coded
+
+gt17                    - recursive force bug fixed
+                        - /make<node>(+,-)<command name>
+                        - //<command> does not print "left to" and "arrived
+                          from "
+                        - /t to locked channel ALWAYS says locked
+                          channel GODS have to /t<channel>+ to override
+                        - fixed bracked in /info
+                        - now records calls for yesterday and record highs
+                        - /g*</g command> does not print a notification
+                          to the target of what has been done.
+                        - delete *.* find_next used instead of
+                          find_first, BUG fixed
+                        - composite checksum now tells us the version
+                          number
+
+
+
+gt17a1                  - fixed /watch bug (watching you problem)
+                        - fixed LINK carrots limiting bug
+                        - fixed "lingering" handle line mistakes
+                        - channel moderators are now marked with
+                          a + inside the /s listing
+                        - /cg message fixed
+                        - system downtime is kept track of
+                        - /info revamped
+                        - can do / commands from mail and bbs prompts
+                          (with prompt_get_string)
+                        - /time redone
+
+gt17a2
+                        - logout messages with LINKED
+                          fixed
+                        - Link login messages fixed
+                        - BBS changes
+                          changed prompts
+                          added delete messages at scan prompt
+                          added reset scan pointer
+                          added X command to set scan pointer
+                        - prompt_get_string now does
+                          check for privates and handleline sprintf(ing)
+                        - exec sprintf(s) the handeline when leaving
+                          to a palce with a new "location"
+
+
+gt17a3         - added suspending to user accounts
+      FUCKED, the string table is too BIG
+
+       FIX IT
+
+
+gt17a5
+      - YEAH! we fixed it.. we also set up the makefile
+        for easy removal of unwanted warnings (i.e. ptr conversions,
+         code w/no effect)
+
+      OK... string table is fixed, but there are some problems with
+      the software which is running (1.7a3 crashed)
+
+
+   <COPY PROTECTION could be placed in the wrong version,
+     it may have been added earlier>
+      - COPY PROTECTION is fully implemented
+        Now, #define COPY_PROTECTION_ON in task.c
+        turns on/off copy protection.
+         - SOFTWARE VERSION NUMBER is now in the
+           "composite checksum" that user reads to us
+           (rom.c updated)
+
+
+      - removed the log_error() in BBS which fills the log files
+      - set compiler linker flags for better optimization
+      - OBJ directory added
+        Menu,Text,Help directories added to the program
+
+          YEAH! no more clutter
+
+      - removing unnecessary files
+gt17a6
+      - EVERYTHING now uses precompiled headers (for more speedy compile)
+      - actions and /f<node><message> now print
+        (tswitch) in "|\" mode so that people with
+        the priv can see WHO typed the command
+
+gt17a7
+      - COSMETIC/BUG changes only
+
+gt17a8
+      - redid /sp (consider making a /sp system name different from
+        real system name)
+   NEED: /system (C) needs to PRINT the system name
+       : FIX legnth of SYSTEM NAME IN task.c startup
+      - fixed /suspend (works now)
+      - fixed (changed ) squelch
+
+LAST TWO VERSIONS< SHUTDOWN (save sys info) WAS FUCKED (worked fine here,
+   crashed the chat)
+
+   - changed shutdown save sys info to be a NON-SCHEDULED
+
+gt18a1.arj
+      - filter_ansi now removes ^s also so guests can't login with
+        them in their handles
+      - login messages had the wrong AM/PM at 12 noon (in gt.c) FIXED
+      - /term+ takes a new PRIV (TERMPLUS_PRV)
+      - /t<channel>-<node> moves a link with MAKELINK_PRV
+      - /chk- bug fixed
+      - /page* fixed
+      - /M autodelete when user is deleted
+      - Links "}" interpretation works fine
+      - MAKELINK_PRV and LINKMYSELF_PRV added
+      - ANSI in silence messages fixed
+      - Link Carrot limiting removed
+      -
+
+      - /chat<node> started
+    WOW - serial port revamp from hell
+        - intelligent digiboard support
+        - loading from configuration file
+        - .ANS extention for FULL SCREEN ANSI stuff
+     - DUMB DIGIBOARD BROKEN!!!
+
+
+gt18a2
+      - FIXED THE DUMB DIGIBOARD (was actually a confuration/bug)
+         - now the digiboards will not even TRY to use digi ports
+           which have not been configured.. so it wont fuckup.
+           (if digi_XX_interrupt sees that a port is indexed
+            by the digiboard which has a null strucure... it
+            just returns and loses the character. )
+
+      - /ds - double space installed
+      - /si-   (conforms to normal command standard)
+      - /t<channel>-<link node> to move links
+      - System #, Name, and software version
+        in /sysinfo
+      - Login Node [XX] at <YYY> will print extended result codes
+
+
+gt1.8a3
+      - Links can no longer be "kicked" they must be "moved" with
+        /t<channel>-<link_node>
+      - Link channels will reset if you leave the link alone on them
+        but PRIORITY lock will not reset
+      - MOVED mail and other messages in login from BEFORE to AFTER
+        the xxxLIN.TXT file
+      - gt.c (init_login_vars) replaced 2 "tswitch"s with "portnum"
+        to fix /f/lurk(+,-) so it resets the correct persons time.
+
+gt1.8a4
+      - BUG : it will lockup at the BEGINNING of a typed line,
+              assuming the problem s with get_first_char stuff
+
+      - get_first_char modified to read HEAD and TAIL first and
+        then do comparisons
+      - char_in_buf(int node) is fixed, there was a bug before
+      - main_loop() uses char_in_buf to tell if the person has
+        typed anything, hoping to fix lockup temporarily
+      - aligned the header stuff in BBS posts
+      - there was a %d should have been %u for the TIME in /sl
+      - there was a bug from the link/channel stuff that made users
+        not lose channel mod when they moved around after getting it
+      - some additional security, passwords for /sysop and /system
+        and logging of bad pw's, xfers, etc.
+
+gt1.8b1
+      - VIRTUAL CONSOLES!@#!@#!@#
+        YES!
+gt1.8b2
+      - CONSOLE HAS ANSI
+
+gt1.8b3
+      - killstats.kills_total and killedstats.kills_total are now
+        working. And are printed in /info
+      - set up editor to work for CURRENT width
+         NOTE: HUGE BUGS IN THIS WE FOUND LATER
+               SEE gt1.8b5
+      - /SLOW
+      - Ddial Link protocal now sends one line login and logoff messages
+      - COOL BANNER THING
+
+   BUG: dcd_state for digiboard ports is UNKNOWN at the beginning
+        because it has not sent us any interrupts.
+      FIX: we need to send the circular command buffer a command
+           to tell us the DCD state of each configured intelligent
+           port.
+
+gt1.8b4
+     - /k log installed </log k or /log2k or /log -k>
+     - ANSI on console improved , approaching vt102
+     - put back / commands at hotkey prompts which were lost
+       before
+
+gt1.8b5
+     - WOW: big bug in the editor variable width stuff, needed to
+       allocate bigger S pointers. FIXED (we hope)
+     - checksum stuff works GREAT now
+     - created and fixed bug in loading of editor files
+     - keyboard and 8250 routines separated
+
+gt1.8b6  4/11/93
+     - fixed bug from a LONG time ago in com.c where an 8250
+       routine did NOT re "enable()" interrupts
+
+
+
+EMS VERSIONS ********************
+
+gt19emsc
+
+     - EMS support added only for EMS 4.0. look_for_mem allocates
+       it, next_task, and int8_task_switch totally revamped to
+       handle switching the stack out from under the task switching
+       the stack. make_task and multitask also updated for it.
+       alloc structures changed to accomodate ownership of EMS pages
+     - int8 task switching was fucked because of swap of oldss, and oldsp
+     - 8250 send_char routine fixed (no enable)
+
+gt19emsd(ems)  4/11/93
+     - Operating system detect stuff added and put in INIT.C
+       - (auto chooses a DIFFERENT int8_task_switch
+          for DesqView)
+
+
+NEED : Fix DIGIBOARD INTELLIGENT DCD bug from gt1.8b3
+       improve/finish /user
+       ymodem with wildcards
+       more loggin with log_event
+       turn off paging in XFERS
+

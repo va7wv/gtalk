@@ -1,0 +1,109 @@
+|*h1|*f2GinsuTalk |*f7Command List|*r1
+|*f4Version 930426|*f7
+
+|*f1aaa|*f7 = Account number
+|*f4x|*f7   = Number
+|*f6n|*f7   = Node number
+|*f2c|*f7   = Channel
+
+
+|\11/ANSI            : Toggle ANSI on/off
+|\ |\00/COLOR|*f4x|*f7          : Set default color (x=1-14)
+|\ |\12/D               : Toggle stream send on/off (for buffered chat use)
+|\ |\00/DS              : Toggle double space
+|\ |\00/FB              : Send feedback to sysops
+|\ |\00/I               : Display GinsuTalk version and copyright information
+|\ |\00/LAST|*f1aaa|*f7         : Display last call date for user #|*f1aaa|*f7
+|\ |\00/LOG|*f4xx|*f7           : Display caller log (last |*f4xx|*f7 calls)
+|\ |\00/LOG|*f4xx|*f7-K         : Display kill log (last |*f4xx|*f7 kills)
+|\ |\09/M               : Display message index
+|\ |\09/M|*f4xxx|*f7            : Display message #|*f4xxx|*f7
+|\ |\02/P|*f6n|*f7 <text>       : Send private message <text> to node #|*f6n|*f7
+|\ |\03/Q               : Quit system
+|\ |\00/RE              : Toggle self echo
+|\ |\06/S               : Display callers (short)
+|\ |\06/SL              : Display callers with detailed information (long)
+|\ |\00/SLOW|*f4x|*f7           : Slow down conversation output (x=1-200)
+|\ |\00/SLOW            : Disable slow down feature
+|\ |\06/SM              : Display user list
+|\ |\06/SYSHELP         : Enter detailed system help area
+|\ |\00/SYSINFO         : Display total/daily calls and system configuration file
+|\ |\00/TIME            : Display current date and time
+|\ |\00/W|*f4xxx|*f7            : Set screen width (20-256)
+|\ |\02/X|*f6n|*f7              : Toggle squelch node #|*f6n|*f7
+
+|\ |\07|*h1User Commands:|*r1
+
+|\ |\23/BBS             : Enter BBS area
+|\ |\14/C|*f2c|*f7 <text>       : Send message <text> to channel #|*f2c|*f7
+|\ |\24/CHAT|*f6n|*f7           : Request/enter direct chat with node #|*f6n|*f7
+|\ |\07/INFO            : Display information about your account
+|\ |\07/INFO|*f6n|*f7           : Display information about node #|*f6n|*f7
+|\ |\07/INFO#|*f1aaa|*f7        : Display information about account #|*f1aaa|*f7
+|\ |\07/MAIL            : Enter MAIL area
+|\ |\10/MESG            : Enter message area
+|\ |\14/MON(+,-,=)|*f2c,c|*f7.. : Add/delete/set monitor channels
+|\ |\67/PAGE|*f6n|*f7           : Page node #|*f6n|*f7
+|\ |\67/PAGE+,-         : Allow/disable pages to you
+|\ |\08/PASSWD          : Set new password
+|\ |\13/SI|*f6n|*f7+,-          : Silence/unsilence node #|*f6n|*f7
+|\ |\01/T|*f2c|*f7              : Tune to channel #|*f2c|*f7
+|\ |\01/TS              : Display channel information
+|\ |\13/US|*f6n|*f7             : Unsilence Node #|*f6n|*f7
+|\ |\31|*h1Channel Moderator Commands:|*r1
+/CA+,-           : Set channel anonymous/identified
+/CG|*f6n|*f7             : Give node #|*f6n|*f7 moderator privilege
+/CI|*f6n,n|*f7..         : Invite nodes (|*f6n,n|*f7) to your channel
+/CK|*f6n|*f7             : Kick node #|*f6n|*f7 off your channel
+/CL+,-           : Set channel unlocked/locked
+/CM+,-           : Channel messages (/C) allowed/disabled
+/CN<name>        : Name current channel
+/CP|*f4xx|*f7            : Set channel priority to |*f4xx|*f7
+
+|\ |\16|*h1|*f7CoSysop/Sysop Commands:|*r1
+ 
+|\ |\56/ABORT           : Abort auto system shutdown (from checksum failure)
+|\ |\56/COMMAND         : Global toggle commands on/off (menu)
+|\ |\56/CHK+,-          : Enable/Disable periodic checksum
+|\ |\56/CHK *           : Display current checksum
+|\ |\62/DCD|*f6n|*f7            : Toggle DCD detect for node #|*f6n|*f7
+|\ |\55/F|*f6n|*f7<text/command>: Force text/command to node #|*f6n|*f7
+|\ |\56/FILES           : Show file allocation table
+|\ |\22/G|*f6n|*f7+             : Add default extra time to node |*f6n|*f7
+|\ |\32/G|*f6n|*f7(+,-,=)|*f4xx|*f7     : Add/delete/set time (|*f4xx|*f7/min) for node #|*f6n|*f7
+|\ |\16/K|*f6n|*f7              : Kill node #|*f6n|*f7
+|\ |\34/L|*f6n|*f7              : Set link options for node #|*f6n|*f7
+|\ |\34/L|*f6n|*f7x             : Quick-key set link options for node #|*f6n|*f7 (x=letter from menu)
+|\ |\34/LINK|*f6n|*f7           : Set node #|*f6n|*f7 as a link
+|\ |\30/LOCK|*f4xx|*f7          : Set priority lock for system
+|\ |\66/LURK+,-         : Set lurk on/off
+|\ |\56/MEMORY          : Show system memory allocation table
+|\ |\26/MAKE|*f6n|*f7(GRUBCS)   : Make node #|*f6n|*f7 as a temporary ---
+|\ |\64/MEMUD           : Member list update
+|\ |\56/QUICK           : Quick system shutdown
+|\ |\56/RESET|*f6n|*f7          : Reset node #|*f6n|*f7
+|\ |\25/RL|*f6n|*f7             : Relog node #|*f6n|*f7
+|\ |\28/ROT             : Enter rotator menu
+|\ |\66/SAFE+,-         : Set safe mode for lurk on/off
+|\ |\56/SAVE            : Save current channel settings as default
+|\ |\56/SCHED           : Display scheduler information
+|\ |\56/SERIAL          : Display serial configuration information
+|\ |\56/SHUTDOWN*       : Auto shutdown of system
+|\ |\56/SHUTDOWN+,-     : Shutdown system with reboot/without reboot
+|\ |\06/SM+             : Display sysop user list
+|\ |\56/SUSPEND|*f6n|*f7        : Suspend user on node #|*f6n|*f7
+|\ |\56/SUSPEND#|*f1aaa|*f7     : Suspend user account #|*f1aaa|*f7
+|\ |\58/SYSMON          : Toggle system monitor (monitor channel 0)
+|\ |\61/SYSOP           : Enter file maintance area
+|\ |\56/SYSTEM          : Enter sysop functions menu
+|\ |\58/SYSUD           : Update system information file
+|\ |\56/TASK            : Display system task information
+|\ |\27/TERM|*f6n|*f7           : Enter terminal node #|*f6n|*f7
+|\ |\27/TERM|*f6n|*f7+          : Enter terminal node #|*f6n|*f7 (node in use override)
+|\ |\51/U|*f1aaa|*f7            : Enter user editor for account #|*f1aaa|*f7
+|\ |\17/V|*f6n|*f7              : Validate node #|*f6n|*f7
+|\ |\21/WALL <text>     : Send broadcast message to system
+|\ |\56/WALLA <text>    : Send anonymous broadcast message to system
+|\ |\68/WATCH           : Display watch list
+|\ |\68/WATCH|*f6n|*f7          : Watch node #|*f6n|*f7
+|\

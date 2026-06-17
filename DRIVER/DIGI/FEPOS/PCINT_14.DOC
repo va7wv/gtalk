@@ -1,0 +1,276 @@
+	DigiCHANNEL PC/X* DOS DEVICE DRIVER EXTENDED INT 14H FUNCTIONS
+
+
+
+The following information is a list of the interrupt 14h functions that the
+DigiCHANNEL PC/Xa DOS driver provides and their entry parameters. These funct-
+ions are compatable with the ROM BIOS interrupt 14h functions to support the
+DigiChannel PC/X*.
+
+The entry parameters specified below are those to be used when requesting
+one of the functions from an assembly or high level language program. It
+should be noted that these entry parameters are not the same parameters found
+in the XAPCM232.ASM driver listing. Those shown in the source listing are the
+parameters used within the driver and not those passed to the driver in the
+INT 14H call.
+
+
+
+
+FNCT 0H  - INITIALIZE A PORT
+
+	   ENTRY     AH : 0H
+                     AL : PORT PARAMETERS
+                          76543210
+                          ||||||``- data bits   : 0=5bits, 1= 6, 2=7, 3=8
+			  |||||`--- stop bits   : 0=1 stop, 1=2 stop
+			  |||``---- parity bits : 0=no parity, 1=odd. 3=even
+  			  ```------ baud rate   : 0=110,  1=150,  2=300,  3=600
+                                                  4=1200, 5=2400, 6=4800, 7=9600
+
+		     DX : ANY CHANNEL NUMBER SUPPORTED BY THE DRIVER.
+
+
+	   RETURNS   AH : 0FFH ON ERROR, OTHERWISE
+
+		     AH : 8250 FORMATTED LINE STATUS
+		     AL : 8250 FORMATTED MODEM STATUS
+
+
+
+FNCT 1H  - OUTPUT A CHARACTER
+
+	   ENTRY:    AH : 01H
+                     AL : CHARACTER
+		     DX : ANY CHANNEL NUMBER SUPPORTED BY THE DRIVER.
+
+	   RETURNS   AH : 80H ON TIME OUT (30 SECS), OTHERWISE
+
+		     AH : 8250 FORMATTED LINE STATUS
+                     AL : CHARACTER SENT
+
+
+
+FNCT 2H  - INPUT A CHARACTER
+
+	   ENTRY     AH : 02H
+		     DX : ANY CHANNEL NUMBER SUPPORTED BY THE DRIVER.
+
+
+	   RETURNS   AH : 8250 FORMATTED LINE STATUS
+		     AL : RECEIVED CHARACTER
+
+
+
+
+FNCT 3H  - RETURN PORT STATUS
+
+	   ENTRY     AH : 03H
+		     DX : ANY CHANNEL NUMBER SUPPORTED BY THE DRIVER.
+
+	   RETURNS   AH : 8250 FORMATTED LINE STATUS
+		     AL : 8250 FORMATTED MODEM STATUS
+
+
+
+FNCT 4H  - CHANGE BAUD RATE
+
+	   ENTRY     AH : 04H
+                     AL : PORT PARAMETERS
+                          76543210
+                          ||||||``- data bits   : 0=5bits, 1= 6, 2=7, 3=8
+			  |||||`--- stop bits   : 0=1 stop, 1=2 stop
+			  |||``---- parity bits : 0=no parity, 1=odd. 3=even
+  			  ```------ not used
+		     BX : BAUD RATE IN DECIMAL  (e.g. 19200)
+		     DX : ANY CHANNEL NUMBER SUPPORTED BY THE DRIVER.
+
+	   RETURNS   AH : 0 NO ERROR
+                     AH : 0FFH FOR ERROR
+
+
+FNCT 5H  - CHANGE PROTOCOL
+
+	   ENTRY     AH : 05H, AL=PROTOCOL SELECTION CODE
+		     AL : 0 = NO PROTOCOL
+			: PROTOCOL
+			  7 6 5 4 3 2 1 0
+			  | | | | | | | |
+			  | | | | | | `-`-- XON/XOFF
+			  | | | | | `------ DSR (Tx flow cntrl)
+			  | | | | `-------- RTS (Rx) / CTS (Tx)
+			  `-`-`-`---------- NOT USED
+		     BL : NEW XON (IF 0, USE CURRENT VALUE)
+		     BH : NEW XOFF (IF 0, USE CURRENT VALUE)
+		     DX : ANY CHANNEL NUMBER SUPPORTED BY THE DRIVER.
+
+      	   RETURNS   AH : 0FFH FOR CCB TIMEOUT
+		     AH : 0 FCT GOOD
+
+
+FNCT 8H  - ALTERNATE STATUS CHECK
+
+	   ENTRY     AH : 08H
+		     DX : ANY CHANNEL NUMBER SUPPORTED BY THE DRIVER.
+
+	   RETURNS   AH : 8250 FORMATTED LINE STATUS
+		     ZF : 0  THEN AL : CHAR IN QUEUE
+           	     ZF : 1  THEN NO CHAR QUEUED
+
+
+
+FNCT 9H  - CLEAR BUFFERS
+
+	   ENTRY     AH : 09H
+		     DX : ANY CHANNEL NUMBER SUPPORTED BY THE DRIVER.
+
+	   RETURNS   AH : 0 - FCT GOOD
+                     AH : 0FFH - FCT BAD (CCB TIMEOUT ERR)
+
+
+
+FNCT 0AH - INPUT QUEUE CHECK
+
+	   ENTRY     AH : 0AH
+		     DX : ANY CHANNEL NUMBER SUPPORTED BY THE DRIVER.
+
+	   RETURNS   AX : NUMBER OF QUEUED CHARACTERS
+
+
+
+FNCT 0DH - GET POINTER TO CH_KEY_RDY FLAG
+
+	   ENTRY     AH : 0DH
+		     DX : ANY CHANNEL NUMBER SUPPORTED BY THE DRIVER.
+
+	   RETURNS   ES:BX POINTS TO THE BYTE FLAG
+                     FLAG = 0    : RX BUFFER EMPTY
+		     FLAG = 0FFH : CHAR AVIALABLE IN RX BUFFER
+
+	   NOTE : INTERRUPTS MUST BE ENABLED FOR THE CH_KEY_RDY FLAG
+                  INFORMATION TO BE VALID.
+
+FNCT 0EH - WRITE STRING
+
+           ENTRY     AH : 0EH
+		     DX : ANY CHANNEL NUMBER SUPPORTED BY THE DRIVER.
+                     CX : # OF CHARS IN STRING
+	             ES : SEGMENT OF STRING
+		     BX : OFFSET OF STRING
+
+   	    RETURNS  AX = # CHARS TRANSMITTED
+                     ZF = 0 : NO ERRORS
+                     ZF = 1 : IF ERRORS
+
+
+FNCT 0FH  - READ STRING
+
+           ENTRY     AH : 0FH
+		     DX : ANY CHANNEL NUMBER SUPPORTED BY THE DRIVER.
+                     CX : # OF CHARS TO READ
+	             ES : SEGMENT OF CALLERS BUFFER
+		     BX : OFFSET OF CALLERS BUFFER
+
+	   RETURNS:  AX = # CHARS READ
+                     ZF = 0 : NO ERRORS  
+                     ZF = 1 : IF ERRORS  (LINE STS OR WRONG # CHARS READ) 
+
+
+FNCT 10H - CLEAR RX BUFFER
+
+	   ENTRY     AH : 10H
+		     DX : ANY CHANNEL NUMBER SUPPORTED BY THE DRIVER.
+
+	   RETURNS:  AH : 0FFH FCT ERROR (CCB TIMEOUT)
+		     AH : 0    FCT GOOD
+
+
+
+FNCT 11H - CLEAR TX BUFFER
+
+	   ENTRY     AH : 11H
+		     DX : ANY CHANNEL NUMBER SUPPORTED BY THE DRIVER.
+
+	   RETURNS:  AH : 0FFH FCT ERROR (CCB TIMEOUT)
+		     AH : 0    FCT GOOD
+
+
+
+
+FNCT 12H - GET TX BUFFER FREE SPACE
+
+	   ENTRY     AH : 12H
+		     DX : ANY CHANNEL NUMBER SUPPORTED BY THE DRIVER.
+
+	   RETURNS   AX : # 0F FREE BYTES
+
+
+FNCT 16H - CCB COMMAND
+
+	   ENTRY     AH : 16H
+                     AL : CCB COMMAND NUMBER
+                          (40H - 54H)
+		     BL : BYTE 2
+		     BH : BYTE 3
+ 		     CL : BYTE 1 FOR ALL-CHNL FNCS(SEE NOTE)
+
+		     DX : ANY CHANNEL NUMBER SUPPORTED BY THE DRIVER.
+
+     	   RETURNS:  AH = 0FFH FCT ERROR (CCB TIMEOUT)
+  		     AH = 0    FCT GOOD
+
+NOTE : CCB FNCS 4EH & 4FH REQUIRE NO CHNL#, SINCE THEY OPERATE ON ALL
+       CHNLS, BUT DX MUST STILL CONTAIN A VALID CHNL FOR THE BOARD
+       TO PASS THE INT 14H VALID PORT CHECK. FOR THESE ALL-CHNL FNCS,
+       PUT BYTE1 PARAMS IN CL BEFORE CALLING INT 14H
+
+
+FNCT 18H  -  SEND BIOS COMMAND
+
+     	   ENTRY     AH : 18H
+	             ES : SEGMENT OF USERS 16 BYTE COMMAND STRING
+		     BX : OFFSET OF USERS 16 BYTE COMMAND STRING
+		     DX : ANY CHANNEL NUMBER SUPPORTED BY THE DRIVER.
+
+	   RETURNS   AH : FCT 18H STATUS
+			  0   : NO ERRORS
+			  80H : TIMEOUT ERROR
+		     AL : MAILBOX STATUS (BYTE 1)
+			  0   : NO ERRORS
+			  8XH : BIOS ERROR (MAILBOX BYTE 1 - SEE BIOS SPEC)
+                     ZF : 0 : NO ERRORS
+                     ZF : 1 : IF ERRORS  (ERROR IN EITHER STATUS BYTE)
+	             16 BYTE MAILBOX STRING RETURNED TO ES:[BX]
+
+
+FNCT 19H - ENABLE / DISABLE  SPECIAL CHARACTER INTERRUPT
+
+	   ENTRY     AH : 19H
+		     BL : 0    - DISABLE SPECIAL CHARACTER INTERRUPT
+		     BH : 0FFH - ENABLE SPECIAL CHARACTER INTERRUPT
+		     DX : ANY CHANNEL NUMBER SUPPORTED BY THE DRIVER.
+
+	   RETURNS   AH : 0    - FUNCTION GOOD
+		     AL : 0FFH - FUNCTION FAILED
+
+
+FNCT 1AH - GET POINTER TO SPECIAL CHARACTER FLAG/COUNTER
+
+	   ENTRY     AH : 1AH
+		     BX : 0 - RETURN POINTER TO SPECIAL CHARACTER FLAG (BYTE)
+		     BX : 1 - RETURN POINTER TO SPECIAL CHARACTER COUNTER (WORD)
+		     DX : ANY CHANNEL NUMBER SUPPORTED BY THE DRIVER.
+
+	   RETURNS   ES : BX - POINTS TO THE FLAG OR COUNTER.
+
+	   NOTE : SPECIAL CHARACTER INTERRUPTS MUST BE ENABLED FOR THE
+		  FLAGS AND COUNTERS TO PROVIDE VALID INFORMATION.
+
+	   FLAG  = FFh if a Special Character is in the receive buffer.
+		 = 0   No Special Character in buffer; count is invalid.
+
+	   COUNT = The number of characters in the receive buffer, up to
+		   and including the last received Special Character. This
+		   count is not valid if the Special Character Flag is 0.
+
+

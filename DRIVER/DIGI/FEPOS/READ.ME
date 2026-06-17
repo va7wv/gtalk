@@ -1,0 +1,29 @@
+NOTE:                                                           11/22/89
+        The files in this directory relate to the on-board software
+        provided for the DigiCHANNEL PC/Xx by DigiBoard, Inc.
+
+        PCXXSPEC.TXT    This specification covers the BIOS & FEPOS programs.
+                        The BIOS is used for the power-up and post diagnostics.
+                        It also explains how to exit the BIOS and begin 
+                        execution of downloaded code.  The BIOS resides in
+                        EPROM for the PC/Xm (EPROM version 1.5 for rev 'A' 
+                        boards & 2.3 for rev 'B' boards).  The BIOS is a 2K
+                        binary file that is downloaded to dual-ported memory
+                        on the PC/Xe or PC/Xi, version 3.5.  This specification
+                        also covers the Front End Processor Operating System,
+                        FEPOS. This code is the supplied on-board operating 
+                        system, FEPOS version 4.7.
+        XABIOS.OBJ      Assembled 2K BIOS (MASM 4.0).
+        XABIOS.BIN      Binary file for the 2K downloadable BIOS (EXE2BIN).
+        XAFEP.OBJ       Assembled module for the FEPOS (MASM 4.0).
+        XAFEP.BIN       Binary file for the FEPOS (EXE2BIN).  CONVERT.COM can 
+                        be used to make this a downloadable module that can be
+                        executed via a BIOS function 1.
+        CONVERT.COM     Takes the existing XAFEP.BIN file and inserts the 
+                        number of 256 byte blocks in byte 2 and a 2's 
+                        compliment CRC in byte 3.  This program will create a 
+                        new file, XAFEP.FCM.  XAFEP.FCM file can now be 
+                        downloaded to the DigiCHANNEL PC/Xx, followed by a
+                        BIOS function 1 to transfer control from the BIOS to 
+                        the downloaded program (FEPOS).  Refer to PCXXSPEC.TXT
+                        for more details on creating the downloadable program.

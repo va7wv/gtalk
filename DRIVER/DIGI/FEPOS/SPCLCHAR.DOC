@@ -1,0 +1,112 @@
+
+
+
+This document describes the procedures and information necessary to use
+the Special Character Interrupt features of the DigiBoard XAPCM232 DOS Driver
+(V 1.9.1).
+
+
+The driver has been enhanced to handle Special Character Interrupts (SCI) from
+the Digiboard. The modifications provide for a Special Character Flag (SCF) and
+a Special Character Count (SCC) for each channel supported by the driver.
+
+Interrupt 14h functions 19h (Enable/Disable Special Character interrupts) and
+and 1ah (Get pointer to Special Character Flag/Count) have been added to
+facilitate easy use of these features.
+
+
+The Special Character Flag :
+
+The SCF is a byte location for each channel and has two possible values :
+
+		00h - No Special Characters in the channel's
+		      receive buffer.
+
+ 		FFh - Special Character(s) in the channel's
+		      receive buffer.
+
+The driver will set the SCF to FFh on each SCI and reset it to 00h only after
+the last received Special Character has been retrieved from the buffer, or the
+buffer has been flushed.
+
+
+
+The Special Character Count :
+
+The SCC is a word location for each channel and specifies the number of characters
+in the receive buffer, up to and including the last received Special Character.
+( Note that the SCC is NOT a count of the Special Characters in the buffer, but
+a count of all characters in the buffer, up to and including the last received
+Special Character.) The SCC is valid only when the SCF is set to FFh. The SCC
+is calculated each time a SCI occurs and is decremented each time a character
+is read from the channel's receive buffer. The SCC is set to 0 if the buffer is
+flushed or the last Special Character is read from the buffer. The SCC permits
+easy use of INT 14h function 0Fh, the read string function, which requires that
+the user specify the number of bytes to read.
+
+
+
+Enabling SC Interrupts :
+
+
+As mentioned earlier, each channel must have it's SCI's enabled. To do this,
+you can use the DOS driver INT 14h function 19h (Enable/Disable Special
+Character Interrupts). This function has the following usage :
+
+
+FNCT 19H - ENABLE / DISABLE  SPECIAL CHARACTER INTERRUPT
+
+	   ENTRY     AH : 19H
+		     BL : 0    - DISABLE SPECIAL CHARACTER INTERRUPT
+		     BH : 0FFH - ENABLE SPECIAL CHARACTER INTERRUPT
+		     DX : ANY CHANNEL NUMBER SUPPORTED BY THE DRIVER
+
+	   RETURNS   AH : 0    - FUNCTION GOOD
+		     AL : 0FFH - FUNCTION FAILED
+
+
+Enabling the SCI for each channel will allow the SCFs and SCCs to provide
+accurate information.
+
+
+
+
+
+Locating the SCFs and the SCCs :
+
+
+The SCFs and the SCCs are located in the driver's memory space and can be
+located using the driver's Interrupt 14h function 1Ah. The function usage
+is shown below :
+
+
+FNCT 1AH - GET POINTER TO SPECIAL CHARACTER FLAG/COUNTER
+
+	   ENTRY     AH : 1AH
+		     BX : 0 - RETURN POINTER TO SPECIAL CHARACTER FLAG (BYTE)
+		     BX : 1 - RETURN POINTER TO SPECIAL CHARACTER COUNTER (WORD)
+		     DX : ANY CHANNEL NUMBER SUPPORTED BY THE DRIVER.
+
+	   RETURNS   ES : BX - POINTS TO THE FLAG OR COUNTER.
+
+	   NOTE : SPECIAL CHARACTER INTERRUPTS MUST BE ENABLED FOR THE
+		  FLAGS AND COUNTERS TO PROVIDE VALID INFORMATION.
+
+	   FLAG  = FFh if a Special Character is in the receive buffer.
+		 = 0   No Special Character in buffer; count is invalid.
+
+	   COUNT = The number of characters in the receive buffer, up to
+		   and including the last received Special Character. This
+		   count is not valid if the Special Character Flag is 0.
+
+Typically, the application would get pointers to a channel's flag and count,
+and monitor the flag until it changes from 0 to 0FFh. At this time, the
+application could issue an interrupt 14h function 0FH call (read string) to
+read the number of characters specfied by the count value.
+
+
+
+
+
+
+

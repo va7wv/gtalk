@@ -1,0 +1,44 @@
+BBS DOC FILE     March 1993   - David W Jeske
+
+Quick and Dirty.
+
+To Create a New BBS Board, create a directory in the BBS subdirectory
+under the main GinsuTalk directory. This name should be in the convention
+
+  BBS###    where ### is the board number with leading 0s
+
+The software ships with BBS\BBS001 created.
+
+There is a file called DESCRIPT inside every BBS### directory. This file
+configures the maximum number of messages in the Board, the Priv number
+required to empty the board, the User Number who moderates the board, and
+the NAME of the board.
+
+Sample DESCRIPT  file
+------------------------------------------------------
+50
+0
+100
+Main
+
+------------------------------------------------------
+<end of sample file>
+
+50   = The Max number of messages in the board
+0    = the Priv(flag) required to enter the bbs board
+100  = the user number who moderates this BBS
+Main = the NAME of the bbs
+
+
+
+Create a DESCRIPT file in your new BBS directory.
+
+To have this new board appear in the (J)ump command, edit the file
+
+MENU\BOARDS.MNU
+
+MENU\BOARDS.ANS will print as a FULL SCREEN ANSI file to those
+who wish to see FULL screen ANSI (if the file exists)
+
+
+YOUR DONE!

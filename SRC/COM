@@ -1,0 +1,24 @@
+MAKE Version 3.6  Copyright (c) 1992 Borland International
+
+Available memory 13113888 bytes
+
+        bcc -1 +GTALK.CFG -c com.c
+Borland C++  Version 3.1 Copyright (c) 1992 Borland International
+com.c:
+Error com.c 123: Statement missing ; in function init_smart_port
+Error com.c 124: Misplaced else in function init_smart_port
+Warning com.c 141: Constant is long in function init_smart_port
+Warning com.c 143: Constant is long in function init_smart_port
+Error com.c 146: Undefined symbol 'portnum' in function init_smart_port
+Error com.c 146: Too few parameters in call to 'write_buf_command' in function init_smart_port
+Warning com.c 335: Mixing pointers to signed and unsigned char in function write_buf_command
+Warning com.c 394: Constant is long in function set_baud_rate_smart
+Warning com.c 396: Constant is long in function set_baud_rate_smart
+Error com.c 399: Undefined symbol 'portnum' in function set_baud_rate_smart
+Error com.c 399: Too few parameters in call to 'write_buf_command' in function set_baud_rate_smart
+Warning com.c 400: 'cport' is assigned a value that is never used in function set_baud_rate_smart
+*** 6 errors in Compile ***
+
+        Available memory 4002424
+
+** error 1 ** deleting obj\com.obj

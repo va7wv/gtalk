@@ -1,0 +1,39 @@
+MAKE Version 3.6  Copyright (c) 1992 Borland International
+
+Available memory 13113872 bytes
+
+        bcc -1- +GTALK.CFG -c alloc.c
+Borland C++  Version 3.1 Copyright (c) 1992 Borland International
+alloc.c:
+Loaded pre-compiled headers.
+Error alloc.c 141: Statement missing ; in function find_smallest_available_memory
+Error alloc.c 156: Declaration is not allowed here in function find_smallest_available_memory
+Error alloc.c 157: Declaration syntax error in function find_smallest_available_memory
+Error alloc.c 406: Declaration is not allowed here in function find_smallest_available_memory
+Error alloc.c 407: Declaration syntax error in function find_smallest_available_memory
+Error alloc.c 434: Declaration is not allowed here in function find_smallest_available_memory
+Error alloc.c 436: Declaration syntax error in function find_smallest_available_memory
+Error alloc.c 488: Declaration is not allowed here in function find_smallest_available_memory
+Error alloc.c 489: Declaration syntax error in function find_smallest_available_memory
+Error alloc.c 515: Declaration is not allowed here in function find_smallest_available_memory
+Error alloc.c 516: Declaration syntax error in function find_smallest_available_memory
+Error alloc.c 542: Declaration is not allowed here in function find_smallest_available_memory
+Error alloc.c 543: Declaration syntax error in function find_smallest_available_memory
+Error alloc.c 605: Declaration is not allowed here in function find_smallest_available_memory
+Error alloc.c 606: Declaration syntax error in function find_smallest_available_memory
+Error alloc.c 641: Declaration is not allowed here in function find_smallest_available_memory
+Error alloc.c 642: Declaration syntax error in function find_smallest_available_memory
+Error alloc.c 659: Declaration is not allowed here in function find_smallest_available_memory
+Error alloc.c 660: Declaration syntax error in function find_smallest_available_memory
+Error alloc.c 677: Declaration is not allowed here in function find_smallest_available_memory
+Error alloc.c 680: Declaration syntax error in function find_smallest_available_memory
+Error alloc.c 696: Declaration is not allowed here in function find_smallest_available_memory
+Error alloc.c 697: Declaration syntax error in function find_smallest_available_memory
+Error alloc.c 708: Declaration is not allowed here in function find_smallest_available_memory
+Error alloc.c 709: Declaration syntax error in function find_smallest_available_memory
+Error alloc.c 709: Too many error or warning messages in function find_smallest_available_memory
+*** 26 errors in Compile ***
+
+        Available memory 4008872
+
+** error 1 ** deleting obj\alloc.obj

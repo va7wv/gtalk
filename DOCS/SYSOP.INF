@@ -1,0 +1,202 @@
+
+
+************************************************************
+****                                                    ****
+****     GTalk - official Documemtation Release 0.1     ****
+****               Sysop System Commands                ****
+****                                                    ****
+************************************************************
+
+
+Sysop System Commands    - Written 04/05/93 by David W Jeske
+---------------------      Copyright 1993 by David W. Jeske and
+                                             Daniel L. Marks
+
+
+The Following is a list of GTalk SYSOP commands:
+
+GTalk Kernal/Serial Info Commands:
+  /CHK                  - checksum util
+  /MEMORY               - memory
+  /FILES                - gtalk file usage
+  /SCHED                - scheduled task list
+  /SERIAL               - serial configuration list
+  /DCD                  - Toggle DCD detect for node on/off
+  /QUICK                - Quick system shutdown
+  /SHUTDOWN             - Shutdown system
+  /RESETn               - Reset node #n
+
+Sysop Utilities:
+  /SYSTEM               - General Sysop Utilities menu
+  /SYSOP                - Sysop FILE utilities
+  /COMMAND              - Global Toggle commands on/off
+  /EF                   - Edit File
+  /VIEW                 - View file
+  /ROT                  - Enter rotator menu
+  /TERMn                - Enter terminal node #n
+  /U                    - Enter user editor
+  /WALL <text>          - Send broadcast message
+  /WALLA <text>         - Send anonymous broadcast message
+  /WATCH                - watch utility
+
+
+Sysop General Use Commands:
+  /SYSMON               - System Monitoring (auto monitoring of channel 0)
+  /Fn                   - "Force" another node
+  /LURK+,-              - Set lurk on/off
+  /SAFE+,-              - Set safe mode for lurk on/off
+  /LOCKxx               - Set priority lock for system
+  /RLn                  - Relog node #n
+  /SM+                  - Display sysop user list
+
+Time/Access Related Commands
+  /Vn                   - Validate node #n
+  /Gn(+,-,=)xx          - +/-/set time (xx/min) for #n
+  /Kn                   - Kill node #n
+  /MAKEn(GRUBCS*)       - Set Temporary Access Priviliges
+
+Link Related Commands:
+  /LINKn                - Set node #n as a link
+
+System Update Commands:
+  /MEMUD                - Member list update
+  /SYSUD                - Update system information file
+
+
+********************************
+*  Kernel/Serial Info Commands *
+********************************
+
+ /CHK            The CHecKsum Command allow users to utilize GTalk's self
+                 checksum utilities.
+
+                 /CHK *
+                    Will tell the system to do an immediate checksum
+                    of the "program" in RAM. NOTE: This is a background task
+                    so output may not appear immediately. When the checksum is
+                    finished, both the INITIAL checksum of the program RAM
+                    (which was taken when the system started up) and the
+                    CURRENT checksum of the program RAM are printed. If they
+                    differ, Rebooting of the system is suggested, for the
+                    integrity of the program has been breeched.
+
+                 /CHK+  or /CHK-
+                    Will ENABLE or DISABLE the operation of the AUTOMATIC
+                    checksum.
+
+                    If enabled, this will checksum the Program in RAM every
+                    minute. If they checksum fails. It will alert all users.
+                    Log an error to the file <gtalk>\LOG\ERROR.LOG and
+                    reboot the system.
+
+                 /CHK
+                    Will print whether the above AUTO-checksum feature is
+                    currently enabled.
+
+                 NOTE: the auto-checksum feature saves to the system
+                       information file. So if it is enabled, it will
+                       continue to be enabled when the system is shutdown
+                       and restarted. Until the /CHK- command is executed.
+
+/MEMORY         The /MEMORY command prints a detailed memory map of
+                GTalk memory. It will print the amount of memory allocated
+                to DOS, as well as the amount of memory GTalk is using itself.
+
+                 - Spaces marked as EMPTY are available for allocation.
+
+                 - The DOS CoreLeft should be around 32k, that is memory left
+                   for dos C functions to allocate from.
+
+/FILES          The /FILES command prints a detailed map of the files which
+                are currently open.
+
+                   NOTE: files are not usually left open very long, so this
+                         list is usually empty. Files which are being Xferred
+                         are usually open for an extended period of time, and
+                         thus can been seen while the Xfer is in progress.
+
+/SCHED          The /SCHED command prints a detailed map of events which are
+                currently scheduled. These tasks are NOT running, they are
+                WAITING to be run. When they are actually run, they no longer
+                appear in this list.
+
+/SERIAL         The /SERIAL command prints a list of the currently installed
+                serial devices. No serial configuration data can be modified
+                from withen the GTalk program.
+                    - See the program SERIALCF.EXE
+
+/DCD            The /DCD command toggles the use of the Data Carrier Detect
+                line for a specific Node. This should be left alone in
+                normal situations.
+
+                Initially DCD detect is set to ON.
+
+                /DCD<line>
+                   Will toggle the DCD detect for that line. The main use of
+                   this command is to allow NULL MODEM connections to specific
+                   lines. if /DCD<line> and that line is connected to a modem
+                   GTalk will no longer realize which someone Hangs Up on the
+                   modem. (The Gtalk program will think there is ALWAYS DCD)
+
+                 NOTE: Currently, to log into another node you must set the
+                       baud rate to the configured baud rate, and type
+                       CON <baud><return>.
+
+                        Ex. CON 2400<return>
+
+/QUICK          This feature is available from CONSOLE only. Console cannot
+                be forced to issue this command in any way.
+
+                This command does an IMMEDIATE drop to DOS. It does not
+                deallocate anything, or deinit the serial ports. This
+                feature is currently for debugging purposes only and will
+                be removed. It may be initially "disabled" in the /command
+                menu. When configuring the system, this is the quickest
+                way to exit the software, and should have no ill-effects
+                other than, the modems will be left at auto-answer.
+
+/SHUTDOWN       This command will de-init all modems with the "de-init string"
+                which was preconfigured in the SERIAL.CFG. Normally this
+                is set for "ats0=0" to set the modem to no longer answer.
+
+                It will carefully close all files, and kill all processes.
+                Then it will automatically  ** REBOOT YOUR COMPUTER **.
+
+                <note, this command will soon ask for a shutdown password,
+                 which can be set via the <P>assword section of the /SYSTEM
+                 menu.
+
+/RESET<task#>   This command will blindly KILL the task at the specified
+                task number. Note that each port's number is the same
+                as it's task number. This command is also provided as a
+                debug utility, and should not be used for general purposes.
+                Use /K<line> instead. <This will not save the information
+                of the user logged into the node.>
+
+                USAGE: if a modem needs to be reset and there is NO USER
+                       on that line. /RESET<line> will hang-up and re-init
+                       the modem.
+
+                       If you add a modem to an active serial port, it should
+                       automatically be initted when it is turned on. If it
+                       is not initted, switch it off, count to 2 and switch
+                       it back on. If this still does not re-init the modem.
+                       type /reset<line>. If THAT does not init the modem,
+                       something is wrong with either the SERIAL.CFG or
+                       the line the modem is connected to.
+
+/SYSTEM         This menu is the Easiest entry to the sysop utilities.
+                It has menu entries for all of the following functions:
+
+                        /SYSOP          - sysop file utilities
+                        /EF             - File Editor
+                        /VIEW           - File Viewer
+                        /U              - User Editor
+
+               From this menu you may enter  "U###" where ### is the
+               user number you wish to edit or create.
+
+
+
+
+

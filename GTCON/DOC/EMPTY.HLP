@@ -1,0 +1,83 @@
+
+Guest Commands:
+
+/ANSI            : Toggle ANSI on/off
+/D               : Toggle stream send on/off (for buffered chat use)
+/FB              : Send feedback to sysops
+/I               : Display GinsuTalk version and copyright information
+/LASTaaa         : Display last call date for user #aaa
+/LOGxx           : Display caller log (last xx calls)
+/Mxxx            : Display message #xxx
+/Pn <text>       : Send private message <text> to node #n
+/Q               : Quit system
+/S               : Display callers
+/SM              : Display user list
+/SYSHELP         : Enter detailed system help area
+/SYSINFO         : Display total/daily calls and system configuration file
+/TIME            : Display current date and time
+/Wxxx            : Set screen width (20-256)
+/Xn              : Toggle squelch node #n
+
+User Commands:
+
+/AUTOANSI        : Set ANSI default for your account
+/BBS             : Enter BBS area
+/Cc <text>       : Send message <text> to channel #c
+/INFO            : Display information about your account
+/MAIL            : Enter MAIL area
+/MESG            : Enter message area
+/MON(+,-,=)c,c.. : Add/delete/set monitor channels
+/PAGEn           : Page node #n
+/PAGE+,-         : Allow/disable pages to you
+/PASSWD          : Set new password
+/SIn             : Silence node #n
+/Tc              : Tune to channel #c
+/TS              : List channel information
+/USn             : Unsilence Node #n
+
+Channel Moderator Commands:
+
+/CA+,-           : Set channel anonymous/identified
+/CGn             : Give node #n moderator privilege
+/CIn,n..         : Invite nodes (n,n) to your channel
+/CKn             : Kick node #n off your channel
+/CL+,-           : Set channel unlocked/locked
+/CM+,-           : Channel messages (/C) allowed/disabled
+/CN<name>        : Name current channel
+/CPxx            : Set channel priority to xx
+
+Sysop Commands:
+ 
+/COMMAND         : Global toggle commands on/off
+/DCDn            : Toggle DCD detect for node #n
+/EF <filename>   : Edit file <filename>
+/Fn <txt/command>: Force text/command to node #n
+/FILES           : Show file allocation table
+/Gn(+,-,=)xx     : Add/delete/set time (xx/min) for node #n
+/Kn              : Kill node #n
+/LINKn           : Set node #n as a link
+/LOCKxx          : Set priority lock for system
+/LURK+,-         : Set lurk on/off
+/MEMORY          : Show system memory allocation table
+/MAKEn(GRUBCS)   : Make node #n as a temporary ---
+/MEMUD           : Member list update
+/QUICK           : Quick system shutdown
+/RESETn          : Reset node #n
+/RLn             : Relog node #n
+/ROT             : Enter rotator menu
+/SAFE+,-         : Set safe mode for lurk on/off
+/SHUTDOWN        : Shutdown system
+/SM+             : Display sysop user list
+/SYSMON          : Toggle system monitor (channel 0)
+/SYSOP           : Enter file maintance area
+/SYSTEM          : Enter sysop functions menu
+/SYSUD           : Update system information file
+/TERMn           : Enter terminal node #n
+/Uaaa            : Enter user editor for account #aaa
+/Vn              : Validate node #n
+/VIEW <filename> : View file <filename>
+/WALL <text>     : Send broadcast message to system
+/WALLA <text>    : Send anonymous broadcast message to system
+/WATCH           : Display watch list
+/WATCHn          : Watch node #n
+

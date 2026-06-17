@@ -1,0 +1,918 @@
+
+
+/* Gtalk */
+/* Copyright (C) 1993, by David W Jeske, and Daniel L Marks */
+/* Copying or distributing this source code without written  */
+/* permission of David W Jeske and Daniel L Marks is strictly forbidden */
+
+
+/* BBS.C */
+
+#include "include.h"
+#include "gtalk.h"
+#include "structs.h"
+
+int save_bbs_user(char *directory, int number, struct bbs_user_account *bbs_ptr);
+void delete_a_bbs_message(char *directory,struct bbs_board_info *bbs_info,
+   int *num_files, int which_fl, struct board_info *new_board);
+
+#define MAX_MESG_LIMIT 50
+#define MAX_BOARDS 999
+#define MESSAGE_SIZE 4096
+#define BBS_PAGING 1
+
+#undef DEBUG
+
+int compare_dates(const void *a, const void *b)
+ {
+   unsigned long int date1 = ((struct bbs_board_info *) a)->filedate;
+   unsigned long int date2 = ((struct bbs_board_info *) b)->filedate;
+   if (date1<date2) return -1;
+    else
+   if (date1==date2) return 0;
+   return 1;
+ };
+
+void find_bbs(char *directory, struct bbs_board_info bbs_info[],
+    int *num_bbs, int limit)
+ {
+   char wildcard[25];
+   struct ffblk look_up;
+   int isfile;
+
+   *num_bbs=0;
+   sprintf(wildcard,"%s\\m*.*",directory);
+   lock_dos();
+   isfile=findfirst(wildcard,&look_up,FA_NORMAL);
+   while ((!isfile) && (*num_bbs<limit))
+    {
+      strcpy(bbs_info[*num_bbs].filename,look_up.ff_name);
+      bbs_info[*num_bbs].filedate=(unsigned long int)
+           ((((unsigned long int)look_up.ff_fdate) << 16) |
+              ((unsigned long int)look_up.ff_ftime));
+      (*num_bbs)++;
+      unlock_dos();
+      next_task();
+      lock_dos();
+      isfile = findnext(&look_up);
+    };
+   unlock_dos();
+   qsort((void *)bbs_info, *num_bbs, sizeof(struct bbs_board_info), compare_dates);
+ };
+
+void create_bbs_message(char *directory,char *copyfile,char *subject,
+      int user,char *from, struct board_info *new_board, int num_msg,
+      struct bbs_board_info *bbs_info)
+ {
+   int flag = 0;
+   struct ffblk look_up;
+   char s[27];
+   char str[60];
+   char temp[29];
+   FILE *file_write;
+   FILE *file_read;
+   time_t now;
+
+   while (!flag)
+    {
+      sprintf(s,"%s\\m%04dx%02d",directory,user_lines[tswitch].number,(dans_counter % 100));
+      lock_dos();
+      flag = findfirst(s,&look_up,FA_NORMAL);
+      unlock_dos();
+      next_task();
+    };
+   lock_dos();
+   if ((file_write=g_fopen(s,"wb","BBS#1"))==NULL)
+    {
+#ifdef DEBUG
+      log_error(s);
+#endif
+
+      unlock_dos();
+      return;
+    };
+   fprintf(file_write,"|*h1|*f4   User: |*f7(#%03d) %s|*r1%s",user,from,cr_lf);
+   fprintf(file_write,"|*h1|*f4Subject: |*f7%s|*r1%s",subject,cr_lf);
+   time(&now);
+   str_time(temp,30,localtime(&now));
+   strftime(s,70,"%a %b %d %Y",localtime(&now));
+   sprintf(str,"%s  %s ",s,temp);
+   fprintf(file_write,"   |*f4|*h1Date:|*f7 %s%s%s|*r1",str,cr_lf,cr_lf);
+   if ((file_read=g_fopen(copyfile,"rb","BBS#2"))==NULL)
+    {
+      log_error(copyfile);
+      g_fclose(file_write);
+      unlock_dos();
+      return;
+    };
+   copy_stream(file_read,file_write);
+   g_fclose(file_read);
+   g_fclose(file_write);
+   if (num_msg >= new_board->limit_messages)
+    {
+      sprintf(s,"%s\\%s",directory,bbs_info[0].filename);
+      remove(s);
+    };
+   unlock_dos();
+ };
+
+void find_bbs_directory(char *directory, int user_num)
+ {
+   sprintf(directory,"bbs\\bbs%03d",user_num);
+ };
+
+int open_bbs_file(char *directory,struct bbs_board_info *bbs_info,
+   int filenm,FILE **fileptr)
+ {
+  char s[25];
+
+  sprintf(s,"%s\\%s",directory,bbs_info[filenm].filename);
+  if ((*fileptr=g_fopen(s,"rb","BBS#3"))==NULL)
+   {
+#ifdef DEBUG
+     log_error(s);
+#endif
+     return 0;
+   };
+  return 1;
+ };
+
+void list_bbs(char *directory, struct bbs_board_info *bbs_info,
+   int num_files,struct bbs_user_account *bbs_user)
+ {
+  int file;
+  int anyfile = 1;
+  int key;
+  int abort=0;
+  char user_l[80];
+  char date_l[80];
+  char subject_l[120];
+  char num_l[120];
+  int count=0;
+
+  FILE *fileptr;
+
+  print_cr();
+  file=num_files;
+
+  while ((file>0) && (!abort))
+   {
+     file--;
+     lock_dos();
+     if (open_bbs_file(directory,bbs_info,file,&fileptr))
+      {
+        mail_line(user_l,20,40,fileptr);
+        mail_line(subject_l,32,70,fileptr);
+        mail_line(date_l,16,40,fileptr);
+        g_fclose(fileptr);
+        unlock_dos();
+        anyfile = 0;
+        if (bbs_info[file].filedate > (bbs_user->last_entered_bbs))
+         sprintf(num_l,"*%02d: ",file+1);
+         else
+         sprintf(num_l," %02d: ",file+1);
+
+        special_code(1,tswitch);
+
+        print_string(num_l);
+        print_string(user_l);
+        print_chr(' ');
+        print_string(date_l);
+        print_chr(' ');
+        print_string(subject_l);
+        print_cr();
+        count++;
+        special_code(0,tswitch);
+
+        key = get_first_char(tswitch);
+        if ((key == 27) || (key == 3))
+         {
+           int_char(tswitch);
+           file = -1;
+         };
+        if (key == 19)
+         {
+           wait_ch();
+           wait_ch();
+         };
+
+        if (count>=24)
+         { abort= do_page_break();
+           count=0;
+        }
+
+        lock_dos();
+      };
+     unlock_dos();
+   };
+ if (anyfile) print_str_cr("No BBS messages.");
+};
+
+
+void read_a_bbs_message(char *directory, struct bbs_board_info *bbs_info,
+       int *num_files, int which_fl, struct board_info *new_board,
+       int board_num, struct bbs_user_account *bbs_user)
+ {
+   char s[200];
+   int not_abort = 1;
+   int testnum;
+
+   if ((which_fl<1) || (which_fl>(*num_files))) return;
+   which_fl--;
+
+   while (not_abort)
+    {
+     print_cr();
+     sprintf(s,"|*f4|*h1Message:|*f7 #%03d on %s(%02d)",which_fl+1,new_board->title,board_num);
+     special_code(1,tswitch);
+     print_str_cr(s);
+     special_code(0,tswitch);
+     sprintf(s,"%s\\%s",directory,bbs_info[which_fl].filename);
+     print_file_to_cntrl(s,tswitch,1,1,1,BBS_PAGING);
+     check_for_privates();
+     print_cr();
+     sprintf(s,"[|*f2|*h1%02d |*r1of |*f2|*h1%02d|*r1] [|*h1A|*h0]gain [|*h1N|*h0]ext [|*h1J|*h0]ump [|*h1R|*h0]eply [|*h1Q|*h0]uit: ",which_fl+1,*num_files);
+
+     switch (get_hot_key_prompt(s,"ANJRQ",'N',1))
+      {
+       case 'N': which_fl++;
+                 if (which_fl == *num_files)
+                  {
+                    which_fl--;
+                    not_abort = 0;
+                  };
+                 break;
+       case 'A': break;
+       case 'J': sprintf(s,"Which message to jump to: (1-%d) ",*num_files);
+                 print_string(s);
+                 get_string(s,10);
+                 if (!(*s))
+                 print_cr();
+                 else
+                 {
+                    testnum = atoi(s);
+                    if ((testnum>=1) && (testnum<=(*num_files))) which_fl = testnum-1;
+                 };
+                 break;
+
+       case 'D':
+                print_cr();
+                print_string("Are you sure you want to delete? ");
+                get_string(s,10);
+                if (!(*s))
+                  print_cr();
+                else
+                if ((*s=='y') || (*s=='Y'))
+                {
+                  delete_a_bbs_message(directory,bbs_info,num_files,which_fl,
+                     new_board);
+                  find_bbs(directory,bbs_info,num_files,new_board->limit_messages);
+                  if (which_fl>=(*num_files)) which_fl = *num_files - 1;
+                }
+                break;
+       case 'R':
+                 send_a_bbs_message(board_num,new_board,*num_files,bbs_info);
+                 find_bbs(directory,bbs_info,num_files,new_board->limit_messages);
+                 break;
+       case 'Q':
+                not_abort = 0;
+                break;
+     }// end switch
+   }//end while
+ if (bbs_info[which_fl].filedate>bbs_user->last_entered_bbs)
+    {
+      bbs_user->last_entered_bbs = bbs_info[which_fl].filedate;
+      save_bbs_user(directory,user_lines[tswitch].number,bbs_user);
+    };
+ };
+
+
+void read_bbs_message(char *directory, struct bbs_board_info *bbs_info,
+     int *num_files, struct board_info *new_board, int board_num,
+     struct bbs_user_account *bbs_user)
+ {
+   int which_fl;
+   char s[40];
+   char *data;
+   if (!(*num_files)) {print_str_cr("No messages to read"); return; }
+
+   sprintf(s,"Which mail message to read: (1-%d): ",*num_files);
+   print_cr();
+   print_string(s);
+   get_editor_string(s,5);
+   which_fl=str_to_num(s,&data);
+   if ((which_fl<1) || (which_fl>(*num_files))) return;
+   /* which_fl--; */
+
+   read_a_bbs_message(directory,bbs_info,num_files,which_fl,
+             new_board,board_num,bbs_user);
+ };
+
+int is_new_messages(struct bbs_board_info *bbs_info,
+     int num_files, struct bbs_user_account *bbs_user)
+ {
+   int which_fl=0;
+   int flag = 1;
+
+   if (!num_files) return 0;
+
+   while ((which_fl<num_files) && (flag))
+    {
+       if (bbs_info[which_fl].filedate > (bbs_user->last_entered_bbs))
+        flag = 0;
+        else which_fl++;
+    };
+
+   return (num_files-which_fl);
+ };
+
+void new_messages(char *directory, struct bbs_board_info *bbs_info,
+     int *num_files, struct board_info *new_board, int board_num,
+     struct bbs_user_account *bbs_user)
+ {
+   int which_fl=0;
+   int flag = 1;
+   if (!(*num_files)) {print_str_cr("No messages to read"); return;}
+
+   while ((which_fl<(*num_files)) && (flag))
+    {
+       if (bbs_info[which_fl].filedate > (bbs_user->last_entered_bbs))
+        flag = 0;
+        else which_fl++;
+    };
+
+   if (flag)
+   {
+      if (bbs_info[(*num_files)-1].filedate < (bbs_user->last_entered_bbs))
+       bbs_user->last_entered_bbs = 0;
+       else
+       print_str_cr("No new messages.");
+   }
+
+   read_a_bbs_message(directory,bbs_info,num_files,which_fl+1,
+            new_board,board_num,bbs_user);
+ };
+
+void edit_a_bbs_message(char *directory,struct bbs_board_info *bbs_info,
+   int *num_files, int which_fl, struct board_info *new_board)
+{
+   char s[40];
+
+   if ((which_fl<1) || (which_fl>*num_files)) return;
+
+   if (!((test_bit(user_options[tswitch].privs,BBS_EDIT_PRV)) ||
+         (user_lines[tswitch].number == new_board->user_moderator)))
+    {
+      print_str_cr("You do not have edit privilege to that message.");
+      return;
+    };
+   sprintf(s,"%s\\%s",directory,bbs_info[which_fl-1].filename);
+   line_editor(s,MESSAGE_SIZE);
+}
+
+void edit_bbs_message(char *directory, struct bbs_board_info *bbs_info,
+    int *num_files, struct board_info *new_board)
+ {
+   int which_fl;
+   char s[40];
+   char *data;
+
+   if (!num_files) {print_str_cr("No messages to edit"); return;}
+   sprintf(s,"Which mail message to edit: (1-%d): ",*num_files);
+   print_cr();
+   print_string(s);
+   get_editor_string(s,5);
+   which_fl=str_to_num(s,&data);
+   edit_a_bbs_message(directory,bbs_info,num_files,which_fl,new_board);
+ };
+
+void delete_a_bbs_message(char *directory,struct bbs_board_info *bbs_info,
+   int *num_files, int which_fl, struct board_info *new_board)
+{
+   char s[40];
+   char *data;
+   int owner;
+
+   if ((which_fl<1) || (which_fl>*num_files)) return;
+
+   owner = str_to_num(bbs_info[which_fl-1].filename+1,&data);
+   if (!((owner == user_lines[tswitch].number) ||
+         (test_bit(user_options[tswitch].privs,BBS_EDIT_PRV)) ||
+         (user_lines[tswitch].number == new_board->user_moderator)))
+    {
+      print_str_cr("You do not have delete privilege to that message.");
+      return;
+    };
+   sprintf(s,"%s\\%s",directory,bbs_info[which_fl-1].filename);
+   print_cr();
+   lock_dos();
+   remove(s);
+   unlock_dos();
+   print_str_cr("Message deleted.");
+}
+
+void delete_bbs_message(char *directory, struct bbs_board_info *bbs_info,
+    int *num_files, struct board_info *new_board)
+ {
+   int which_fl;
+   char s[40];
+   char *data;
+
+   if (!num_files) {print_str_cr("No messages to delete"); return;}
+   sprintf(s,"Which mail message to delete: (1-%d): ",*num_files);
+   print_cr();
+   print_string(s);
+   get_editor_string(s,5);
+   which_fl=str_to_num(s,&data);
+   delete_a_bbs_message(directory,bbs_info,num_files,which_fl,new_board);
+
+ };
+
+void send_a_bbs_message(int bbs_num,struct board_info *new_board,
+    int bbs_mesg, struct bbs_board_info *board_info)
+{
+   char s[40];
+   char subject[60];
+   FILE *fileptr;
+   char directory[24];
+
+   if ((bbs_num<0) || (bbs_num>999)) return;
+   print_cr();
+   special_code(1,tswitch);
+   print_string("|*h1|*f4From:|*r1    ");
+   print_str_cr(user_lines[tswitch].handle);
+   print_string("|*r1|*h1|*f4Subject:|*f7 ");
+   get_string(subject,57);
+   print_cr();
+   special_code(0,tswitch);
+   if (!(*subject))
+    {
+      print_cr();
+      return;
+    };
+   sprintf(s,"bbs\\tempfl.%02d",tswitch);
+   lock_dos();
+   if ((fileptr=g_fopen(s,"wb","BBS#4"))==NULL)
+    {
+      log_error(s);
+      unlock_dos();
+      return;
+    };
+   g_fclose(fileptr);
+   unlock_dos();
+   if (line_editor(s,MESSAGE_SIZE))
+    {
+      find_bbs_directory(directory,bbs_num);
+      create_bbs_message(directory,s,subject,user_lines[tswitch].number,
+          user_lines[tswitch].handle,new_board,bbs_mesg,board_info);
+      print_str_cr("Message posted.");
+    };
+}
+
+int load_board_info(int board, struct board_info *new_board, char *directory)
+ {
+   FILE *fileptr;
+   char filename[40];
+   char s[12];
+   char *data;
+
+   new_board->limit_messages = MAX_MESG_LIMIT;
+   new_board->priv_access = HANDLE_PRV;
+   strcpy(new_board->title,"Board");
+   find_bbs_directory(directory,board);
+   sprintf(filename,"%s\\DESCRIPT",directory);
+
+   lock_dos();
+   if (!(fileptr = g_fopen(filename,"rb","BBS#5")))
+    {
+      unlock_dos();
+#ifdef DEBUG
+      log_error(filename);
+#endif
+      return 2;
+    }
+    else
+    {
+      fgets(s,10,fileptr);
+      new_board->limit_messages = str_to_num(s,&data);
+      fgets(s,10,fileptr);
+      new_board->priv_access = str_to_num(s,&data);
+      fgets(s,10,fileptr);
+      new_board->user_moderator = str_to_num(s,&data);
+      fgets(new_board->title,29,fileptr);
+      if (strlen(new_board->title)>2)
+       *(new_board->title+strlen(new_board->title)-2) = 0;
+      g_fclose(fileptr);
+      unlock_dos();
+    };
+   if (new_board->limit_messages > MAX_MESG_LIMIT)
+    new_board->limit_messages = MAX_MESG_LIMIT;
+   return (!(test_bit(user_options[tswitch].privs,new_board->priv_access)));
+ };
+
+void create_blank_bbs_acct(struct bbs_user_account *temp)
+{
+    temp->last_entered_bbs = 0;
+    temp->newscan = 1;
+};
+
+int load_bbs_user(char *directory, int number, struct bbs_user_account *bbs_ptr)
+{
+    int flag=islocked(DOS_SEM);
+    int number_users;
+    FILE *fileptr;
+    char bbs_user_file[40];
+
+    create_blank_bbs_acct(bbs_ptr);
+    sprintf(bbs_user_file,"%s\\DEFAULTS",directory);
+
+    if (!flag) lock_dos();
+
+    if (!(fileptr=g_fopen(bbs_user_file,"rb","BBS#6")))
+       {
+        log_error("*bbs file wouldn't open");
+        log_error(bbs_user_file);
+        if (!flag) unlock_dos();
+        return 1;
+       }
+    fseek(fileptr,0,SEEK_SET);
+    fscanf(fileptr,"%d\n",&number_users);
+    if (number>number_users)
+       {
+        log_error("*LOAD BBS ACCT : system tried to read past end of user file");
+        g_fclose(fileptr);
+        if (!flag) unlock_dos();
+        return 1;
+       }
+    else
+        fseek(fileptr,
+         (long int)sizeof(struct bbs_user_account)*(number+1),SEEK_SET);
+        if (!fread(bbs_ptr, sizeof(struct bbs_user_account), 1, fileptr))
+             {  log_error("* fread() failed on file ");
+                log_error(bbs_user_file);
+                g_fclose(fileptr);
+                if (!flag) unlock_dos();
+                return 1;
+             }
+        if (g_fclose(fileptr))
+           {
+             log_error("fclose failed");
+             log_error(bbs_user_file);
+             if (!flag) unlock_dos();
+             return 1;
+           }
+    if (!flag) unlock_dos();
+ return 0;
+
+}
+
+int save_bbs_user(char *directory, int number, struct bbs_user_account *bbs_ptr)
+{
+    int flag=islocked(DOS_SEM);
+    int number_users;
+    int putit;
+    struct bbs_user_account temp;
+    FILE *fileptr;
+    char bbs_user_file[40];
+
+    sprintf(bbs_user_file,"%s\\DEFAULTS",directory);
+
+    if (!flag) lock_dos();
+
+    if (!(fileptr=g_fopen(bbs_user_file,"rb+","BBS#7")))
+       {
+        if (!(fileptr=g_fopen(bbs_user_file,"wb","BBS#8")))
+         {
+          log_error(bbs_user_file);
+          if (!flag) unlock_dos();
+          return 1;
+         };
+        fseek(fileptr,0,SEEK_SET);
+        fprintf(fileptr,"0\n");
+       }
+    fseek(fileptr,0,SEEK_SET);
+    fscanf(fileptr,"%d\n",&number_users);
+
+    if (number>=number_users)
+        {
+           log_error("* SYSTEM tried to add user that exhisted");
+
+        create_blank_bbs_acct(&temp);
+        fseek(fileptr,
+         (long int)sizeof(struct bbs_user_account)*
+         (number_users),SEEK_SET);
+        for (putit=number_users;putit<number;putit++)
+         if (!fwrite(&temp, sizeof(struct bbs_user_account), 1, fileptr))
+              { log_error(bbs_user_file);
+                g_fclose(fileptr);
+                 if (!flag) unlock_dos();
+                 return 1;
+              }
+        fseek(fileptr,0,SEEK_SET);
+        fprintf(fileptr,"%d\n",number+1);
+        }
+        
+        fseek(fileptr,
+         (long int)sizeof(struct bbs_user_account)*(number+1),SEEK_SET);
+        if (!fwrite(bbs_ptr, sizeof(struct bbs_user_account), 1, fileptr))
+             {  log_error(bbs_user_file);
+                log_error("*tried to write user and failed");
+                g_fclose(fileptr);
+                if (!flag) unlock_dos();
+                return 1;
+             }
+   fflush(fileptr);
+   if (g_fclose(fileptr))
+        {
+          log_error(bbs_user_file);
+          if (!flag) unlock_dos();
+          return 1;
+        }
+    if (!flag) unlock_dos();
+ return 0;
+
+};
+
+int enter_board(int board_num, struct board_info *new_board,
+                struct bbs_board_info *bbs_info, char *directory,
+                struct bbs_user_account *bbs_user, int *mail_pieces)
+{
+   if (load_board_info(board_num,new_board,directory))
+      return 1;
+   load_bbs_user(directory,user_lines[tswitch].number,bbs_user);
+   find_bbs(directory,bbs_info,mail_pieces,new_board->limit_messages);
+   return 0;
+};
+
+void jump_board(int *board_num, struct board_info *new_board,
+                struct bbs_board_info *bbs_info, char *directory,
+                struct bbs_user_account *bbs_user, int *mail_pieces,
+                int jump_to)
+{
+   int new_board_num;
+   struct board_info test_board;
+   char s[10];
+   char tempdirectory[30];
+
+   if (jump_to == -1)
+    {
+     do
+      {
+        print_cr();
+        print_string("Jump to which board: (?=List) ");
+        get_string(s,8);
+        if (*s=='?') print_file("bbs\\boards.lst");
+      } while (*s == '?');
+     if (!(*s)) print_cr();
+    };
+
+      if (jump_to != -1) new_board_num = jump_to;
+       else new_board_num = atoi(s);
+      if ((new_board_num<1) || (new_board_num>MAX_BOARDS))
+       print_str_cr("Board number does not exist.");
+       else
+       {
+        if (load_board_info(new_board_num,&test_board,tempdirectory))
+         {
+           print_str_cr("Cannot access board.");
+         }
+         else
+         {
+           enter_board(new_board_num,new_board,bbs_info,directory,
+              bbs_user,mail_pieces);
+           *board_num = new_board_num;
+         };
+       };
+};
+
+
+
+
+void global_newscan(int *board_num, struct board_info *new_board,
+                struct bbs_board_info *bbs_info, char *directory,
+                struct bbs_user_account *bbs_user, int *mail_pieces)
+ {
+   int cur_board = 1;
+   int is_still_boards = 1;
+   struct board_info test_board;
+   char tempdirectory[30];
+   char s[250];
+   int state;
+   int key_pr;
+   int key;
+   int num_new_msg;
+   int skip;
+
+   while (is_still_boards)
+    {
+      if (state=load_board_info(cur_board,&test_board,tempdirectory))
+       {
+        if (state==2) is_still_boards = 0;
+       }
+       else
+       {
+         enter_board(cur_board,new_board,bbs_info,directory,
+           bbs_user,mail_pieces);
+         *board_num = cur_board;
+         if ((num_new_msg=is_new_messages(bbs_info,*mail_pieces,bbs_user)) &&
+             (bbs_user->newscan))
+          {
+            check_for_privates();
+            print_cr();
+            sprintf(s,"#|*f2|*h1%02d|*r1 [|*f2|*h1%s|*r1] New: |*f4|*h1%02d|*r1 [|*h1R|*h0]ead [|*h1S|*h0]kip [|*h1Q|*h0]uit: ",cur_board,new_board->title,num_new_msg);
+
+
+            skip = 0;
+            switch (get_hot_key_prompt(s,"RSQP",'R',1))
+            {
+                case  'R' :  new_messages(directory,bbs_info,mail_pieces,
+                             new_board,cur_board,bbs_user);
+                             break;
+                case  'P' :  break;
+                case  'S' :  skip=1;
+                             break;
+                case  'Q' :  is_still_boards=0;
+                             break;
+            }
+
+             if (!skip)
+              {
+                print_cr();
+                sprintf(s,"#|*f2|*h1%02d|*r1 [|*f2|*h1%s|*r1] Post on board? [|*h1Y|*h0/|*h1N|*h0/|*h1Q|*h0] ",cur_board,new_board->title,num_new_msg);
+                special_code(1,tswitch);
+                print_string(s);
+                special_code(0,tswitch);
+                key_pr = 1;
+                while (key_pr)
+                 {
+                   key=wait_ch();
+                   if (key>'Z') key -= 32;
+                   if (key == 'Y')
+                    {
+                     print_chr('Y');
+                     print_cr();
+                     key_pr = 0;
+                     send_a_bbs_message(*board_num,new_board,*mail_pieces,bbs_info);
+                     find_bbs(directory,bbs_info,mail_pieces,new_board->limit_messages);
+                    };
+                   if (key == 'Q')
+                    {
+                      print_chr('Q');
+                      print_cr();
+                      key_pr = 0;
+                      is_still_boards = 0;
+                    };
+                   if ((key == 13) || (key == 'N'))
+                    {
+                      print_chr('N');
+                      print_cr();
+                      key = 'N';
+                      key_pr = 0;
+                    };
+                 };
+              };
+          };
+       };
+      cur_board++;
+    };
+ };
+
+void toggle_global_on(char *directory, struct bbs_user_account *bbs_user,
+                      int board_num)
+ {
+   char s[80];
+
+   bbs_user->newscan = !bbs_user->newscan;
+   print_cr();
+   sprintf(s,"Global Newscan for Board [%02d] turned ",board_num);
+   print_string(s);
+   if (bbs_user->newscan) print_string("on");
+    else print_string("off");
+   print_cr();
+   save_bbs_user(directory,user_lines[tswitch].number,bbs_user);
+ };
+
+void reset_bbs_message_date(struct bbs_user_account *bbs_user,
+                            int mail_pieces,
+                            struct bbs_board_info *bbs_info,
+                            const char *directory)
+ {
+   char s[80];
+   char t[10];
+   unsigned int new_message;
+
+   print_cr();
+   print_str_cr("Reset last message read number");
+   sprintf(s,"Reset last message read to (1-%d): ",mail_pieces);
+   print_string(s);
+   get_string(t,5);
+   if (!(*t))
+   {
+     print_cr();
+     return;
+   }
+   new_message=atoi(t);
+   if ((new_message<1) || (new_message>mail_pieces))
+   {
+     print_str_cr("Message is out of range");
+     return;
+   }
+   bbs_user->last_entered_bbs = bbs_info[new_message-1].filedate-1;
+   save_bbs_user(directory,user_lines[tswitch].number,bbs_user);
+   print_str_cr("Last date reset");
+}
+
+void bbs_system(const char *str,const char *name, int portnum)
+ {
+   char directory[20];
+   struct bbs_board_info bbs_info[MAX_MESG_LIMIT];
+   struct board_info new_board;
+   struct bbs_user_account bbs_user;
+   int mail_pieces;
+   int board_num = 1;
+   int flag = 1;
+   int num;
+   char *point;
+   char command[7];
+   char s[100];
+
+   if (user_lines[tswitch].number<0)
+     { print_str_cr("--> BBS access denied. Guests not allowed.");
+       return;
+     }
+
+   if (enter_board(board_num,&new_board,bbs_info,directory,
+                &bbs_user,&mail_pieces))
+    {
+      print_str_cr("--> BBS access denied.");
+      return;
+    };
+   while (flag)
+    {
+      check_for_privates();
+      print_cr();
+      sprintf(s,"#|*f2|*h1%02d|*r1 [|*f2|*h1%s|*r1] [|*f2|*h11-%d|*r1] BBS Command (|*h1?|*h0 for Menu): ",board_num,new_board.title,mail_pieces);
+
+      prompt_get_string(s,command,4);
+
+      if (*command>'Z') *command -= 32;
+
+      if ((num=str_to_num(command,&point))>0)
+       { if (num<=mail_pieces)
+           {
+            read_a_bbs_message(directory,bbs_info,&mail_pieces,num,
+                               &new_board,board_num,&bbs_user);
+           };
+        }
+       else
+      switch (*command)
+       {
+         case 'N': new_messages(directory,bbs_info,&mail_pieces,
+                        &new_board,board_num,&bbs_user);
+                   break;
+         case 'G': global_newscan(&board_num,&new_board,bbs_info,directory,
+                        &bbs_user,&mail_pieces);
+                   break;
+         case 'Q': flag = 0;
+                   break;
+         case 'J': jump_board(&board_num,&new_board,bbs_info,directory,
+                      &bbs_user,&mail_pieces,str_to_num(command+1,&point));
+                   break;
+         case 'L': list_bbs(directory,bbs_info,mail_pieces,&bbs_user);
+                   break;
+         case 'R': if ((num=str_to_num(command+1,&point))==-1)
+                      read_bbs_message(directory,bbs_info,&mail_pieces,
+                         &new_board,board_num,&bbs_user);
+                    else read_a_bbs_message(directory,bbs_info,
+                         &mail_pieces,num,&new_board,board_num,&bbs_user);
+                   break;
+         case 'X': reset_bbs_message_date(&bbs_user,mail_pieces,
+                      bbs_info,directory);
+                   break;
+         case 'P': send_a_bbs_message(board_num,&new_board,
+                      mail_pieces,bbs_info);
+                   find_bbs(directory,bbs_info,&mail_pieces,
+                      new_board.limit_messages);
+                   break;
+         case 'D': if ((num=str_to_num(command+1,&point))==-1)
+                     delete_bbs_message(directory,bbs_info,
+                         &mail_pieces,&new_board);
+                     else delete_a_bbs_message(directory,bbs_info,
+                         &mail_pieces,num,&new_board);
+                   find_bbs(directory,bbs_info,&mail_pieces,
+                      new_board.limit_messages);
+                   break;
+         case 'E': if ((num=str_to_num(command+1,&point))==-1)
+                     edit_bbs_message(directory,bbs_info,
+                          &mail_pieces,&new_board);
+                     else edit_a_bbs_message(directory,bbs_info,
+                          &mail_pieces,num,&new_board);
+                   break;
+         case 'T': toggle_global_on(directory,&bbs_user,board_num);
+                   break;
+         case '?': print_file("help\\bbs.hlp");
+        };
+    };
+    print_str_cr("--> GinsuTalk: Returning to System");
+ };
+

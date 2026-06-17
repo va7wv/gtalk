@@ -1,0 +1,93 @@
+|*h1|*f2GinsuTalk |*f7Command List|*r1
+|*f4Version 930204|*f7
+ 
+|*f1aaa|*f7 = Account number
+|*f4x|*f7   = Number
+|*f6n|*f7   = Node number
+|*f2c|*f7   = Channel number
+ 
+|*h1Guest Commands:|*h0
+ 
+/ANSI            : Toggle ANSI on/off
+/D               : Toggle stream send on/off (for buffered chat use)
+/FB              : Send feedback to sysops
+/I               : Display GinsuTalk version and copyright information
+/INFO            : Display information regarding your account
+/INFO#|*f1aaa|*f7        : Display information regarding account #|*f1aaa|*f7
+/INFO|*f6nn|*f7          : Display information regarding node #|*f6nn|*f7
+/LAST|*f1aaa|*f7         : Display last call date for user #|*f1aaa|*f7
+/LOG|*f4xx|*f7           : Display caller log (last |*f4xx|*f7 calls)
+/M|*f4xxx|*f7            : Display message #|*f4xxx|*f7
+/P|*f6n|*f7 <text>       : Send private message <text> to node #|*f6n|*f7
+/Q               : Quit system
+/S               : Display callers
+/SM              : Display user list
+/SYSHELP         : Enter detailed system help area
+/SYSINFO         : Display total/daily calls and system configuration file
+/TIME            : Display on-line time information
+/W|*f4xxx|*f7            : Set screen width (20-256)
+/X|*f6n|*f7              : Toggle squelch node #|*f6n|*f7
+ 
+|*h1User Commands:|*h0
+ 
+/AUTOANSI        : Set ANSI default for your account
+/BBS             : Enter BBS area
+/C|*f2c|*f7 <text>       : Send message <text> to channel #|*f2c|*f7
+/INFO            : Display information about your account
+/MAIL            : Enter MAIL area
+/MESG            : Enter message area
+/MON(+,-,=)|*f2c,c|*f7.. : Add/delete/set monitor channels
+/PAGE|*f6n|*f7           : Page node #|*f6n|*f7
+/PAGE+,-         : Allow/disable pages to you
+/PASSWD          : Set new password
+/SI|*f6n|*f7             : Silence node #|*f6n|*f7
+/T|*f2c|*f7              : Tune to channel #|*f2c|*f7
+/TS              : List channel information
+/US|*f6n|*f7             : Unsilence Node #|*f6n|*f7
+ 
+|*h1Channel Moderator Commands:|*h0
+ 
+/CA+,-           : Set channel anonymous/identified
+/CG|*f6n|*f7             : Give node #|*f6n|*f7 moderator privilege
+/CI|*f6n,n|*f7..         : Invite nodes (|*f6n,n|*f7) to your channel
+/CK|*f6n|*f7             : Kick node #|*f6n|*f7 off your channel
+/CL+,-           : Set channel unlocked/locked
+/CM+,-           : Channel messages (/C) allowed/disabled
+/CN<name>        : Name current channel
+/CP|*f4xx|*f7            : Set channel priority to |*f4xx|*f7
+ 
+|\79|*h1|*f1Sysop Commands:|*f7|*h0
+ 
+/COMMAND         : Global toggle commands on/off
+/DCD|*f6n|*f7            : Toggle DCD detect for node #n
+/EF <filename>   : Edit file <filename>
+/F|*f6n|*f7 <txt/command>: Force text/command to node #|*f6n|*f7
+/FILES           : Show file allocation table
+/G|*f6n|*f7(+,-,=)|*f4xx|*f7     : +/-/set time (|*f4xx|*f7/min) for #|*f6n|*f7
+/K|*f6n|*f7              : Kill node #|*f6n|*f7
+/LINK|*f6n|*f7           : Set node #|*f6n|*f7 as a link
+/LOCK|*f4xx|*f7          : Set priority lock for system
+/LURK+,-         : Set lurk on/off
+/MEMORY          : Show system memory allocation table
+/MAKE|*f6n|*f7(GRUBCS)   : Make node #|*f6n|*f7 as a temporary ---
+/MEMUD           : Member list update
+/QUICK           : Quick system shutdown
+/RESET|*f6n|*f7          : Reset node #|*f6n|*f7
+/RL|*f6n|*f7             : Relog node #|*f6n|*f7
+/ROT             : Enter rotator menu
+/SAFE+,-         : Set safe mode for lurk on/off
+/SHUTDOWN        : Shutdown system
+/SM+             : Display sysop user list
+/SYSMON          : Toggle system monitor (channel 0)
+/SYSOP           : Enter file maintance area
+/SYSTEM          : Enter sysop functions menu
+/SYSUD           : Update system information file
+/TERM|*f6n|*f7           : Enter terminal node #n
+/U|*f1aaa|*f7            : Enter user editor for account #|*f1aaa|*f7
+/V|*f6n|*f7              : Validate node #|*f6n|*f7
+/VIEW <filename> : View file <filename>
+/WALL <text>     : Send broadcast message to system
+/WALLA <text>    : Send anonymous broadcast message to system
+/WATCH           : Display watch list
+/WATCH|*f6n|*f7          : Watch node #|*f6n|*f7
+

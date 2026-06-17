@@ -1,0 +1,4 @@
+/M000 - #000 : test|*r1
+/M001 - #000 : BOX [001]|*r1
+/M004 - #000 : |*f4|*h1My Message Box|*r1
+/M005 - #000 : <Untitled>|*r1

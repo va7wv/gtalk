@@ -1,0 +1,38 @@
+MAKE Version 3.6  Copyright (c) 1992 Borland International
+
+Available memory 15079952 bytes
+
+	bcc -2 +GTALK.CFG -c init.c
+Borland C++  Version 3.1 Copyright (c) 1992 Borland International
+init.c:
+Error task.h 51: Declaration missing ;
+Error alloc.h 31: Declaration missing ;
+Error alloc.h 56: Declaration syntax error
+Error alloc.h 57: 'FILE' cannot start a parameter declaration
+Error alloc.h 58: 'FILE' cannot start a parameter declaration
+Error alloc.h 59: 'FILE' cannot start a parameter declaration
+Error mail.h 15: ) expected
+Error mail.h 16: 'FILE' cannot start a parameter declaration
+Error mail.h 16: ) expected
+Error C:\BORLANDC\INCLUDE\stdio.h 46: Multiple declaration for 'FILE'
+Error C:\BORLANDC\INCLUDE\stdio.h 107: Declaration syntax error
+Error C:\BORLANDC\INCLUDE\stdio.h 140: 'FILE' cannot start a parameter declaration
+Error C:\BORLANDC\INCLUDE\stdio.h 141: 'FILE' cannot start a parameter declaration
+Error C:\BORLANDC\INCLUDE\stdio.h 142: 'FILE' cannot start a parameter declaration
+Error C:\BORLANDC\INCLUDE\stdio.h 143: 'FILE' cannot start a parameter declaration
+Error C:\BORLANDC\INCLUDE\stdio.h 144: 'FILE' cannot start a parameter declaration
+Error C:\BORLANDC\INCLUDE\stdio.h 145: ) expected
+Error C:\BORLANDC\INCLUDE\stdio.h 146: Declaration syntax error
+Error C:\BORLANDC\INCLUDE\stdio.h 147: 'FILE' cannot start a parameter declaration
+Error C:\BORLANDC\INCLUDE\stdio.h 148: ) expected
+Error C:\BORLANDC\INCLUDE\stdio.h 149: ) expected
+Error C:\BORLANDC\INCLUDE\stdio.h 151: ) expected
+Error C:\BORLANDC\INCLUDE\stdio.h 152: Declaration syntax error
+Error C:\BORLANDC\INCLUDE\stdio.h 154: 'FILE' cannot start a parameter declaration
+Error C:\BORLANDC\INCLUDE\stdio.h 155: 'FILE' cannot start a parameter declaration
+Error C:\BORLANDC\INCLUDE\stdio.h 155: Too many error or warning messages
+*** 26 errors in Compile ***
+
+	Available memory 4086328
+
+** error 1 ** deleting obj\init.obj

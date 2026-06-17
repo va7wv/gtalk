@@ -1,0 +1,197 @@
+
+************************************************************
+****                                                    ****
+****     GTalk - official Documemtation Release 0.1     ****
+****                   Guest Commands                   ****
+****                                                    ****
+************************************************************
+
+
+Guest Commands    - Written 04/05/93 by David W Jeske
+--------------      Copyright 1993 by David W. Jeske and
+                                      Daniel L. Marks
+
+
+The Following is a list of GTalk GUEST commands:
+
+
+/ANSI             Toggle ANSI on/off
+/D                Toggle stream send on/off (for buffered chat use)
+/FB               Send feedback to sysops
+/I                Display GinsuTalk version and copyright information
+/LASTaaa          Display last call date for user #aaa
+/LOGxx            Display caller log (last xx calls)
+/Mxxx             Display message #xxx
+/Pn <text>        Send private message <text> to node #n
+/Q                Quit system
+/S                Display callers
+/SL               LONG /s (more detailed)
+/SM               Display user list
+/SYSHELP          Enter detailed system help area
+/SYSINFO          Display total/daily calls and system configuration file
+/TIME             Display current date and time
+/Wxxx             Set screen width (20-256)
+/Xn               Toggle squelch node #n
+
+
+*************
+*    /P     *
+*************
+
+/P<line><message>       Private Message
+
+                This command allows a user or guest to send private messages
+                to other users or guests on the system. <See the /X command
+                for information about RESTRICTING /p messages to YOU>
+
+
+*************
+*    /X     *
+*************
+
+/X<line>       Squelch/Un-squelch user. This command will toggle between
+               squelched and unsquelched for the user on line #<line>.
+               If a user is squelched, he will not be able to /p you in
+               any way.
+
+/X(+,-)        Squelch ALL on/off. If all nodes are squelched, entering
+               the above /X<line> command will UNSQUELCH that line and
+               allow him to talk.
+
+       <see /SL for more information>
+
+****************
+*    /ANSI     *
+****************
+
+/ANSI           This command toggles ANSI emulation on or off. It does
+                NOTE save to the user file.
+
+
+*************
+*    /D     *
+*************
+
+
+/D              Toggle Stream send on/off. When using a buffered chat mode
+                in a terminal program on a remote system. The /D command may
+                be used to cause the GTalk system not to echo back the lines
+                you type in the main level.
+
+                This option saves to the user file.
+
+
+**************
+*    /FB     *
+**************
+
+/FB             This command allows a GUEST to send mail to the sysop of the
+                system. Guests do not normally have mail priviliges, so this
+                allows them to leave information for the sysop for whatever
+                reason.
+
+
+*************
+*    /I     *
+*************
+
+/I              This command show software copyright information.
+
+
+****************
+*    /LAST     *
+****************
+
+/LAST<number>   This command prints the last time and date that user number
+                <number> was on the system.
+
+
+***************
+*    /LOG     *
+***************
+
+/LOGxx          This command shows the last xx callers to the system.
+                If no number is given, the default is 10 callers.
+                The number may be between 1 and 99.
+
+/LOGxxK         This command will print the last ten "kills". If no number
+                is given, it defaults to the last 10.
+                NOTE: you cannot do  /logk
+                      you must do either /log-k  or /log k
+
+
+*************
+*    /M     *
+*************
+
+/Mxxx           Display message box. This command will print message box
+                number xxx. See the user command /MESG and the sysop command
+                /ROT for more information.
+
+
+
+
+*************
+*    /S     *
+*************
+
+/S              Display Callers on the system. The numbers to the right are
+                as follows:
+
+                    User number/Time Online/Time alloted
+
+    <see the Gtalk walkthrough for a more detailed description>
+
+
+**************
+*    /SL     *
+**************
+
+/SL             This is the "long /s" it tells much more information about
+                the users who are online.
+
+       <INCLUDE A CLIP OF A /SL and description>
+
+
+
+
+**************
+*    /SM     *
+**************
+
+/SM             The /SM command will print the list of users who are
+                currently registered with the system. Hitting Escape
+                at a [Press Return] paging prompt will abort the listing.
+
+                NOTE: this is updated automatically at 6am every morning.
+                      For information about manually updating. See the
+                      SYSOP COMMAND DOCUMEMTATION : /MEMUD
+
+
+*******************
+*    /SYSHELP     *
+*******************
+
+/SYSHELP        This will place a user into the SYSHELP help/docs and
+                general information menu. Typing a number of the
+                file you wish to see will print that file. ESC will
+                abort any listing. "P" at the menu will toggle automatic
+                pageing OFF/ON for the printing of these files only.
+
+                FOR INFORMATION about the setup of /syshelp, see the
+                  Directory Structure/Files Documentation
+
+
+****************
+*    /TIME     *
+****************
+
+/TIME           This will print the current Time
+
+
+*************
+*    /W     *
+*************
+
+/W
+

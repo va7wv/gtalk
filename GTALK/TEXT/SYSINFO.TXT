@@ -1,0 +1,16 @@
+
+         Hardware:
+       386/25mhz
+       40meg HD
+       5.25" floppy
+       10 PP2400SA clone modems
+       an 8 port digiboard with 8 16450s
+       an AT I/O card
+       a Monochrome card and monitor
+
+    Software:
+       MS-DOS 5.0
+       The GinsuTalk Chat System (type /m950 for more information)
+
+    For Sysop/CoSysop listings see /m1
+

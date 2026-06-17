@@ -1,0 +1,11 @@
+device=port1.sys latch=0200 dpram=c000 channel=1
+device=port2.sys latch=0200 dpram=c000 channel=2
+device=port3.sys latch=0200 dpram=c000 channel=3
+device=port4.sys latch=0200 dpram=c000 channel=4
+device=port5.sys latch=0200 dpram=c000 channel=5
+device=port6.sys latch=0200 dpram=c000 channel=6
+device=port7.sys latch=0200 dpram=c000 channel=7
+device=port8.sys latch=0200 dpram=c000 channel=8
+
+
+

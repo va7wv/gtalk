@@ -1,0 +1,21 @@
+DELETING USERS  - March 1993  -   David W Jeske
+
+Quick and Dirty
+
+
+To delete a user.. type /u<return>, enter the user edit password.
+
+THEN: type (D) for Delete.
+
+Once you are in the Delete Utility, simply type the user number to delete.
+
+
+WARNING: IT WILL NOT ASK YOU FOR CONFIRMATION, it will just delete the user.
+
+    BE CAREFULL
+
+
+
+    Enter 'q'  on a line by itself to quit the delete user utility.
+
+

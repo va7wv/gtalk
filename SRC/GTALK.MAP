@@ -1,0 +1,2593 @@
+
+ Start  Stop   Length Name               Class
+
+ 00000H 05318H 05319H _TEXT              CODE
+ 05319H 076FFH 023E7H COM_TEXT           CODE
+ 07700H 111B9H 09ABAH COMMAND_TEXT       CODE
+ 111BAH 12E80H 01CC7H IO_TEXT            CODE
+ 12E81H 1805AH 051DAH GT_TEXT            CODE
+ 1805BH 1897CH 00922H TASK_TEXT          CODE
+ 1897DH 19C5CH 012E0H INIT_TEXT          CODE
+ 19C5DH 1A5C2H 00966H USER_TEXT          CODE
+ 1A5C3H 1B4F9H 00F37H ALLOC_TEXT         CODE
+ 1B4FAH 1DDF0H 028F7H USEREDIT_TEXT      CODE
+ 1DDF1H 1DE16H 00026H INPUT_TEXT         CODE
+ 1DE17H 1FAAEH 01C98H VIDEO_TEXT         CODE
+ 1FAAFH 20D1FH 01271H EDITOR_TEXT        CODE
+ 20D20H 21D7CH 0105DH MAIL_TEXT          CODE
+ 21D7DH 2359CH 01820H ROTATOR_TEXT       CODE
+ 2359DH 23D48H 007ACH GFILES_TEXT        CODE
+ 23D49H 24AA8H 00D60H CHANNEL_TEXT       CODE
+ 24AA9H 251FDH 00755H SCHEDULE_TEXT      CODE
+ 251FEH 267EDH 015F0H SYSOP_TEXT         CODE
+ 267EEH 284E3H 01CF6H BBS_TEXT           CODE
+ 284E4H 292DFH 00DFCH LINK_TEXT          CODE
+ 292E0H 2A7F1H 01512H PROTOCOL_TEXT      CODE
+ 2A7F2H 2A901H 00110H STRING_TEXT        CODE
+ 2A902H 2A9A6H 000A5H FUNCTION_TEXT      CODE
+ 2A9A7H 2A9A7H 00000H GLINK_TEXT         CODE
+ 2A9A7H 2B62EH 00C88H DIAGS_TEXT         CODE
+ 2B630H 2B630H 00000H _FARDATA           FAR_DATA
+ 2B630H 2C113H 00AE4H COMMAND5_DATA      FAR_DATA
+ 2C120H 2C281H 00162H GT5_DATA           FAR_DATA
+ 2C290H 2E5B0H 02321H USER5_DATA         FAR_DATA
+ 2E5C0H 2F5FFH 01040H ALLOC5_DATA        FAR_DATA
+ 2F600H 2FF23H 00924H CHANNEL5_DATA      FAR_DATA
+ 2FF30H 2FFD9H 000AAH LINK5_DATA         FAR_DATA
+ 2FFE0H 3000AH 0002BH STRING5_DATA       FAR_DATA
+ 30010H 3002FH 00020H STRING6_DATA       FAR_DATA
+ 30030H 30039H 0000AH STRING7_DATA       FAR_DATA
+ 30040H 30078H 00039H STRING8_DATA       FAR_DATA
+ 30080H 3008DH 0000EH STRING9_DATA       FAR_DATA
+ 30090H 300A2H 00013H STRING10_DATA      FAR_DATA
+ 300B0H 300BEH 0000FH STRING11_DATA      FAR_DATA
+ 300C0H 300D2H 00013H STRING12_DATA      FAR_DATA
+ 300E0H 3012AH 0004BH STRING13_DATA      FAR_DATA
+ 30130H 30157H 00028H STRING14_DATA      FAR_DATA
+ 30160H 30160H 00000H _FARBSS            FAR_BSS
+ 30160H 30160H 00000H _OVERLAY_          OVRINFO
+ 30160H 30160H 00000H _1STUB_            STUBSEG
+ 30160H 38F11H 08DB2H _DATA              DATA
+ 38F12H 38F13H 00002H _CVTSEG            DATA
+ 38F14H 38F19H 00006H _SCNSEG            DATA
+ 38F1AH 38F1AH 00000H _CONST             CONST
+ 38F1AH 38F37H 0001EH _INIT_             INITDATA
+ 38F38H 38F38H 00000H _INITEND_          INITDATA
+ 38F38H 38F38H 00000H _EXIT_             EXITDATA
+ 38F38H 38F38H 00000H _EXITEND_          EXITDATA
+ 38F38H 3E619H 056E2H _BSS               BSS
+ 3E61AH 3E61AH 00000H _BSSEND            BSSEND
+ 3E620H 3E69FH 00080H _STACK             STACK
+
+
+Detailed map of segments
+
+ 0000:0000 0295 C=CODE   S=_TEXT          G=(none)  M=c0.ASM     ACBP=28
+ 0000:0295 002D C=CODE   S=_TEXT          G=(none)  M=ATEXIT     ACBP=28
+ 0000:02C2 004F C=CODE   S=_TEXT          G=(none)  M=CTRLBRK    ACBP=28
+ 0000:0311 0000 C=CODE   S=_TEXT          G=(none)  M=CTYPE      ACBP=28
+ 0000:0311 003D C=CODE   S=_TEXT          G=(none)  M=DOSFATTR   ACBP=28
+ 0000:034E 0093 C=CODE   S=_TEXT          G=(none)  M=EXIT       ACBP=28
+ 0000:03E1 0000 C=CODE   S=_TEXT          G=(none)  M=FILES      ACBP=28
+ 0000:03E1 0000 C=CODE   S=_TEXT          G=(none)  M=FILES2     ACBP=28
+ 0000:03E1 0000 C=CODE   S=_TEXT          G=(none)  M=FMODE      ACBP=28
+ 0000:03E1 0017 C=CODE   S=_TEXT          G=(none)  M=F_LXMUL    ACBP=28
+ 0000:03F8 0021 C=CODE   S=_TEXT          G=(none)  M=F_PCMP     ACBP=28
+ 0000:0419 001C C=CODE   S=_TEXT          G=(none)  M=F_SCOPY    ACBP=28
+ 0000:0435 001B C=CODE   S=_TEXT          G=(none)  M=GETCBRK    ACBP=28
+ 0000:0450 0026 C=CODE   S=_TEXT          G=(none)  M=GETDATE    ACBP=28
+ 0000:0476 0020 C=CODE   S=_TEXT          G=(none)  M=GETVECT    ACBP=28
+ 0000:0496 00AE C=CODE   S=_TEXT          G=(none)  M=H_LDIV     ACBP=28
+ 0000:0544 0021 C=CODE   S=_TEXT          G=(none)  M=H_LLSH     ACBP=28
+ 0000:0565 0021 C=CODE   S=_TEXT          G=(none)  M=H_LURSH    ACBP=28
+ 0000:0586 0088 C=CODE   S=_TEXT          G=(none)  M=H_PADA     ACBP=28
+ 0000:060E 0060 C=CODE   S=_TEXT          G=(none)  M=H_PADD     ACBP=28
+ 0000:066E 0028 C=CODE   S=_TEXT          G=(none)  M=H_PSBP     ACBP=28
+ 0000:0696 004B C=CODE   S=_TEXT          G=(none)  M=IOERROR    ACBP=28
+ 0000:06E1 0011 C=CODE   S=_TEXT          G=(none)  M=ISATTY     ACBP=28
+ 0000:06F2 00A2 C=CODE   S=_TEXT          G=(none)  M=LONGTOA    ACBP=28
+ 0000:0794 0029 C=CODE   S=_TEXT          G=(none)  M=LSEEK      ACBP=28
+ 0000:07BD 0018 C=CODE   S=_TEXT          G=(none)  M=MKDIR      ACBP=28
+ 0000:07D5 00B6 C=CODE   S=_TEXT          G=(none)  M=MKNAME     ACBP=28
+ 0000:088B 0017 C=CODE   S=_TEXT          G=(none)  M=N_LXMUL    ACBP=28
+ 0000:08A2 0021 C=CODE   S=_TEXT          G=(none)  M=N_PCMP     ACBP=28
+ 0000:08C3 001C C=CODE   S=_TEXT          G=(none)  M=N_SCOPY    ACBP=28
+ 0000:08DF 002F C=CODE   S=_TEXT          G=(none)  M=READA      ACBP=28
+ 0000:090E 0018 C=CODE   S=_TEXT          G=(none)  M=REMOVE     ACBP=28
+ 0000:0926 0018 C=CODE   S=_TEXT          G=(none)  M=RMDIR      ACBP=28
+ 0000:093E 04F4 C=CODE   S=_TEXT          G=(none)  M=SCANNER    ACBP=28
+ 0000:0E32 01CD C=CODE   S=_TEXT          G=(none)  M=SCANTOL    ACBP=28
+ 0000:0FFF 002A C=CODE   S=_TEXT          G=(none)  M=SETDATE    ACBP=28
+ 0000:1029 00BA C=CODE   S=_TEXT          G=(none)  M=SETUPIO    ACBP=28
+ 0000:10E3 0098 C=CODE   S=_TEXT          G=(none)  M=STIME      ACBP=28
+ 0000:117B 0000 C=CODE   S=_TEXT          G=(none)  M=STKLEN     ACBP=28
+ 0000:117B 002C C=CODE   S=_TEXT          G=(none)  M=TOUPPER    ACBP=28
+ 0000:11A7 0018 C=CODE   S=_TEXT          G=(none)  M=UNLINK     ACBP=28
+ 0000:11BF 04DB C=CODE   S=_TEXT          G=(none)  M=VPRINTER   ACBP=28
+ 0000:169A 009F C=CODE   S=_TEXT          G=(none)  M=VRAM       ACBP=28
+ 0000:1739 0034 C=CODE   S=_TEXT          G=(none)  M=_STPCPY    ACBP=28
+ 0000:176D 0029 C=CODE   S=_TEXT          G=(none)  M=CLRSCR     ACBP=28
+ 0000:1796 01A5 C=CODE   S=_TEXT          G=(none)  M=CRTINIT    ACBP=28
+ 0000:193B 001F C=CODE   S=_TEXT          G=(none)  M=CVTFAK     ACBP=28
+ 0000:195A 0432 C=CODE   S=_TEXT          G=(none)  M=FARHEAP    ACBP=28
+ 0000:1D8C 0140 C=CODE   S=_TEXT          G=(none)  M=FBRK       ACBP=28
+ 0000:1ECC 0050 C=CODE   S=_TEXT          G=(none)  M=FCORELFT   ACBP=28
+ 0000:1F1C 00AC C=CODE   S=_TEXT          G=(none)  M=GPTEXT     ACBP=28
+ 0000:1FC8 002E C=CODE   S=_TEXT          G=(none)  M=HARD       ACBP=28
+ 0000:1FF6 0126 C=CODE   S=_TEXT          G=(none)  M=HARDERR    ACBP=28
+ 0000:211C 0029 C=CODE   S=_TEXT          G=(none)  M=IOCTL      ACBP=28
+ 0000:2145 009D C=CODE   S=_TEXT          G=(none)  M=MOVETEXT   ACBP=28
+ 0000:21E2 0004 C=CODE   S=_TEXT          G=(none)  M=REALCVT    ACBP=28
+ 0000:21E6 000C C=CODE   S=_TEXT          G=(none)  M=SCANTOD    ACBP=28
+ 0000:21F2 01C7 C=CODE   S=_TEXT          G=(none)  M=SCREEN     ACBP=28
+ 0000:23B9 018E C=CODE   S=_TEXT          G=(none)  M=SCROLL     ACBP=28
+ 0000:2547 012B C=CODE   S=_TEXT          G=(none)  M=SETARGV    ACBP=28
+ 0000:2672 001C C=CODE   S=_TEXT          G=(none)  M=SETBLOCK   ACBP=28
+ 0000:268E 0058 C=CODE   S=_TEXT          G=(none)  M=SETENVP    ACBP=28
+ 0000:26E6 002C C=CODE   S=_TEXT          G=(none)  M=WHEREXY    ACBP=28
+ 0000:2712 0086 C=CODE   S=_TEXT          G=(none)  M=ATOL       ACBP=28
+ 0000:2798 0010 C=CODE   S=_TEXT          G=(none)  M=BDOS       ACBP=28
+ 0000:27A8 001D C=CODE   S=_TEXT          G=(none)  M=CHMODA     ACBP=28
+ 0000:27C5 0028 C=CODE   S=_TEXT          G=(none)  M=CLOSE      ACBP=28
+ 0000:27ED 001E C=CODE   S=_TEXT          G=(none)  M=CLOSEA     ACBP=28
+ 0000:280B 097F C=CODE   S=_TEXT          G=(none)  M=CTIME      ACBP=28
+ 0000:318A 0077 C=CODE   S=_TEXT          G=(none)  M=EOF        ACBP=28
+ 0000:3201 00B8 C=CODE   S=_TEXT          G=(none)  M=FCLOSE     ACBP=28
+ 0000:32B9 00CD C=CODE   S=_TEXT          G=(none)  M=FFLUSH     ACBP=28
+ 0000:3386 009C C=CODE   S=_TEXT          G=(none)  M=FGETS      ACBP=28
+ 0000:3422 0060 C=CODE   S=_TEXT          G=(none)  M=FINDFIRS   ACBP=28
+ 0000:3482 0042 C=CODE   S=_TEXT          G=(none)  M=FLUSHALL   ACBP=28
+ 0000:34C4 020C C=CODE   S=_TEXT          G=(none)  M=FOPEN      ACBP=28
+ 0000:36D0 001C C=CODE   S=_TEXT          G=(none)  M=FPRINTF    ACBP=28
+ 0000:36EC 0182 C=CODE   S=_TEXT          G=(none)  M=FREAD      ACBP=28
+ 0000:386E 0024 C=CODE   S=_TEXT          G=(none)  M=FSCANF     ACBP=28
+ 0000:3892 01E2 C=CODE   S=_TEXT          G=(none)  M=FSEEK      ACBP=28
+ 0000:3A74 008B C=CODE   S=_TEXT          G=(none)  M=FWRITE     ACBP=28
+ 0000:3AFF 01C8 C=CODE   S=_TEXT          G=(none)  M=GETC       ACBP=28
+ 0000:3CC7 0070 C=CODE   S=_TEXT          G=(none)  M=GETENV     ACBP=28
+ 0000:3D37 0024 C=CODE   S=_TEXT          G=(none)  M=MEMCPY     ACBP=28
+ 0000:3D5B 0043 C=CODE   S=_TEXT          G=(none)  M=MEMSET     ACBP=28
+ 0000:3D9E 0022 C=CODE   S=_TEXT          G=(none)  M=MOVEDATA   ACBP=28
+ 0000:3DC0 019C C=CODE   S=_TEXT          G=(none)  M=OPEN       ACBP=28
+ 0000:3F5C 004F C=CODE   S=_TEXT          G=(none)  M=OPENA      ACBP=28
+ 0000:3FAB 0058 C=CODE   S=_TEXT          G=(none)  M=PERROR     ACBP=28
+ 0000:4003 001B C=CODE   S=_TEXT          G=(none)  M=PRINTF     ACBP=28
+ 0000:401E 03C8 C=CODE   S=_TEXT          G=(none)  M=PUTC       ACBP=28
+ 0000:43E6 02DC C=CODE   S=_TEXT          G=(none)  M=QSORT      ACBP=28
+ 0000:46C2 00D1 C=CODE   S=_TEXT          G=(none)  M=READ       ACBP=28
+ 0000:4793 001D C=CODE   S=_TEXT          G=(none)  M=RENAME     ACBP=28
+ 0000:47B0 011D C=CODE   S=_TEXT          G=(none)  M=SETVBUF    ACBP=28
+ 0000:48CD 0083 C=CODE   S=_TEXT          G=(none)  M=SPRINTF    ACBP=28
+ 0000:4950 003F C=CODE   S=_TEXT          G=(none)  M=STRCAT     ACBP=28
+ 0000:498F 0029 C=CODE   S=_TEXT          G=(none)  M=STRCPY     ACBP=28
+ 0000:49B8 00A6 C=CODE   S=_TEXT          G=(none)  M=STRERROR   ACBP=28
+ 0000:4A5E 001F C=CODE   S=_TEXT          G=(none)  M=STRLEN     ACBP=28
+ 0000:4A7D 0031 C=CODE   S=_TEXT          G=(none)  M=STRNCPY    ACBP=28
+ 0000:4AAE 032E C=CODE   S=_TEXT          G=(none)  M=TIMECVT    ACBP=28
+ 0000:4DDC 02CD C=CODE   S=_TEXT          G=(none)  M=TZSET      ACBP=28
+ 0000:50A9 006E C=CODE   S=_TEXT          G=(none)  M=UNGETC     ACBP=28
+ 0000:5117 0151 C=CODE   S=_TEXT          G=(none)  M=WRITE      ACBP=28
+ 0000:5268 003C C=CODE   S=_TEXT          G=(none)  M=WRITEA     ACBP=28
+ 0000:52A4 003D C=CODE   S=_TEXT          G=(none)  M=XFCLOSE    ACBP=28
+ 0000:52E1 0038 C=CODE   S=_TEXT          G=(none)  M=XFFLUSH    ACBP=28
+ 0531:0009 23E7 C=CODE   S=COM_TEXT       G=(none)  M=com.c      ACBP=28
+ 0770:0000 9ABA C=CODE   S=COMMAND_TEXT   G=(none)  M=command.c  ACBP=28
+ 111B:000A 1CC7 C=CODE   S=IO_TEXT        G=(none)  M=io.c       ACBP=28
+ 12E8:0001 51DA C=CODE   S=GT_TEXT        G=(none)  M=gt.c       ACBP=28
+ 1805:000B 0922 C=CODE   S=TASK_TEXT      G=(none)  M=task.c     ACBP=28
+ 1897:000D 12E0 C=CODE   S=INIT_TEXT      G=(none)  M=init.c     ACBP=28
+ 19C5:000D 0966 C=CODE   S=USER_TEXT      G=(none)  M=user.c     ACBP=28
+ 1A5C:0003 0F37 C=CODE   S=ALLOC_TEXT     G=(none)  M=alloc.c    ACBP=28
+ 1B4F:000A 28F7 C=CODE   S=USEREDIT_TEXT  G=(none)  M=useredit.c ACBP=28
+ 1DDF:0001 0026 C=CODE   S=INPUT_TEXT     G=(none)  M=input.c    ACBP=28
+ 1DE1:0007 1C98 C=CODE   S=VIDEO_TEXT     G=(none)  M=video.c    ACBP=28
+ 1FAA:000F 1271 C=CODE   S=EDITOR_TEXT    G=(none)  M=editor.c   ACBP=28
+ 20D2:0000 105D C=CODE   S=MAIL_TEXT      G=(none)  M=mail.c     ACBP=28
+ 21D7:000D 1820 C=CODE   S=ROTATOR_TEXT   G=(none)  M=rotator.c  ACBP=28
+ 2359:000D 07AC C=CODE   S=GFILES_TEXT    G=(none)  M=gfiles.c   ACBP=28
+ 23D4:0009 0D60 C=CODE   S=CHANNEL_TEXT   G=(none)  M=channel.c  ACBP=28
+ 24AA:0009 0755 C=CODE   S=SCHEDULE_TEXT  G=(none)  M=schedule.c ACBP=28
+ 251F:000E 15F0 C=CODE   S=SYSOP_TEXT     G=(none)  M=sysop.c    ACBP=28
+ 267E:000E 1CF6 C=CODE   S=BBS_TEXT       G=(none)  M=bbs.c      ACBP=28
+ 284E:0004 0DFC C=CODE   S=LINK_TEXT      G=(none)  M=link.c     ACBP=28
+ 292E:0000 1512 C=CODE   S=PROTOCOL_TEXT  G=(none)  M=protocol.c ACBP=28
+ 2A7F:0002 0110 C=CODE   S=STRING_TEXT    G=(none)  M=string.c   ACBP=28
+ 2A90:0002 00A5 C=CODE   S=FUNCTION_TEXT  G=(none)  M=function.c ACBP=28
+ 2A9A:0007 0000 C=CODE   S=GLINK_TEXT     G=(none)  M=glink.c    ACBP=28
+ 2A9A:0007 0C88 C=CODE   S=DIAGS_TEXT     G=(none)  M=diags.c    ACBP=28
+ 2B63:0000 0000 C=FAR_DATA S=_FARDATA       G=(none)  M=c0.ASM     ACBP=68
+ 2B63:0000 0AE4 C=FAR_DATA S=COMMAND5_DATA  G=FSTUFF  M=command.c  ACBP=68
+ 2B63:0AF0 0162 C=FAR_DATA S=GT5_DATA       G=FSTUFF  M=gt.c       ACBP=68
+ 2B63:0C60 2321 C=FAR_DATA S=USER5_DATA     G=FSTUFF  M=user.c     ACBP=68
+ 2B63:2F90 1040 C=FAR_DATA S=ALLOC5_DATA    G=FSTUFF  M=alloc.c    ACBP=68
+ 2B63:3FD0 0924 C=FAR_DATA S=CHANNEL5_DATA  G=FSTUFF  M=channel.c  ACBP=68
+ 2B63:4900 00AA C=FAR_DATA S=LINK5_DATA     G=FSTUFF  M=link.c     ACBP=68
+ 2B63:49B0 002B C=FAR_DATA S=STRING5_DATA   G=FSTUFF  M=string.c   ACBP=68
+ 2B63:49E0 0020 C=FAR_DATA S=STRING6_DATA   G=FSTUFF  M=string.c   ACBP=68
+ 2B63:4A00 000A C=FAR_DATA S=STRING7_DATA   G=FSTUFF  M=string.c   ACBP=68
+ 2B63:4A10 0039 C=FAR_DATA S=STRING8_DATA   G=FSTUFF  M=string.c   ACBP=68
+ 2B63:4A50 000E C=FAR_DATA S=STRING9_DATA   G=FSTUFF  M=string.c   ACBP=68
+ 2B63:4A60 0013 C=FAR_DATA S=STRING10_DATA  G=FSTUFF  M=string.c   ACBP=68
+ 2B63:4A80 000F C=FAR_DATA S=STRING11_DATA  G=FSTUFF  M=string.c   ACBP=68
+ 2B63:4A90 0013 C=FAR_DATA S=STRING12_DATA  G=FSTUFF  M=string.c   ACBP=68
+ 2B63:4AB0 004B C=FAR_DATA S=STRING13_DATA  G=FSTUFF  M=string.c   ACBP=68
+ 2B63:4B00 0028 C=FAR_DATA S=STRING14_DATA  G=FSTUFF  M=string.c   ACBP=68
+ 3016:0000 0000 C=FAR_BSS S=_FARBSS        G=(none)  M=c0.ASM     ACBP=68
+ 3016:0000 0000 C=OVRINFO S=_OVERLAY_      G=(none)  M=c0.ASM     ACBP=68
+ 3016:0000 0000 C=STUBSEG S=_1STUB_        G=(none)  M=c0.ASM     ACBP=68
+ 3016:0000 0093 C=DATA   S=_DATA          G=DGROUP  M=c0.ASM     ACBP=68
+ 3016:0094 0010 C=DATA   S=_DATA          G=DGROUP  M=com.c      ACBP=48
+ 3016:00A4 2F49 C=DATA   S=_DATA          G=DGROUP  M=command.c  ACBP=48
+ 3016:2FEE 0155 C=DATA   S=_DATA          G=DGROUP  M=io.c       ACBP=48
+ 3016:3144 0B3E C=DATA   S=_DATA          G=DGROUP  M=gt.c       ACBP=48
+ 3016:3C82 0028 C=DATA   S=_DATA          G=DGROUP  M=task.c     ACBP=48
+ 3016:3CAA 08D6 C=DATA   S=_DATA          G=DGROUP  M=init.c     ACBP=48
+ 3016:4580 02E8 C=DATA   S=_DATA          G=DGROUP  M=user.c     ACBP=48
+ 3016:4868 0126 C=DATA   S=_DATA          G=DGROUP  M=alloc.c    ACBP=48
+ 3016:498E 0FBC C=DATA   S=_DATA          G=DGROUP  M=useredit.c ACBP=48
+ 3016:594A 0000 C=DATA   S=_DATA          G=DGROUP  M=input.c    ACBP=48
+ 3016:594A 003F C=DATA   S=_DATA          G=DGROUP  M=video.c    ACBP=48
+ 3016:598A 0209 C=DATA   S=_DATA          G=DGROUP  M=editor.c   ACBP=48
+ 3016:5B94 0399 C=DATA   S=_DATA          G=DGROUP  M=mail.c     ACBP=48
+ 3016:5F2E 070E C=DATA   S=_DATA          G=DGROUP  M=rotator.c  ACBP=48
+ 3016:663C 0162 C=DATA   S=_DATA          G=DGROUP  M=gfiles.c   ACBP=48
+ 3016:679E 02A6 C=DATA   S=_DATA          G=DGROUP  M=channel.c  ACBP=48
+ 3016:6A44 000A C=DATA   S=_DATA          G=DGROUP  M=schedule.c ACBP=48
+ 3016:6A4E 0B59 C=DATA   S=_DATA          G=DGROUP  M=sysop.c    ACBP=48
+ 3016:75A8 06D4 C=DATA   S=_DATA          G=DGROUP  M=bbs.c      ACBP=48
+ 3016:7C7C 014A C=DATA   S=_DATA          G=DGROUP  M=link.c     ACBP=48
+ 3016:7DC6 024D C=DATA   S=_DATA          G=DGROUP  M=protocol.c ACBP=48
+ 3016:8014 002C C=DATA   S=_DATA          G=DGROUP  M=string.c   ACBP=48
+ 3016:8040 0000 C=DATA   S=_DATA          G=DGROUP  M=function.c ACBP=48
+ 3016:8040 0000 C=DATA   S=_DATA          G=DGROUP  M=glink.c    ACBP=48
+ 3016:8040 03EA C=DATA   S=_DATA          G=DGROUP  M=diags.c    ACBP=48
+ 3016:842A 0002 C=DATA   S=_DATA          G=DGROUP  M=ATEXIT     ACBP=48
+ 3016:842C 0000 C=DATA   S=_DATA          G=DGROUP  M=CTRLBRK    ACBP=48
+ 3016:842C 0101 C=DATA   S=_DATA          G=DGROUP  M=CTYPE      ACBP=48
+ 3016:852E 0000 C=DATA   S=_DATA          G=DGROUP  M=DOSFATTR   ACBP=48
+ 3016:852E 000C C=DATA   S=_DATA          G=DGROUP  M=EXIT       ACBP=48
+ 3016:853A 0190 C=DATA   S=_DATA          G=DGROUP  M=FILES      ACBP=48
+ 3016:86CA 002A C=DATA   S=_DATA          G=DGROUP  M=FILES2     ACBP=48
+ 3016:86F4 0004 C=DATA   S=_DATA          G=DGROUP  M=FMODE      ACBP=48
+ 3016:86F8 0000 C=DATA   S=_DATA          G=DGROUP  M=F_LXMUL    ACBP=48
+ 3016:86F8 0000 C=DATA   S=_DATA          G=DGROUP  M=F_PCMP     ACBP=48
+ 3016:86F8 0000 C=DATA   S=_DATA          G=DGROUP  M=F_SCOPY    ACBP=48
+ 3016:86F8 0000 C=DATA   S=_DATA          G=DGROUP  M=GETCBRK    ACBP=48
+ 3016:86F8 0000 C=DATA   S=_DATA          G=DGROUP  M=GETDATE    ACBP=48
+ 3016:86F8 0000 C=DATA   S=_DATA          G=DGROUP  M=GETVECT    ACBP=48
+ 3016:86F8 0000 C=DATA   S=_DATA          G=DGROUP  M=H_LDIV     ACBP=48
+ 3016:86F8 0000 C=DATA   S=_DATA          G=DGROUP  M=H_LLSH     ACBP=48
+ 3016:86F8 0000 C=DATA   S=_DATA          G=DGROUP  M=H_LURSH    ACBP=48
+ 3016:86F8 0000 C=DATA   S=_DATA          G=DGROUP  M=H_PADA     ACBP=48
+ 3016:86F8 0000 C=DATA   S=_DATA          G=DGROUP  M=H_PADD     ACBP=48
+ 3016:86F8 0000 C=DATA   S=_DATA          G=DGROUP  M=H_PSBP     ACBP=48
+ 3016:86F8 005B C=DATA   S=_DATA          G=DGROUP  M=IOERROR    ACBP=48
+ 3016:8754 0000 C=DATA   S=_DATA          G=DGROUP  M=ISATTY     ACBP=48
+ 3016:8754 0000 C=DATA   S=_DATA          G=DGROUP  M=LONGTOA    ACBP=48
+ 3016:8754 0000 C=DATA   S=_DATA          G=DGROUP  M=LSEEK      ACBP=48
+ 3016:8754 0000 C=DATA   S=_DATA          G=DGROUP  M=MKDIR      ACBP=48
+ 3016:8754 0009 C=DATA   S=_DATA          G=DGROUP  M=MKNAME     ACBP=48
+ 3016:875E 0000 C=DATA   S=_DATA          G=DGROUP  M=N_LXMUL    ACBP=48
+ 3016:875E 0000 C=DATA   S=_DATA          G=DGROUP  M=N_PCMP     ACBP=48
+ 3016:875E 0000 C=DATA   S=_DATA          G=DGROUP  M=N_SCOPY    ACBP=48
+ 3016:875E 0000 C=DATA   S=_DATA          G=DGROUP  M=READA      ACBP=48
+ 3016:875E 0000 C=DATA   S=_DATA          G=DGROUP  M=REMOVE     ACBP=48
+ 3016:875E 0000 C=DATA   S=_DATA          G=DGROUP  M=RMDIR      ACBP=48
+ 3016:875E 0080 C=DATA   S=_DATA          G=DGROUP  M=SCANNER    ACBP=48
+ 3016:87DE 0000 C=DATA   S=_DATA          G=DGROUP  M=SCANTOL    ACBP=48
+ 3016:87DE 0000 C=DATA   S=_DATA          G=DGROUP  M=SETDATE    ACBP=48
+ 3016:87DE 0000 C=DATA   S=_DATA          G=DGROUP  M=SETUPIO    ACBP=48
+ 3016:87DE 0000 C=DATA   S=_DATA          G=DGROUP  M=STIME      ACBP=48
+ 3016:87DE 0002 C=DATA   S=_DATA          G=DGROUP  M=STKLEN     ACBP=48
+ 3016:87E0 0000 C=DATA   S=_DATA          G=DGROUP  M=TOUPPER    ACBP=48
+ 3016:87E0 0000 C=DATA   S=_DATA          G=DGROUP  M=UNLINK     ACBP=48
+ 3016:87E0 0067 C=DATA   S=_DATA          G=DGROUP  M=VPRINTER   ACBP=48
+ 3016:8848 0000 C=DATA   S=_DATA          G=DGROUP  M=VRAM       ACBP=48
+ 3016:8848 0000 C=DATA   S=_DATA          G=DGROUP  M=_STPCPY    ACBP=48
+ 3016:8848 0000 C=DATA   S=_DATA          G=DGROUP  M=CLRSCR     ACBP=48
+ 3016:8848 0018 C=DATA   S=_DATA          G=DGROUP  M=CRTINIT    ACBP=48
+ 3016:8860 0031 C=DATA   S=_DATA          G=DGROUP  M=CVTFAK     ACBP=48
+ 3016:8892 0000 C=DATA   S=_DATA          G=DGROUP  M=FARHEAP    ACBP=48
+ 3016:8892 0002 C=DATA   S=_DATA          G=DGROUP  M=FBRK       ACBP=48
+ 3016:8894 0000 C=DATA   S=_DATA          G=DGROUP  M=FCORELFT   ACBP=48
+ 3016:8894 0000 C=DATA   S=_DATA          G=DGROUP  M=GPTEXT     ACBP=48
+ 3016:8894 0000 C=DATA   S=_DATA          G=DGROUP  M=HARD       ACBP=48
+ 3016:8894 0000 C=DATA   S=_DATA          G=DGROUP  M=HARDERR    ACBP=48
+ 3016:8894 0000 C=DATA   S=_DATA          G=DGROUP  M=IOCTL      ACBP=48
+ 3016:8894 0000 C=DATA   S=_DATA          G=DGROUP  M=MOVETEXT   ACBP=48
+ 3016:8894 0000 C=DATA   S=_DATA          G=DGROUP  M=REALCVT    ACBP=48
+ 3016:8894 0000 C=DATA   S=_DATA          G=DGROUP  M=SCANTOD    ACBP=48
+ 3016:8894 0000 C=DATA   S=_DATA          G=DGROUP  M=SCREEN     ACBP=48
+ 3016:8894 0000 C=DATA   S=_DATA          G=DGROUP  M=SCROLL     ACBP=48
+ 3016:8894 0010 C=DATA   S=_DATA          G=DGROUP  M=SETARGV    ACBP=48
+ 3016:88A4 0000 C=DATA   S=_DATA          G=DGROUP  M=SETBLOCK   ACBP=48
+ 3016:88A4 0004 C=DATA   S=_DATA          G=DGROUP  M=SETENVP    ACBP=48
+ 3016:88A8 0000 C=DATA   S=_DATA          G=DGROUP  M=WHEREXY    ACBP=48
+ 3016:88A8 0000 C=DATA   S=_DATA          G=DGROUP  M=ATOL       ACBP=48
+ 3016:88A8 0000 C=DATA   S=_DATA          G=DGROUP  M=BDOS       ACBP=48
+ 3016:88A8 0000 C=DATA   S=_DATA          G=DGROUP  M=CHMODA     ACBP=48
+ 3016:88A8 0000 C=DATA   S=_DATA          G=DGROUP  M=CLOSE      ACBP=48
+ 3016:88A8 0000 C=DATA   S=_DATA          G=DGROUP  M=CLOSEA     ACBP=48
+ 3016:88A8 01D5 C=DATA   S=_DATA          G=DGROUP  M=CTIME      ACBP=48
+ 3016:8A7E 0000 C=DATA   S=_DATA          G=DGROUP  M=EOF        ACBP=48
+ 3016:8A7E 0000 C=DATA   S=_DATA          G=DGROUP  M=FCLOSE     ACBP=48
+ 3016:8A7E 0000 C=DATA   S=_DATA          G=DGROUP  M=FFLUSH     ACBP=48
+ 3016:8A7E 0000 C=DATA   S=_DATA          G=DGROUP  M=FGETS      ACBP=48
+ 3016:8A7E 0000 C=DATA   S=_DATA          G=DGROUP  M=FINDFIRS   ACBP=48
+ 3016:8A7E 0000 C=DATA   S=_DATA          G=DGROUP  M=FLUSHALL   ACBP=48
+ 3016:8A7E 0000 C=DATA   S=_DATA          G=DGROUP  M=FOPEN      ACBP=48
+ 3016:8A7E 0000 C=DATA   S=_DATA          G=DGROUP  M=FPRINTF    ACBP=48
+ 3016:8A7E 0000 C=DATA   S=_DATA          G=DGROUP  M=FREAD      ACBP=48
+ 3016:8A7E 0000 C=DATA   S=_DATA          G=DGROUP  M=FSCANF     ACBP=48
+ 3016:8A7E 0000 C=DATA   S=_DATA          G=DGROUP  M=FSEEK      ACBP=48
+ 3016:8A7E 0000 C=DATA   S=_DATA          G=DGROUP  M=FWRITE     ACBP=48
+ 3016:8A7E 0000 C=DATA   S=_DATA          G=DGROUP  M=GETC       ACBP=48
+ 3016:8A7E 0000 C=DATA   S=_DATA          G=DGROUP  M=GETENV     ACBP=48
+ 3016:8A7E 0000 C=DATA   S=_DATA          G=DGROUP  M=MEMCPY     ACBP=48
+ 3016:8A7E 0000 C=DATA   S=_DATA          G=DGROUP  M=MEMSET     ACBP=48
+ 3016:8A7E 0000 C=DATA   S=_DATA          G=DGROUP  M=MOVEDATA   ACBP=48
+ 3016:8A7E 0000 C=DATA   S=_DATA          G=DGROUP  M=OPEN       ACBP=48
+ 3016:8A7E 0000 C=DATA   S=_DATA          G=DGROUP  M=OPENA      ACBP=48
+ 3016:8A7E 02D3 C=DATA   S=_DATA          G=DGROUP  M=PERROR     ACBP=48
+ 3016:8D52 0000 C=DATA   S=_DATA          G=DGROUP  M=PRINTF     ACBP=48
+ 3016:8D52 0001 C=DATA   S=_DATA          G=DGROUP  M=PUTC       ACBP=48
+ 3016:8D54 0000 C=DATA   S=_DATA          G=DGROUP  M=QSORT      ACBP=48
+ 3016:8D54 0000 C=DATA   S=_DATA          G=DGROUP  M=READ       ACBP=48
+ 3016:8D54 0000 C=DATA   S=_DATA          G=DGROUP  M=RENAME     ACBP=48
+ 3016:8D54 0004 C=DATA   S=_DATA          G=DGROUP  M=SETVBUF    ACBP=48
+ 3016:8D58 0000 C=DATA   S=_DATA          G=DGROUP  M=SPRINTF    ACBP=48
+ 3016:8D58 0000 C=DATA   S=_DATA          G=DGROUP  M=STRCAT     ACBP=48
+ 3016:8D58 0000 C=DATA   S=_DATA          G=DGROUP  M=STRCPY     ACBP=48
+ 3016:8D58 001A C=DATA   S=_DATA          G=DGROUP  M=STRERROR   ACBP=48
+ 3016:8D72 0000 C=DATA   S=_DATA          G=DGROUP  M=STRLEN     ACBP=48
+ 3016:8D72 0000 C=DATA   S=_DATA          G=DGROUP  M=STRNCPY    ACBP=48
+ 3016:8D72 000C C=DATA   S=_DATA          G=DGROUP  M=TIMECVT    ACBP=48
+ 3016:8D7E 0033 C=DATA   S=_DATA          G=DGROUP  M=TZSET      ACBP=48
+ 3016:8DB2 0000 C=DATA   S=_DATA          G=DGROUP  M=UNGETC     ACBP=48
+ 3016:8DB2 0000 C=DATA   S=_DATA          G=DGROUP  M=WRITE      ACBP=48
+ 3016:8DB2 0000 C=DATA   S=_DATA          G=DGROUP  M=WRITEA     ACBP=48
+ 3016:8DB2 0000 C=DATA   S=_DATA          G=DGROUP  M=XFCLOSE    ACBP=48
+ 3016:8DB2 0000 C=DATA   S=_DATA          G=DGROUP  M=XFFLUSH    ACBP=48
+ 3016:8DB2 0000 C=DATA   S=_CVTSEG        G=DGROUP  M=c0.ASM     ACBP=48
+ 3016:8DB2 0002 C=DATA   S=_CVTSEG        G=DGROUP  M=CVTFAK     ACBP=48
+ 3016:8DB4 0000 C=DATA   S=_CVTSEG        G=DGROUP  M=REALCVT    ACBP=48
+ 3016:8DB4 0000 C=DATA   S=_SCNSEG        G=DGROUP  M=c0.ASM     ACBP=48
+ 3016:8DB4 0006 C=DATA   S=_SCNSEG        G=DGROUP  M=CVTFAK     ACBP=48
+ 3016:8DBA 0000 C=DATA   S=_SCNSEG        G=DGROUP  M=SCANTOD    ACBP=48
+ 3016:8DBA 0000 C=CONST  S=_CONST         G=DGROUP  M=c0.ASM     ACBP=48
+ 3016:8DBA 0000 C=INITDATA S=_INIT_         G=DGROUP  M=c0.ASM     ACBP=48
+ 3016:8DBA 0006 C=INITDATA S=_INIT_         G=DGROUP  M=SETUPIO    ACBP=48
+ 3016:8DC0 0006 C=INITDATA S=_INIT_         G=DGROUP  M=CRTINIT    ACBP=48
+ 3016:8DC6 0006 C=INITDATA S=_INIT_         G=DGROUP  M=SETARGV    ACBP=48
+ 3016:8DCC 0006 C=INITDATA S=_INIT_         G=DGROUP  M=SETENVP    ACBP=48
+ 3016:8DD2 0006 C=INITDATA S=_INIT_         G=DGROUP  M=TZSET      ACBP=48
+ 3016:8DD8 0000 C=INITDATA S=_INITEND_      G=DGROUP  M=c0.ASM     ACBP=28
+ 3016:8DD8 0000 C=EXITDATA S=_EXIT_         G=DGROUP  M=c0.ASM     ACBP=48
+ 3016:8DD8 0000 C=EXITDATA S=_EXITEND_      G=DGROUP  M=c0.ASM     ACBP=28
+ 3016:8DD8 0000 C=BSS    S=_BSS           G=DGROUP  M=c0.ASM     ACBP=48
+ 3016:8DD8 2FE2 C=BSS    S=_BSS           G=DGROUP  M=com.c      ACBP=48
+ 3016:BDBA 0000 C=BSS    S=_BSS           G=DGROUP  M=command.c  ACBP=48
+ 3016:BDBA 0000 C=BSS    S=_BSS           G=DGROUP  M=io.c       ACBP=48
+ 3016:BDBA 17C3 C=BSS    S=_BSS           G=DGROUP  M=gt.c       ACBP=48
+ 3016:D57E 04F4 C=BSS    S=_BSS           G=DGROUP  M=task.c     ACBP=48
+ 3016:DA72 0040 C=BSS    S=_BSS           G=DGROUP  M=init.c     ACBP=48
+ 3016:DAB2 0000 C=BSS    S=_BSS           G=DGROUP  M=user.c     ACBP=48
+ 3016:DAB2 0006 C=BSS    S=_BSS           G=DGROUP  M=alloc.c    ACBP=48
+ 3016:DAB8 0000 C=BSS    S=_BSS           G=DGROUP  M=useredit.c ACBP=48
+ 3016:DAB8 0000 C=BSS    S=_BSS           G=DGROUP  M=input.c    ACBP=48
+ 3016:DAB8 0320 C=BSS    S=_BSS           G=DGROUP  M=video.c    ACBP=48
+ 3016:DDD8 0000 C=BSS    S=_BSS           G=DGROUP  M=editor.c   ACBP=48
+ 3016:DDD8 0000 C=BSS    S=_BSS           G=DGROUP  M=mail.c     ACBP=48
+ 3016:DDD8 0088 C=BSS    S=_BSS           G=DGROUP  M=rotator.c  ACBP=48
+ 3016:DE60 0000 C=BSS    S=_BSS           G=DGROUP  M=gfiles.c   ACBP=48
+ 3016:DE60 0000 C=BSS    S=_BSS           G=DGROUP  M=channel.c  ACBP=48
+ 3016:DE60 04DC C=BSS    S=_BSS           G=DGROUP  M=schedule.c ACBP=48
+ 3016:E33C 0000 C=BSS    S=_BSS           G=DGROUP  M=sysop.c    ACBP=48
+ 3016:E33C 0000 C=BSS    S=_BSS           G=DGROUP  M=bbs.c      ACBP=48
+ 3016:E33C 0000 C=BSS    S=_BSS           G=DGROUP  M=link.c     ACBP=48
+ 3016:E33C 0000 C=BSS    S=_BSS           G=DGROUP  M=protocol.c ACBP=48
+ 3016:E33C 0000 C=BSS    S=_BSS           G=DGROUP  M=string.c   ACBP=48
+ 3016:E33C 0000 C=BSS    S=_BSS           G=DGROUP  M=function.c ACBP=48
+ 3016:E33C 0000 C=BSS    S=_BSS           G=DGROUP  M=glink.c    ACBP=48
+ 3016:E33C 0000 C=BSS    S=_BSS           G=DGROUP  M=diags.c    ACBP=48
+ 3016:E33C 0080 C=BSS    S=_BSS           G=DGROUP  M=ATEXIT     ACBP=48
+ 3016:E3BC 0004 C=BSS    S=_BSS           G=DGROUP  M=CTRLBRK    ACBP=48
+ 3016:E3C0 0000 C=BSS    S=_BSS           G=DGROUP  M=DOSFATTR   ACBP=48
+ 3016:E3C0 0000 C=BSS    S=_BSS           G=DGROUP  M=GETVECT    ACBP=48
+ 3016:E3C0 0000 C=BSS    S=_BSS           G=DGROUP  M=IOERROR    ACBP=48
+ 3016:E3C0 0000 C=BSS    S=_BSS           G=DGROUP  M=ISATTY     ACBP=48
+ 3016:E3C0 0000 C=BSS    S=_BSS           G=DGROUP  M=LONGTOA    ACBP=48
+ 3016:E3C0 0000 C=BSS    S=_BSS           G=DGROUP  M=LSEEK      ACBP=48
+ 3016:E3C0 0000 C=BSS    S=_BSS           G=DGROUP  M=MKDIR      ACBP=48
+ 3016:E3C0 000D C=BSS    S=_BSS           G=DGROUP  M=MKNAME     ACBP=48
+ 3016:E3CE 0000 C=BSS    S=_BSS           G=DGROUP  M=READA      ACBP=48
+ 3016:E3CE 0000 C=BSS    S=_BSS           G=DGROUP  M=REMOVE     ACBP=48
+ 3016:E3CE 0000 C=BSS    S=_BSS           G=DGROUP  M=RMDIR      ACBP=48
+ 3016:E3CE 0000 C=BSS    S=_BSS           G=DGROUP  M=SCANNER    ACBP=48
+ 3016:E3CE 0000 C=BSS    S=_BSS           G=DGROUP  M=SCANTOL    ACBP=48
+ 3016:E3CE 0000 C=BSS    S=_BSS           G=DGROUP  M=SETDATE    ACBP=48
+ 3016:E3CE 0000 C=BSS    S=_BSS           G=DGROUP  M=SETUPIO    ACBP=48
+ 3016:E3CE 0000 C=BSS    S=_BSS           G=DGROUP  M=UNLINK     ACBP=48
+ 3016:E3CE 0000 C=BSS    S=_BSS           G=DGROUP  M=VPRINTER   ACBP=48
+ 3016:E3CE 0000 C=BSS    S=_BSS           G=DGROUP  M=VRAM       ACBP=48
+ 3016:E3CE 0000 C=BSS    S=_BSS           G=DGROUP  M=CRTINIT    ACBP=48
+ 3016:E3CE 000C C=BSS    S=_BSS           G=DGROUP  M=HARDERR    ACBP=48
+ 3016:E3DA 0000 C=BSS    S=_BSS           G=DGROUP  M=IOCTL      ACBP=48
+ 3016:E3DA 0000 C=BSS    S=_BSS           G=DGROUP  M=SETBLOCK   ACBP=48
+ 3016:E3DA 0000 C=BSS    S=_BSS           G=DGROUP  M=ATOL       ACBP=48
+ 3016:E3DA 0000 C=BSS    S=_BSS           G=DGROUP  M=BDOS       ACBP=48
+ 3016:E3DA 0000 C=BSS    S=_BSS           G=DGROUP  M=CHMODA     ACBP=48
+ 3016:E3DA 0000 C=BSS    S=_BSS           G=DGROUP  M=CLOSEA     ACBP=48
+ 3016:E3DA 002C C=BSS    S=_BSS           G=DGROUP  M=CTIME      ACBP=48
+ 3016:E406 0000 C=BSS    S=_BSS           G=DGROUP  M=EOF        ACBP=48
+ 3016:E406 0000 C=BSS    S=_BSS           G=DGROUP  M=FINDFIRS   ACBP=48
+ 3016:E406 0000 C=BSS    S=_BSS           G=DGROUP  M=FREAD      ACBP=48
+ 3016:E406 0000 C=BSS    S=_BSS           G=DGROUP  M=FWRITE     ACBP=48
+ 3016:E406 0001 C=BSS    S=_BSS           G=DGROUP  M=GETC       ACBP=48
+ 3016:E408 0000 C=BSS    S=_BSS           G=DGROUP  M=GETENV     ACBP=48
+ 3016:E408 0000 C=BSS    S=_BSS           G=DGROUP  M=MEMCPY     ACBP=48
+ 3016:E408 0000 C=BSS    S=_BSS           G=DGROUP  M=MEMSET     ACBP=48
+ 3016:E408 0000 C=BSS    S=_BSS           G=DGROUP  M=MOVEDATA   ACBP=48
+ 3016:E408 0000 C=BSS    S=_BSS           G=DGROUP  M=OPEN       ACBP=48
+ 3016:E408 0000 C=BSS    S=_BSS           G=DGROUP  M=OPENA      ACBP=48
+ 3016:E408 0001 C=BSS    S=_BSS           G=DGROUP  M=PUTC       ACBP=48
+ 3016:E40A 0006 C=BSS    S=_BSS           G=DGROUP  M=QSORT      ACBP=48
+ 3016:E410 0000 C=BSS    S=_BSS           G=DGROUP  M=READ       ACBP=48
+ 3016:E410 0000 C=BSS    S=_BSS           G=DGROUP  M=RENAME     ACBP=48
+ 3016:E410 0000 C=BSS    S=_BSS           G=DGROUP  M=STRCAT     ACBP=48
+ 3016:E410 0000 C=BSS    S=_BSS           G=DGROUP  M=STRCPY     ACBP=48
+ 3016:E410 00A1 C=BSS    S=_BSS           G=DGROUP  M=STRERROR   ACBP=48
+ 3016:E4B2 0000 C=BSS    S=_BSS           G=DGROUP  M=STRLEN     ACBP=48
+ 3016:E4B2 0000 C=BSS    S=_BSS           G=DGROUP  M=STRNCPY    ACBP=48
+ 3016:E4B2 0008 C=BSS    S=_BSS           G=DGROUP  M=TZSET      ACBP=48
+ 3016:E4BA 0000 C=BSS    S=_BSS           G=DGROUP  M=UNGETC     ACBP=48
+ 3016:E4BA 0000 C=BSS    S=_BSS           G=DGROUP  M=WRITEA     ACBP=48
+ 3016:E4BA 0000 C=BSSEND S=_BSSEND        G=DGROUP  M=c0.ASM     ACBP=28
+ 3E62:0000 0080 C=STACK  S=_STACK         G=(none)  M=c0.ASM     ACBP=74
+
+  Address         Publics by Name
+
+ 3016:00000 idle  DATASEG@
+ 0000:00291 idle  DGROUP@
+ 0000:00499       F_LDIV@
+ 0000:004A8 idle  F_LMOD@
+ 0000:004A0       F_LUDIV@
+ 0000:004B0       F_LUMOD@
+ 0000:00547       F_LXLSH@
+ 0000:003E1       F_LXMUL@
+ 0000:00568       F_LXURSH@
+ 0000:00589       F_PADA@
+ 0000:00611 idle  F_PADD@
+ 0000:003F8       F_PCMP@
+ 0000:005CD idle  F_PSBA@
+ 0000:00671 idle  F_PSBP@
+ 0000:00640 idle  F_PSUB@
+ 0000:00419       F_SCOPY@
+ 0000:00499 idle  LDIV@
+ 0000:004A8 idle  LMOD@
+ 0000:004A0 idle  LUDIV@
+ 0000:004B0 idle  LUMOD@
+ 0000:00547 idle  LXLSH@
+ 0000:003E1 idle  LXMUL@
+ 0000:00568 idle  LXURSH@
+ 0000:00496       N_LDIV@
+ 0000:004A5       N_LMOD@
+ 0000:0049D idle  N_LUDIV@
+ 0000:004AD idle  N_LUMOD@
+ 0000:00544       N_LXLSH@
+ 0000:0088B       N_LXMUL@
+ 0000:00565 idle  N_LXURSH@
+ 0000:00586 idle  N_PADA@
+ 0000:0060E       N_PADD@
+ 0000:008A2       N_PCMP@
+ 0000:005CA idle  N_PSBA@
+ 0000:0066E       N_PSBP@
+ 0000:0063D idle  N_PSUB@
+ 0000:008C3       N_SCOPY@
+ 0000:00589 idle  PADA@
+ 0000:00611 idle  PADD@
+ 0000:003F8 idle  PCMP@
+ 0000:005CD idle  PSBA@
+ 0000:00671 idle  PSBP@
+ 0000:00640 idle  PSUB@
+ 0000:00419 idle  SCOPY@
+ 111B:01904 idle  _aback_abuffer
+ 0000:0027A       _abort
+ 0770:01D2F idle  _abort_auto_shutdown
+ 3016:0D30D       _abuf_status
+ 111B:01700 idle  _aclear_buffer
+ 23D4:000DC       _add_channel
+ 1A5C:00C12 idle  _add_file_entry
+ 1FAA:004B6 idle  _add_line
+ 24AA:005E1       _add_task_to_scheduler
+ 111B:017C6       _aget_abuffer
+ 111B:0175F idle  _aget_char
+ 1DE1:00007       _allocate_a_console
+ 1897:00AF6       _allocate_resources
+ 1A5C:00642 idle  _allocate_some_memory
+ 12E8:042E7 idle  _ansi_choice_menu
+ 0770:050BC idle  _ansi_online_toggle
+ 12E8:00561       _ansi_strlen
+ 111B:0159B idle  _aput_char
+ 111B:0161B       _aput_into_buffer
+ 0000:02AA4       _asctime
+ 21D7:00CB0 idle  _ask_question
+ 21D7:007CB idle  _assign_blank_rotator_info
+ 0000:00295 idle  _atexit
+ 0000:02787 idle  _atoi
+ 0000:02712       _atol
+ 251F:0008C       _auto_reboot_task
+ 3016:0594B idle  _avail_screen
+ 3016:0AC90 idle  _a_change_dtr_state
+ 3016:0AF50 idle  _a_chars_in_buffer
+ 3016:0ADD0       _a_char_in_buf
+ 3016:0AF10       _a_dcd_detect
+ 3016:0AE10       _a_empty_inbuffer
+ 3016:0ACD0       _a_empty_outbuffer
+ 3016:0AE90       _a_get_char
+ 3016:0AD90       _a_get_first_char
+ 3016:0AD50       _a_get_nchar
+ 1DE1:00D22 idle  _a_got_ansi
+ 3016:0AED0       _a_put_char_in_buffer
+ 1DE1:008CB idle  _a_reading_ansi
+ 3016:0AE50       _a_send_char
+ 1DE1:00E68 idle  _a_send_console_char
+ 3016:0AD10       _a_wait_for_xmit
+ 1DE1:01569 idle  _background
+ 3016:03144       _backspacestring
+ 3016:0DDD6 idle  _base_seg
+ 267E:01941       _bbs_system
+ 0000:02798       _bdos
+ 1DE1:01B61 idle  _beep_console
+ 3016:0D6AE idle  _begin_task_struct
+ 2A9A:006FC idle  _bit_shuffle
+ 1DE1:0141A idle  _blink_video
+ 3016:000BB idle  _board_types
+ 1DE1:01482 idle  _bold_video
+ 12E8:00A5D       _broadcast_message
+ 3016:08E08 idle  _buffers
+ 2B63:049E0       _by_line
+ 292E:00000 idle  _calc_8bit_checksum
+ 292E:0001C idle  _calc_crc_checksum
+ 24AA:00009 idle  _calc_next_event
+ 12E8:030D9 idle  _calc_time_at_login
+ 12E8:0315B       _calc_time_for_node
+ 12E8:01288       _call_on_logoff
+ 0770:03CB2 idle  _change_all_passwords
+ 0531:00C83 idle  _change_dtr_state_8250
+ 0531:00CA5 idle  _change_dtr_state_keyboard
+ 0531:00C4A idle  _change_dtr_state_smart
+ 0531:00CAA idle  _change_dtr_state_star
+ 0770:07510 idle  _change_num
+ 0770:03B8D idle  _change_password
+ 21D7:00A24 idle  _change_rotator_bit_array
+ 24AA:00549       _change_task_to_scheduler
+ 0770:075E7 idle  _change_user_password
+ 2B63:03FD0       _channels
+ 0770:041DF idle  _channel_anonymous
+ 23D4:00009       _channel_empty
+ 23D4:0003D idle  _channel_link_free
+ 0770:05DEF       _channel_list
+ 0770:06C73 idle  _channel_message
+ 0531:0120E idle  _chars_in_buffer_8250
+ 0531:011F3 idle  _chars_in_buffer_keyboard
+ 0531:011A7 idle  _chars_in_buffer_smart
+ 0531:01150 idle  _chars_in_buffer_star
+ 0531:020BB idle  _char_in_buf_8250
+ 0531:02087 idle  _char_in_buf_keyboard
+ 0531:01FE1 idle  _char_in_buf_smart
+ 0531:02034 idle  _char_in_buf_star
+ 2A9A:009AF idle  _checksum_ginsu_file
+ 2A9A:00899       _checksum_ginsu_file_multitask
+ 2A9A:005F7       _checksum_system
+ 0770:01E7D idle  _checksum_system_command
+ 0770:01E24 idle  _checksum_system_event
+ 292E:00529 idle  _check_cancel
+ 12E8:038CC idle  _check_for_chat_confirmation
+ 1897:0115F idle  _check_for_dv
+ 1897:011D1 idle  _check_for_os2
+ 111B:01C22       _check_for_privates
+ 1897:01196 idle  _check_for_windows
+ 0770:041BB       _check_if_silenced
+ 21D7:004F9 idle  _check_no_rotator_messages
+ 1897:01216 idle  _check_operating_system
+ 2A9A:00B03 idle  _check_system_checksum
+ 0770:03602 idle  _choose_console_page
+ 12E8:012BE       _clear_call_on_logoff
+ 23D4:000B0 idle  _clear_channels
+ 23D4:005FF       _clear_channel_semaphores
+ 1DE1:001D4 idle  _clear_console
+ 1DE1:003EA       _clear_screen
+ 1DE1:00275 idle  _clear_to_eol_console
+ 23D4:00590 idle  _clear_user_from_invite_lists
+ 0000:027C5       _close
+ 2359:00044 idle  _close_file_list
+ 2359:005B3 idle  _close_last_ten_callers
+ 0000:0176D       _clrscr
+ 3016:0594F idle  _color_lookup
+ 0770:0968C       _command
+ 2B63:00000 idle  _commands
+ 0770:029C9 idle  _command_util
+ 2B63:04A90       _company_name
+ 267E:0000E idle  _compare_dates
+ 3016:03CCE       _compile_date
+ 3016:03CC5       _compile_time
+ 0531:0180F idle  _com_11_interrupt
+ 0531:01867 idle  _com_12_interrupt
+ 0531:018BF idle  _com_13_interrupt
+ 0531:01917 idle  _com_15_interrupt
+ 0770:02AE7 idle  _conditional_print
+ 0770:02B75 idle  _conditional_sprint
+ 12E8:045B7 idle  _connect_user
+ 1DE1:01BA0       _console_alarm
+ 0770:03575 idle  _console_alarm_event
+ 12E8:004AC idle  _console_status
+ 12E8:028B8 idle  _construct_ddial_log_in_message
+ 12E8:029F7 idle  _construct_ddial_log_out_message
+ 12E8:0252E idle  _construct_log_in_message
+ 12E8:026A7 idle  _construct_log_out_message
+ 111B:0000A       _convstring
+ 1897:00982 idle  _conv_argv_to_upper
+ 3016:0594A idle  _con_char_counter
+ 2B63:04A10       _copyright_mesg
+ 251F:0104C idle  _copy_file
+ 251F:00F0D idle  _copy_file_function
+ 20D2:0021B       _copy_stream
+ 12E8:00020 idle  _count_num_char_in_string
+ 12E8:00040       _count_num_char_in_string_and_rem
+ 3016:07DC6 idle  _crctab
+ 1DE1:017F7       _create_bar
+ 267E:0015F idle  _create_bbs_message
+ 267E:01036 idle  _create_blank_bbs_acct
+ 20D2:00261 idle  _create_message
+ 292E:00B97 idle  _create_ymodem_block0
+ 3016:0315A       _cr_lf
+ 0000:02ACF       _ctime
+ 0000:002EB       _ctrlbrk
+ 1805:006B1 idle  _ctrl_brk_handler
+ 3016:0D698 idle  _curMaxTasks
+ 3016:0594D       _cur_console
+ 3016:0DD50 idle  _cur_pos1
+ 3016:0DD4E idle  _cur_pos2
+ 3016:0DDDC idle  _cur_rot_message
+ 1DE1:0008A       _cur_video_state
+ 3016:0D6A8       _dans_counter
+ 12E8:010A8 idle  _date_sync
+ 3016:08DA4       _daylight
+ 0531:012A8 idle  _dcd_detect_8250
+ 0531:012A0 idle  _dcd_detect_keyboard
+ 0531:01221 idle  _dcd_detect_smart
+ 0531:0125D idle  _dcd_detect_star
+ 0770:097B3 idle  _dcd_toggle
+ 2B63:04900 idle  _ddial_commands
+ 284E:000A1 idle  _ddial_p
+ 284E:002D1 idle  _ddial_ps
+ 284E:00335 idle  _ddial_sp
+ 1A5C:0051A       _deallocate_ems
+ 111B:01A69       _dealloc_abuf
+ 292E:00C25 idle  _decode_ymodem_block0
+ 2A7F:00002       _deencrypt
+ 12E8:02FE8       _delay
+ 267E:00BC4 idle  _delete_a_bbs_message
+ 20D2:00976 idle  _delete_a_mail_message
+ 267E:00CB7 idle  _delete_bbs_message
+ 1FAA:009FF idle  _delete_buffer
+ 251F:00BB1 idle  _delete_file
+ 251F:009F4 idle  _delete_files_function
+ 1A5C:00CF1 idle  _delete_file_entry
+ 1FAA:0056F idle  _delete_line
+ 20D2:009D2 idle  _delete_mail_message
+ 1A5C:00170 idle  _delete_memory_entry
+ 24AA:0073F       _delete_task_from_scheduler
+ 23D4:0019A       _del_channel
+ 251F:00DF0 idle  _del_directory
+ 24AA:002FE idle  _del_task_from_scheduler
+ 1897:0086E       _de_allocate_resources
+ 0531:0196F idle  _digi_11_interrupt
+ 3016:0AFF0 idle  _digi_11_loc
+ 3016:0B016 idle  _digi_11_mux
+ 0531:019E5 idle  _digi_12_interrupt
+ 3016:0AFD0 idle  _digi_12_loc
+ 3016:0B014 idle  _digi_12_mux
+ 0531:01A5B idle  _digi_13_interrupt
+ 3016:0AFB0 idle  _digi_13_loc
+ 3016:0B012 idle  _digi_13_mux
+ 0531:01AD1 idle  _digi_15_interrupt
+ 3016:0AF90 idle  _digi_15_loc
+ 3016:0B010 idle  _digi_15_mux
+ 251F:010C2 idle  _directory_sysop
+ 3016:08857       _directvideo
+ 1DE1:0183E       _direct_screen
+ 0770:08102 idle  _display_callers
+ 3016:0D596 idle  _dontKeepNextTask
+ 0000:04AAE       _dostounix
+ 0770:006F4 idle  _double_space_toggle
+ 111B:000CF       _do_page_break
+ 12E8:00E1F idle  _do_time_out
+ 12E8:00CBF idle  _do_time_warning
+ 1805:00254 idle  _dv_int8_task_switch
+ 3016:03CAA       _dv_loaded
+ 0770:06BD3       _eat_one_space
+ 267E:00A98 idle  _edit_a_bbs_message
+ 267E:00B39 idle  _edit_bbs_message
+ 1B4F:0248C idle  _edit_credit
+ 251F:0000E       _edit_file
+ 251F:00969 idle  _edit_file_sysop
+ 1FAA:005E6 idle  _edit_line
+ 1FAA:00A9A idle  _edit_lines_in_buffer
+ 1B4F:00294       _edit_main_privs
+ 1B4F:00579 idle  _edit_privs
+ 1B4F:0015B idle  _edit_staples
+ 1B4F:00059 idle  _edit_staple_menu
+ 3016:049AE idle  _edit_user_prompt
+ 3016:03C82 idle  _emm_page_mapping
+ 0531:01FC1 idle  _empty_inbuffer_8250
+ 0531:023E1 idle  _empty_inbuffer_keyboard
+ 0531:01F2D idle  _empty_inbuffer_smart
+ 0531:01F84 idle  _empty_inbuffer_star
+ 0531:01F28 idle  _empty_outbuffer_8250
+ 0531:023E6 idle  _empty_outbuffer_keyboard
+ 0531:01EA0 idle  _empty_outbuffer_smart
+ 0531:01EEB idle  _empty_outbuffer_star
+ 3016:0DAB6 idle  _ems_page_frame
+ 0531:01512       _end_com
+ 1805:0000F       _end_task
+ 3016:0D6AC idle  _end_task_struct
+ 267E:01463 idle  _enter_board
+ 1B4F:0275B idle  _enter_date
+ 1FAA:00D0B idle  _enter_lines
+ 3016:088A4       _environ
+ 0000:0318A       _eof
+ 3016:0007F       _errno
+ 0770:09139       _exec
+ 1B4F:00A39       _exist
+ 0000:003A6       _exit
+ 3016:0DABC idle  _ext_mode
+ 0000:01ECC       _farcoreleft
+ 0000:01A9A idle  _farfree
+ 0000:01BAE       _farmalloc
+ 0000:01D12 idle  _farrealloc
+ 0000:03201       _fclose
+ 0000:032B9       _fflush
+ 0000:03BCD       _fgetc
+ 0000:03CBB idle  _fgetchar
+ 0000:03386       _fgets
+ 2A9A:00161       _files_print
+ 2B63:02F90       _file_array
+ 3016:0663C idle  _file_dir
+ 1B4F:0000A idle  _file_get_string
+ 3016:0486A       _file_handles
+ 3016:06644 idle  _file_list
+ 2359:002AE idle  _file_list_section
+ 2359:0043D       _file_section
+ 12E8:006C4       _filter_ansi
+ 2359:0000D idle  _filter_control
+ 12E8:00603       _filter_flashing
+ 0000:03422       _findfirst
+ 0000:03455       _findnext
+ 1DE1:0009D       _find_ansi
+ 1897:008B0 idle  _find_arg
+ 267E:00066 idle  _find_bbs
+ 267E:0036E idle  _find_bbs_directory
+ 0770:02620 idle  _find_command
+ 20D2:00453 idle  _find_directory
+ 1897:00919 idle  _find_file_name_arg
+ 1A5C:00BC4 idle  _find_file_pointer
+ 20D2:00000 idle  _find_mail
+ 1A5C:00003 idle  _find_memory_pointer
+ 21D7:00BC2 idle  _find_rotator_filename
+ 24AA:002C5 idle  _find_schedule_with_id
+ 1A5C:001BC idle  _find_smallest_available_memory
+ 2A9A:001E7 idle  _fixed_asctime
+ 1805:0011D idle  _flip_a_ems_page
+ 1805:000DE idle  _flip_ems_page
+ 0000:03482       _flushall
+ 0000:0369B       _fopen
+ 0770:0890F idle  _force
+ 1DE1:014EA idle  _foreground
+ 0000:036D0       _fprintf
+ 0000:0403A idle  _fputc
+ 0000:041CF idle  _fputchar
+ 0000:037E0       _fread
+ 0000:01A9A       _free
+ 1805:00820 idle  _free_semaphores
+ 1A5C:00754 idle  _free_some_memory
+ 0000:0386E       _fscanf
+ 0000:03914       _fseek
+ 0000:03994       _ftell
+ 0000:03A74       _fwrite
+ 0770:04290 idle  _generate_current_superuser_numbe
+ 0000:00435       _getcbrk
+ 0000:00450       _getdate
+ 0000:03CC7       _getenv
+ 0000:01F1C       _gettext
+ 0000:00463       _gettime
+ 0000:00476       _getvect
+ 0531:01C81 idle  _get_char_8250
+ 0531:01E55 idle  _get_char_keyboard
+ 0531:01B47 idle  _get_char_smart
+ 0531:01BFE idle  _get_char_star
+ 1FAA:0000F       _get_editor_string
+ 1FAA:0013C idle  _get_editor_string_wordwrap
+ 1FAA:00793 idle  _get_edit_int
+ 2359:00061 idle  _get_file_list
+ 2359:001A7 idle  _get_file_list_name
+ 0531:021B2 idle  _get_first_char_8250
+ 0531:02181 idle  _get_first_char_keyboard
+ 0531:020CD idle  _get_first_char_smart
+ 0531:0212B idle  _get_first_char_star
+ 111B:00156       _get_hot_key_prompt
+ 0531:022FB idle  _get_nchar_8250
+ 0531:02341 idle  _get_nchar_keyboard
+ 0531:021DF idle  _get_nchar_smart
+ 0531:02287 idle  _get_nchar_star
+ 1B4F:000F1 idle  _get_new_staple
+ 0770:00346 idle  _get_new_width
+ 111B:00117       _get_no_echo
+ 0770:03180 idle  _get_number
+ 0770:03A84       _get_password
+ 12E8:02FAE idle  _get_result_code
+ 111B:00687       _get_string
+ 111B:01ACD       _get_string_cntrl
+ 1DDF:00001       _get_string_echo
+ 292E:00100 idle  _get_timeout
+ 21D7:00DB0       _get_yes_no
+ 12E8:04A80       _ginsu
+ 2B63:04A00       _ginsutalk_line
+ 0770:05FAE idle  _give_channel_moderator
+ 0770:0705B idle  _give_time
+ 2B63:04A60       _glenview_il
+ 267E:015A7 idle  _global_newscan
+ 0000:02A55 idle  _gmtime
+ 1A5C:00551       _grab_all_available_memory
+ 1897:00D6E       _g_exit
+ 1A5C:00DC9       _g_fclose
+ 1A5C:00EA1 idle  _g_flush
+ 1A5C:00D3D       _g_fopen
+ 1A5C:00946       _g_free
+ 1A5C:00AA0       _g_free_all_handles
+ 1A5C:008F0       _g_free_from_who
+ 1A5C:00E2D idle  _g_ftransfer
+ 1A5C:00A34 idle  _g_keep_memory
+ 1A5C:0082D       _g_malloc
+ 1A5C:007CB       _g_malloc_main_only
+ 1A5C:0088F       _g_malloc_no_owner
+ 1A5C:00EFA idle  _g_owns_file
+ 1A5C:00B72 idle  _g_owns_memory
+ 251F:002DF idle  _g_rename
+ 1A5C:0099D idle  _g_transfer
+ 0770:07D23 idle  _handle
+ 12E8:01463       _hangup_user
+ 0531:00D44       _hang_up
+ 0000:01FC8       _harderr
+ 1897:0085C idle  _harderror_handler
+ 0000:01FDA       _hardresume
+ 0000:01FE8 idle  _hardretn
+ 12E8:00AD9       _has_channel
+ 3016:03CC4 idle  _have_break
+ 3016:03CC1 idle  _have_com
+ 3016:03CC0 idle  _have_ems
+ 3016:03CC3 idle  _have_error
+ 3016:03CC2 idle  _have_key_int
+ 2A9A:0053A       _hex_conversion
+ 3016:000A4 idle  _illegal_command
+ 12E8:00001 idle  _increment_call_statistics
+ 2B63:04B00       _information_question
+ 2B63:049B0 idle  _info_string
+ 111B:019D4       _initabuffer
+ 3016:03CB1 idle  _initial_serial_config_file
+ 1805:006B5       _initMultitask
+ 0531:00786       _initport
+ 0531:004F1 idle  _init_8250_port
+ 1DE1:015E8       _init_display
+ 12E8:03420       _init_login_vars
+ 21D7:00AF5       _init_rotator_bit_array
+ 0531:001DD idle  _init_smart_port
+ 0531:00009 idle  _init_star_smart_port
+ 12E8:0071F idle  _init_timeout_vars
+ 12E8:02E85 idle  _init_vars
+ 1FAA:0090D idle  _insert_buffer
+ 1FAA:00426 idle  _insert_line
+ 1A5C:0007A idle  _insert_memory_entry_at
+ 3016:08DFC idle  _int11
+ 3016:08DF0 idle  _int12
+ 3016:08DE4 idle  _int13
+ 3016:08DD8 idle  _int15
+ 1805:0032A idle  _int8_task_switch
+ 3016:0AC88 idle  _int_11_loc
+ 3016:0AC8A idle  _int_12_loc
+ 3016:0AC8C idle  _int_13_loc
+ 3016:0AC8E idle  _int_15_loc
+ 3016:0DAB8 idle  _int_9_key
+ 3016:00144 idle  _InvalidCommand
+ 3016:0012D       _InvalidFormat
+ 3016:00167 idle  _InvalidSyntax
+ 23D4:00315       _invited
+ 0770:05968 idle  _invite_to_channel
+ 0000:0211C       _ioctl
+ 0000:006E1       _isatty
+ 1805:00876       _iskilled
+ 1805:00841       _islocked
+ 1805:0088E       _ispaused
+ 0770:009ED idle  _issue_cmd_to_link
+ 111B:01568 idle  _is_abuf_empty
+ 3016:0DD54       _is_a_console
+ 0770:05217 idle  _is_lurking
+ 23D4:0023A       _is_monitoring
+ 20D2:00D76       _is_new_mail
+ 267E:00958 idle  _is_new_messages
+ 0770:023C4 idle  _is_online
+ 1B4F:00E3C idle  _is_user_online
+ 267E:014CF idle  _jump_board
+ 1DE1:01C01 idle  _keyboard_int_9
+ 0770:061CC idle  _kickoff_channel
+ 21D7:00266       _kill_all_messages_for_user
+ 0770:04F6B idle  _kill_node
+ 0770:04E0F idle  _kill_node_event
+ 0770:0490A idle  _kill_port
+ 1805:0001C       _kill_task
+ 0770:047F2 idle  _last_call
+ 2A9A:00C8E idle  _last_procedure
+ 3016:0DDDA idle  _last_rot_message
+ 2359:005C6       _last_ten_callers
+ 111B:00D46       _last_ten_kills
+ 12E8:01948       _leave
+ 0770:08759       _leave_quietly
+ 1FAA:003D0       _length_of_line
+ 1FAA:00403 idle  _length_of_null
+ 12E8:00A81 idle  _limit_carrots
+ 1FAA:01123       _line_editor
+ 1FAA:01019 idle  _line_editor_dealloc
+ 12E8:037B0 idle  _line_out_user
+ 3016:0BFF5       _line_status
+ 12E8:04F7E idle  _linked
+ 284E:00918 idle  _link_command
+ 0770:00E20 idle  _link_config
+ 0770:00B6F idle  _link_config_menu
+ 284E:006B8 idle  _link_exec
+ 284E:00682 idle  _link_leave
+ 284E:00935       _link_loop
+ 0770:06E58 idle  _link_node_event
+ 0770:00E9F idle  _list_all_pending_chat_requests
+ 267E:003E2 idle  _list_bbs
+ 1FAA:00804 idle  _list_buffer
+ 0770:077A2 idle  _list_commands
+ 20D2:00651 idle  _list_mail
+ 23D4:00282 idle  _list_monitor_channel
+ 21D7:00CF5 idle  _list_rotator_box
+ 1897:00023 idle  _loadChannelVars
+ 1897:004A1 idle  _loadSystemVars
+ 19C5:00484       _load_access_of_user
+ 267E:0104F idle  _load_bbs_user
+ 267E:00EA2 idle  _load_board_info
+ 1FAA:00C5B idle  _load_editor_file
+ 21D7:00653 idle  _load_rotator_entry
+ 1897:001E1 idle  _load_serial_config_info
+ 19C5:00081       _load_user
+ 0000:02A6E       _localtime
+ 3016:0DAB2 idle  _location_of_ems
+ 1FAA:00374 idle  _location_of_line
+ 1805:007EC       _lock
+ 23D4:00067 idle  _lock_channel
+ 1805:00859       _lock_dos
+ 0770:06C02 idle  _lock_system
+ 111B:008B4       _log_error
+ 111B:0099F       _log_event
+ 111B:00A8D       _log_kill
+ 12E8:014DB       _log_off
+ 12E8:0160C idle  _log_off_no_restarta
+ 12E8:01362       _log_out_user
+ 2359:0045D       _log_user_is_leaving
+ 0770:07D44 idle  _long_display_callers
+ 1A5C:00397 idle  _look_for_ems
+ 0000:00794       _lseek
+ 0770:040E4 idle  _lurk
+ 3016:00094 idle  _mailbox_1
+ 3016:00098 idle  _mailbox_2
+ 3016:0009C idle  _mailbox_3
+ 3016:000A0 idle  _mailbox_4
+ 20D2:00534       _mail_line
+ 20D2:00E24       _mail_system
+ 1805:00904       _main
+ 12E8:03A9A idle  _main_loop
+ 3016:0DA75 idle  _major_version
+ 0770:0538A idle  _make_access_level
+ 251F:00E3E idle  _make_directory
+ 0770:06F5B idle  _make_link
+ 12E8:009BB idle  _make_manual_sysop
+ 12E8:008A4 idle  _make_manual_user
+ 1805:004B4       _make_task
+ 0000:01BA4       _malloc
+ 111B:007E5       _mark_user_log_on
+ 292E:00582 idle  _massive_cancel
+ 3016:0679E       _max_channels
+ 3016:03C98 idle  _max_task_switches
+ 0000:03D37       _memcpy
+ 2A9A:00007       _memory_print
+ 0000:03D7F       _memset
+ 2B63:03670       _mem_array
+ 3016:04868       _mem_handles
+ 1A5C:002AE idle  _merge_blocks
+ 12E8:04C04       _midnight_task
+ 3016:0DA74 idle  _minor_version
+ 0000:007BD       _mkdir
+ 0000:02C78       _mktime
+ 0770:08B62 idle  _modem_terminal
+ 0770:08B52 idle  _modem_terminal_task
+ 21D7:00FB4 idle  _modify_box_contents
+ 21D7:012EF idle  _modify_rotate_params
+ 21D7:01135 idle  _modify_rotator_box
+ 21D7:0160E idle  _modify_user_rotator_box
+ 23D4:0034D       _monitor_channel
+ 0770:05B50 idle  _monitor_system
+ 0000:03D9E       _movedata
+ 0000:02145       _movetext
+ 1DE1:004AF idle  _move_back_line
+ 1DE1:00CE4 idle  _move_cursor
+ 251F:005C6 idle  _move_files_around
+ 1805:0070E idle  _multitask
+ 3016:03CAB idle  _multitasking_os
+ 0770:05C14 idle  _name_channel
+ 267E:009B3 idle  _new_messages
+ 1FAA:0052E idle  _next_eol
+ 3016:06A4C idle  _next_id
+ 3016:06A46 idle  _next_scheduled_event
+ 1805:0014D       _next_task
+ 3016:0011B       _NodeOutOfRange
+ 2A90:00031       _nodes_free
+ 12E8:00C9B idle  _nodes_online
+ 3016:0010F       _NotOnLine
+ 2B63:04AB0       _nuke_greenhouse
+ 0770:00000 idle  _nuke_modem
+ 1FAA:003A6 idle  _number_of_lines
+ 3016:0BDBA idle  _number_till_core
+ 3016:0D6A4       _numTasksOpen
+ 3016:03CAF idle  _num_consoles_loaded
+ 3016:0B018       _num_ports
+ 3016:03CAD idle  _num_ports_loaded
+ 3016:06A44       _num_schedule
+ 3016:03C94 idle  _num_task_switches
+ 3016:0017A idle  _OFF_str
+ 3016:0D69C idle  _oldsp
+ 3016:0D69E idle  _oldss
+ 3016:0DA72 idle  _old_break_value
+ 3016:0D6A0 idle  _old_int8
+ 3016:0D69A idle  _old_tswitch
+ 0770:0077D idle  _on_or_off
+ 3016:00176 idle  _ON_str
+ 0000:03DED       _open
+ 267E:00388 idle  _open_bbs_file
+ 20D2:004A1 idle  _open_mail_file
+ 21D7:0053A idle  _open_rotator_file
+ 3016:0DA76       _os_name
+ 3016:03CAC idle  _os_type
+ 1805:0000B       _our_task_id
+ 0770:0364A idle  _page_node
+ 12E8:01A22 idle  _pass_prompt
+ 1805:008B4       _pause
+ 2A9A:00762       _perodic_checksum_system_event
+ 0000:03FAB       _perror
+ 3016:0B03A       _port
+ 3016:0B01A       _port_fast
+ 3016:0DD6E       _port_screen
+ 1DE1:0044B       _position
+ 1DE1:00326 idle  _position_console
+ 2B63:04A50       _po_box_line
+ 1897:00676 idle  _pre_init_vars
+ 0000:04003       _printf
+ 12E8:01966 idle  _print_call_stats
+ 1FAA:0103A idle  _print_centered
+ 1DE1:00869       _print_chr
+ 1DE1:0104A       _print_chr_to
+ 0770:02420 idle  _print_command_list
+ 0770:0298E idle  _print_command_menu
+ 1DE1:00834       _print_cr
+ 1DE1:00849       _print_cr_to
+ 0770:02C28 idle  _print_expanded_time
+ 0770:02D68       _print_expanded_time_cr
+ 111B:00EAB       _print_file
+ 111B:00EC2 idle  _print_file_to
+ 111B:011BC       _print_file_to_cntrl
+ 1897:009DC idle  _print_help
+ 0770:019DD idle  _print_info
+ 0770:0704E       _print_invalid_command
+ 0770:00794 idle  _print_lc_menu
+ 12E8:049E2 idle  _print_login_line
+ 12E8:035E2 idle  _print_login_messages
+ 12E8:02BCB       _print_log_in
+ 12E8:02D7C       _print_log_off
+ 12E8:00798       _print_lurk_message_from
+ 1B4F:00229 idle  _print_main_privs_menu
+ 0770:03205 idle  _print_num_calls
+ 0770:03580 idle  _print_page_status
+ 0770:04981 idle  _print_restart_status
+ 0770:03959 idle  _print_safeness
+ 1FAA:010B3 idle  _print_short_welcome
+ 1897:0073E idle  _print_software_startup
+ 0770:0447A idle  _print_stats
+ 1DE1:00712       _print_string
+ 284E:00038 idle  _print_string_dumblink
+ 1DE1:00734       _print_string_noansi
+ 1DE1:00796       _print_string_to
+ 20D2:00508 idle  _print_strip
+ 1DE1:007DC       _print_str_cr
+ 284E:00004 idle  _print_str_cr_dumblink
+ 1DE1:0077F       _print_str_cr_noansi
+ 1DE1:00803       _print_str_cr_to
+ 1897:00837 idle  _print_stupid_shit
+ 251F:003EC idle  _print_system_fucked
+ 1897:007A9 idle  _print_system_identification
+ 251F:003CA idle  _print_system_intact_message
+ 12E8:04504 idle  _print_system_login
+ 1DE1:007BE       _print_sys_mesg
+ 12E8:0085C idle  _print_to_all_with_priv
+ 0770:003C3 idle  _print_user_config_menu
+ 1B4F:00E7C idle  _print_user_info
+ 1B4F:00A82 idle  _print_user_time_pri
+ 0770:024F8 idle  _print_verbose_commands
+ 0770:01F9C idle  _print_watchers
+ 0770:077BF idle  _private
+ 1B4F:00B2C idle  _priv_time_edit
+ 111B:003BC       _prompt_get_string
+ 292E:005D6 idle  _proto_close_file
+ 292E:006AB idle  _proto_file_length
+ 292E:00596 idle  _proto_open_file
+ 292E:005E9 idle  _proto_read_buffer
+ 292E:0066D idle  _proto_write_buffer
+ 0770:019D8 idle  _psudo_call
+ 0000:01F72       _puttext
+ 251F:00504 idle  _put_back_checksum_file
+ 251F:00432 idle  _put_back_exe_file
+ 0531:015F6 idle  _put_char_in_buffer_8250
+ 0531:023D7 idle  _put_char_in_buffer_keyboard
+ 0531:015EC idle  _put_char_in_buffer_smart
+ 0531:015F1 idle  _put_char_in_buffer_star
+ 0000:0469A       _qsort
+ 0770:0984B idle  _quick_shut_down
+ 267E:005C8 idle  _read_a_bbs_message
+ 20D2:007FA idle  _read_a_mail_message
+ 267E:008B7 idle  _read_bbs_message
+ 21D7:00E1D idle  _read_box_contents
+ 20D2:008F1 idle  _read_mail_message
+ 2A9A:00A88       _read_old_time
+ 21D7:0145B       _read_rotator_box
+ 0000:01D0B idle  _realloc
+ 1897:0000D       _reboot
+ 292E:003F1 idle  _receiver_driven_start
+ 292E:014D1       _receive_files
+ 292E:0090C idle  _receive_xmodem_protocol
+ 292E:013D7 idle  _receive_ymodem_batch
+ 292E:00FBF idle  _receive_ymodem_protocol
+ 292E:002B2 idle  _recv_packet
+ 1DE1:01C8C       _release_keyboard_int
+ 12E8:04B01 idle  _relogged
+ 0770:06DD9 idle  _relog_node_event
+ 0770:06ECC idle  _relog_user
+ 12E8:037F2       _remake_handleline
+ 12E8:0187F       _remote
+ 0000:0090E       _remove
+ 12E8:0065A idle  _remove_ansi
+ 12E8:0059D idle  _remove_flashing
+ 0770:05907       _remove_invite
+ 12E8:03881 idle  _remove_priority_messages
+ 0000:04793       _rename
+ 251F:00E8C idle  _rename_file
+ 2A90:00002       _repeat_chr
+ 1DE1:0137E       _reset_attributes
+ 267E:01868 idle  _reset_bbs_message_date
+ 23D4:00CE5       _reset_channel
+ 12E8:00C4E idle  _restart_monitor
+ 12E8:0076E idle  _restart_task
+ 12E8:017AA       _re_log
+ 0000:00926       _rmdir
+ 2A9A:005BB       _rom_checksum
+ 3016:05F2E idle  _rotate_file
+ 21D7:014BF idle  _rotate_message
+ 3016:0DDE0 idle  _rotator_bit_array
+ 3016:0DDDE idle  _rotator_delay
+ 3016:0DDD8 idle  _rotator_id
+ 21D7:01788       _rotator_menu_system
+ 3016:05F3F idle  _rotator_on
+ 21D7:013A7       _rotator_system
+ 0770:02A59 idle  _run_midnight_task
+ 267E:011F6 idle  _save_bbs_user
+ 0770:00574 idle  _save_channel_info
+ 12E8:04D4A       _save_channel_info_function
+ 1FAA:00BBF idle  _save_editor_file
+ 21D7:00816 idle  _save_rotator_entry
+ 21D7:00BDF idle  _save_rotator_file
+ 12E8:04F58       _save_sys_info
+ 12E8:04E60       _save_sys_info_function
+ 19C5:00203       _save_user
+ 3016:0DE60       _schedule
+ 3016:0E2D4       _schedule_data
+ 12E8:00B2F idle  _schedule_events
+ 3016:0DB3E idle  _screens
+ 1DE1:0055F idle  _scroll_up_at_cursor
+ 1DE1:00632 idle  _scroll_view
+ 24AA:003DE       _see_if_scheduled_event_occurs
+ 2A9A:00284       _see_scheduler
+ 0770:039A1 idle  _select_safeness
+ 3016:0D598 idle  _semaphores
+ 292E:004C1 idle  _sender_start
+ 12E8:03009 idle  _sendslow
+ 1DE1:0132A idle  _send_attribute
+ 267E:00D42 idle  _send_a_bbs_message
+ 20D2:00A58 idle  _send_a_mail_message
+ 292E:00084 idle  _send_buffer
+ 0531:01DFB idle  _send_char_8250
+ 0531:023DC idle  _send_char_keyboard
+ 0531:01CD6 idle  _send_char_smart
+ 0531:01D6D idle  _send_char_star
+ 292E:01463       _send_files
+ 292E:000B1 idle  _send_integer
+ 1DE1:01BED idle  _send_key_command
+ 20D2:00C63 idle  _send_mail_message
+ 292E:00217 idle  _send_packet
+ 292E:000E5 idle  _send_short
+ 0531:01E29       _send_string
+ 292E:00715 idle  _send_xmodem_protocol
+ 292E:01348 idle  _send_ymodem_batch
+ 292E:00CC4 idle  _send_ymodem_protocol
+ 3016:03CBC       _serial_config_file
+ 3016:0BFF3       _server
+ 0000:02672       _setblock
+ 0000:0043F       _setcbrk
+ 0000:00FFF       _setdate
+ 0000:03D5B idle  _setmem
+ 0000:01014       _settime
+ 0000:047B0       _setvbuf
+ 0000:00485       _setvect
+ 284E:0006C idle  _set_ansi
+ 0770:00935 idle  _set_auto_system_lists
+ 0531:00FB5       _set_baud_rate
+ 0531:00F19 idle  _set_baud_rate_8250
+ 0531:00E71 idle  _set_baud_rate_smart
+ 0531:00DAE idle  _set_baud_rate_star
+ 19C5:0003B       _set_bit
+ 0770:03E45 idle  _set_call_back_delay
+ 0770:064DD idle  _set_channel_lock
+ 0770:06742 idle  _set_channel_messages
+ 0770:05C6D       _set_channel_name
+ 0770:06913 idle  _set_channel_priority
+ 12E8:01485       _set_death_off
+ 12E8:01495       _set_death_on
+ 0770:07AD9       _set_handle
+ 0770:00A1C idle  _set_link_handle
+ 0770:00AB0 idle  _set_local_link_handle
+ 1B4F:024F9 idle  _set_new_expiration_date
+ 1DE1:01C6A       _set_new_keyboard_int
+ 24AA:0035F idle  _set_next_scheduled_event
+ 0770:03A49 idle  _set_num_calls
+ 0770:000F2 idle  _set_reset_color
+ 0770:0005C idle  _set_return_echo
+ 1DE1:006B4 idle  _set_scroll_region
+ 12E8:0303E       _set_temp_user_info
+ 0770:049E8 idle  _set_width
+ 1FAA:006AF idle  _show_buffer
+ 12E8:02CD4       _show_log_in
+ 12E8:02D28       _show_log_off
+ 0770:0510A idle  _show_members
+ 0770:0060E idle  _show_serial_info
+ 1FAA:00B70 idle  _show_stats
+ 0770:00162 idle  _show_task_info
+ 12E8:050F2       _shutdown_node
+ 12E8:01243       _shutdown_server
+ 12E8:051CA       _shutdown_task
+ 12E8:01236       _shutdown_timeout_server
+ 1897:00D82       _shut_down
+ 0770:0987B idle  _silence_guest
+ 0770:002CA idle  _slowdown_text
+ 0531:0163F idle  _smart_11_interrupt
+ 3016:0AC68 idle  _smart_11_loc
+ 0531:016B3 idle  _smart_12_interrupt
+ 3016:0AC48 idle  _smart_12_loc
+ 0531:01727 idle  _smart_13_interrupt
+ 3016:0AC28 idle  _smart_13_loc
+ 0531:0179B idle  _smart_15_interrupt
+ 3016:0AC08 idle  _smart_15_loc
+ 251F:00752 idle  _software_update
+ 1DE1:0087E       _special_code
+ 0000:0490D       _sprintf
+ 0770:02D7F idle  _sprint_expanded_time
+ 0770:043FF       _sprint_time
+ 0770:04A63       _squelched
+ 0770:04AB9 idle  _squelch_node
+ 12E8:00C04 idle  _stack_monitor
+ 0531:012D7       _start_com
+ 0770:00EBA idle  _start_direct_chat
+ 12E8:010A9       _start_server
+ 12E8:00E74       _start_timeout_server
+ 1B4F:02029       _start_user_edit
+ 0770:0202A idle  _start_watcher
+ 0000:010E3 idle  _stime
+ 0000:04950       _strcat
+ 0000:0498F       _strcpy
+ 0770:06FEA idle  _stream_toggle
+ 0000:04A4D idle  _strerror
+ 0000:02CD8       _strftime
+ 2B63:00AF0 idle  _string_table
+ 0000:04A5E       _strlen
+ 0000:04A7D       _strncpy
+ 12E8:02493       _str_time
+ 0770:07545       _str_to_num
+ 0770:04358 idle  _super_user
+ 0770:015D1 idle  _suspend_user
+ 3016:0D6A6 idle  _switchTasks
+ 1805:000B0 idle  _switch_to_ems_context
+ 1DE1:0014D       _switch_virtual_console
+ 251F:014E1       _sysop_file_mngr
+ 3016:04589 idle  _sysop_member_list
+ 3016:05957       _system_arrow
+ 0770:02EEA idle  _system_information
+ 3016:03C9C idle  _system_load
+ 0770:03F69 idle  _system_menu
+ 3016:0BDBC       _system_number
+ 2B63:04A80       _system_startup
+ 3016:08A7E       _sys_errlist
+ 3016:0BDD8       _sys_info
+ 3016:08B3E       _sys_nerr
+ 3016:0BDC2       _sys_toggles
+ 3016:03C92       _tasking
+ 3016:0D6B0       _tasks
+ 3016:0DA3E idle  _task_fast
+ 0770:05260 idle  _temp_priv_edit
+ 0770:08B45 idle  _terminal_return_line
+ 19C5:0000D       _test_bit
+ 0000:01123       _time
+ 3016:0BFF1       _timeout_server
+ 3016:03C93 idle  _timer_section
+ 3016:08DA0       _timezone
+ 292E:001E4 idle  _time_buffer
+ 0770:01A60 idle  _time_command
+ 292E:001A2 idle  _time_integer
+ 12E8:0102F idle  _time_monitor
+ 20D2:00CD7 idle  _time_t_to_dos_date
+ 0770:027A8 idle  _toggle_command
+ 267E:017DA idle  _toggle_global_on
+ 0000:0117B       _toupper
+ 23D4:0064A       _to_channel
+ 0770:03A5A idle  _to_upper
+ 251F:01252 idle  _transfer_protocol
+ 3016:0D6AA       _tswitch
+ 3016:08D98       _tzname
+ 0000:04DDC       _tzset
+ 1B4F:01428 idle  _ue_delete_users
+ 1B4F:020D0 idle  _ue_global_copy
+ 1B4F:02392 idle  _ue_main_prompt
+ 1B4F:01B6C idle  _ue_new_user_prompt
+ 1B4F:01104 idle  _ue_priv_change
+ 1B4F:0159D idle  _ue_user_edit_prompt
+ 3016:0498E idle  _um_main_prompt
+ 0000:050AC idle  _ungetc
+ 0000:04BD8       _unixtodos
+ 0000:011A7       _unlink
+ 1805:0080F       _unlock
+ 23D4:00097 idle  _unlock_channel
+ 1805:00868       _unlock_dos
+ 12E8:012D5       _unlog_user
+ 1805:008E5       _unpause
+ 2A9A:0066D       _unscramble
+ 12E8:00083 idle  _update_display_one
+ 0770:05189 idle  _update_members_command
+ 19C5:005AD       _update_members_list
+ 21D7:0000D       _update_m_index
+ 0770:051F1 idle  _update_sys_info_command
+ 3016:04580 idle  _userfile
+ 0770:00440 idle  _user_config_menu
+ 0770:00460 idle  _user_config_menu1
+ 20D2:00CAA       _user_feedback
+ 0770:01BB9 idle  _user_info
+ 2B63:01781       _user_lines
+ 2B63:00C60 idle  _user_member_list
+ 2B63:00C71       _user_options
+ 0770:07448 idle  _validate_user
+ 3016:0319F       _version_title
+ 251F:0004E       _view_file
+ 251F:00923 idle  _view_file_sysop
+ 0000:0492F idle  _vsprintf
+ 111B:00076       _wait_ch
+ 0531:02378       _wait_for_dcd_state
+ 12E8:014A5       _wait_for_death
+ 251F:00391 idle  _wait_for_return
+ 292E:00159 idle  _wait_for_sending_state
+ 0531:01027 idle  _wait_for_xmit_8250
+ 0531:023EB idle  _wait_for_xmit_keyboard
+ 0531:010BC idle  _wait_for_xmit_smart
+ 0531:0102C idle  _wait_for_xmit_star
+ 0770:096B3 idle  _wall_to_users
+ 0770:09780 idle  _wall_to_users_anonymous
+ 12E8:03797 idle  _warn_user_lineout
+ 0770:02015 idle  _watcher_dealloc
+ 3016:03148 idle  _welcome
+ 0000:026F0 idle  _wherex
+ 0000:026FF idle  _wherey
+ 3016:06A4A idle  _which_next_event_id
+ 1805:008A1       _who_paused
+ 3016:0DD53 idle  _width
+ 3016:0DD52 idle  _width_minus_one
+ 1DE1:018AD       _wrap_line
+ 0531:00B81 idle  _write_buf_command
+ 251F:0026A idle  _write_new_checksum_file
+ 0000:01000 idle  __AHINCR
+ 0000:0000C idle  __AHSHIFT
+ 3016:08894 idle  __argc
+ 3016:08896 idle  __argv
+ 3016:0842A       __atexitcnt
+ 3016:0E33C       __atexittbl
+ 0000:01E02       __brk
+ 3016:0008B       __brklvl
+ 3016:0006B       __C0argc
+ 3016:0006D       __C0argv
+ 0000:0185C idle  __c0crtinit
+ 3016:00071       __C0environ
+ 0000:003C7 idle  __cexit
+ 0000:0016A       __checknull
+ 0000:027A8       __chmod
+ 0000:00157       __cleanup
+ 0000:027ED       __close
+ 0000:01879 idle  __crtinit
+ 3016:0842C       __ctype
+ 0000:00000  Abs  __cvtfak
+ 0000:003D5 idle  __c_exit
+ 3016:086F8       __doserrno
+ 0000:006CF       __DOSERROR
+ 3016:086FA idle  __dosErrorToSV
+ 0000:00311       __dos_getfileattr
+ 0000:00331 idle  __dos_setfileattr
+ 3016:00075       __envLng
+ 3016:00077       __envseg
+ 3016:00079       __envSize
+ 0000:003B5       __exit
+ 3016:0852E       __exitbuf
+ 3016:08532       __exitfopen
+ 3016:08536 idle  __exitopen
+ 0000:03BB5       __fgetc
+ 3016:086F4       __fmode
+ 0000:0401E idle  __fputc
+ 0000:041E3       __FPUTN
+ 0000:03651 idle  __GETFP
+ 0000:02076 idle  __harderr
+ 0000:020A2       __hardresume
+ 0000:020BD       __hardretn
+ 3016:00087       __heapbase
+ 3016:0008F       __heaptop
+ 3016:0005B idle  __Int0Vector
+ 3016:0005F idle  __Int4Vector
+ 3016:00063 idle  __Int5Vector
+ 3016:00067 idle  __Int6Vector
+ 0000:00696       __IOERROR
+ 0000:04FCA       __ISDST
+ 0000:006F2       __LONGTOA
+ 0000:007D5       __MKNAME
+ 0000:00293 idle  __MMODEL
+ 3016:08D7E idle  __monthDay
+ 0000:03BCA       __Nfgetc
+ 3016:086CA       __nfile
+ 3016:086F6       __notUmask
+ 0000:050A9       __Nungetc
+ 0000:03F5C       __open
+ 3016:086CC       __openfd
+ 0000:03580 idle  __OPENFP
+ 3016:0007D       __osmajor
+ 3016:0007E idle  __osminor
+ 3016:0007D idle  __osversion
+ 3016:0007B       __psp
+ 0000:008DF       __read
+ 0000:021E2       __REALCVT
+ 3016:08DB2       __RealCvtVector
+ 0000:001C0       __restorezero
+ 0000:01E41       __sbrk
+ 0000:0093E       __scanner
+ 0000:021EE       __scanpop
+ 0000:021EA       __scanrslt
+ 0000:021E6       __scantod
+ 3016:08DB4       __ScanTodVector
+ 0000:00E5D       __scantol
+ 0000:02328       __SCREENIO
+ 0000:023DB       __SCROLL
+ 0000:00000  Abs  __setargv__
+ 0000:00000 idle  __setenvp__
+ 0000:01029       __setupio
+ 3016:00081 idle  __StartTime
+ 3016:087DE       __stklen
+ 0000:01739       __stpcpy
+ 3016:0853A       __streams
+ 0000:04A3B       __strerror
+ 0000:0016B       __terminate
+ 0000:00832 idle  __TMPNAM
+ 0000:00000 idle  __turboCrt
+ 0000:00774       __UTOA
+ 0000:02364       __VALIDATEXY
+ 3016:0007D idle  __version
+ 3016:08848       __video
+ 0000:017D1       __VideoInt
+ 0000:011D7       __VPRINTER
+ 0000:0169A       __VPTR
+ 0000:016BF       __VRAM
+ 0000:026E6       __wherexy
+ 0000:05268       __write
+ 0000:052A4       __xfclose
+ 0000:052E1       __xfflush
+ 3016:00085 idle  ___brklvl
+ 0000:0195A idle  ___first
+ 0000:0204A       ___harderr
+ 0000:0195C idle  ___last
+ 0000:046C2       ___read
+ 0000:0195E idle  ___rover
+ 0000:05117       ___write
+
+  Address         Publics by Value
+
+ 0000:01000 idle  __AHINCR
+ 0000:0000C idle  __AHSHIFT
+ 0000:00000  Abs  __setargv__
+ 0000:00000 idle  __turboCrt
+ 0000:00000  Abs  __cvtfak
+ 0000:00000 idle  __setenvp__
+ 0000:052E1       __xfflush
+ 0000:052A4       __xfclose
+ 0000:05268       __write
+ 0000:05117       ___write
+ 0000:050AC idle  _ungetc
+ 0000:050A9       __Nungetc
+ 0000:04FCA       __ISDST
+ 0000:04DDC       _tzset
+ 0000:04BD8       _unixtodos
+ 0000:04AAE       _dostounix
+ 0000:04A7D       _strncpy
+ 0000:04A5E       _strlen
+ 0000:04A4D idle  _strerror
+ 0000:04A3B       __strerror
+ 0000:0498F       _strcpy
+ 0000:04950       _strcat
+ 0000:0492F idle  _vsprintf
+ 0000:0490D       _sprintf
+ 0000:047B0       _setvbuf
+ 0000:04793       _rename
+ 0000:046C2       ___read
+ 0000:0469A       _qsort
+ 0000:041E3       __FPUTN
+ 0000:041CF idle  _fputchar
+ 0000:0403A idle  _fputc
+ 0000:0401E idle  __fputc
+ 0000:04003       _printf
+ 0000:03FAB       _perror
+ 0000:03F5C       __open
+ 0000:03DED       _open
+ 0000:03D9E       _movedata
+ 0000:03D7F       _memset
+ 0000:03D5B idle  _setmem
+ 0000:03D37       _memcpy
+ 0000:03CC7       _getenv
+ 0000:03CBB idle  _fgetchar
+ 0000:03BCD       _fgetc
+ 0000:03BCA       __Nfgetc
+ 0000:03BB5       __fgetc
+ 0000:03A74       _fwrite
+ 0000:03994       _ftell
+ 0000:03914       _fseek
+ 0000:0386E       _fscanf
+ 0000:037E0       _fread
+ 0000:036D0       _fprintf
+ 0000:0369B       _fopen
+ 0000:03651 idle  __GETFP
+ 0000:03580 idle  __OPENFP
+ 0000:03482       _flushall
+ 0000:03455       _findnext
+ 0000:03422       _findfirst
+ 0000:03386       _fgets
+ 0000:032B9       _fflush
+ 0000:03201       _fclose
+ 0000:0318A       _eof
+ 0000:02CD8       _strftime
+ 0000:02C78       _mktime
+ 0000:02ACF       _ctime
+ 0000:02AA4       _asctime
+ 0000:02A6E       _localtime
+ 0000:02A55 idle  _gmtime
+ 0000:027ED       __close
+ 0000:027C5       _close
+ 0000:027A8       __chmod
+ 0000:02798       _bdos
+ 0000:02787 idle  _atoi
+ 0000:02712       _atol
+ 0000:026FF idle  _wherey
+ 0000:026F0 idle  _wherex
+ 0000:026E6       __wherexy
+ 0000:02672       _setblock
+ 0000:023DB       __SCROLL
+ 0000:02364       __VALIDATEXY
+ 0000:02328       __SCREENIO
+ 0000:021EE       __scanpop
+ 0000:021EA       __scanrslt
+ 0000:021E6       __scantod
+ 0000:021E2       __REALCVT
+ 0000:02145       _movetext
+ 0000:0211C       _ioctl
+ 0000:020BD       __hardretn
+ 0000:020A2       __hardresume
+ 0000:02076 idle  __harderr
+ 0000:0204A       ___harderr
+ 0000:01FE8 idle  _hardretn
+ 0000:01FDA       _hardresume
+ 0000:01FC8       _harderr
+ 0000:01F72       _puttext
+ 0000:01F1C       _gettext
+ 0000:01ECC       _farcoreleft
+ 0000:01E41       __sbrk
+ 0000:01E02       __brk
+ 0000:01D12 idle  _farrealloc
+ 0000:01D0B idle  _realloc
+ 0000:01BAE       _farmalloc
+ 0000:01BA4       _malloc
+ 0000:01A9A       _free
+ 0000:01A9A idle  _farfree
+ 0000:0195E idle  ___rover
+ 0000:0195C idle  ___last
+ 0000:0195A idle  ___first
+ 0000:01879 idle  __crtinit
+ 0000:0185C idle  __c0crtinit
+ 0000:017D1       __VideoInt
+ 0000:0176D       _clrscr
+ 0000:01739       __stpcpy
+ 0000:016BF       __VRAM
+ 0000:0169A       __VPTR
+ 0000:011D7       __VPRINTER
+ 0000:011A7       _unlink
+ 0000:0117B       _toupper
+ 0000:01123       _time
+ 0000:010E3 idle  _stime
+ 0000:01029       __setupio
+ 0000:01014       _settime
+ 0000:00FFF       _setdate
+ 0000:00E5D       __scantol
+ 0000:0093E       __scanner
+ 0000:00926       _rmdir
+ 0000:0090E       _remove
+ 0000:008DF       __read
+ 0000:008C3       N_SCOPY@
+ 0000:008A2       N_PCMP@
+ 0000:0088B       N_LXMUL@
+ 0000:00832 idle  __TMPNAM
+ 0000:007D5       __MKNAME
+ 0000:007BD       _mkdir
+ 0000:00794       _lseek
+ 0000:00774       __UTOA
+ 0000:006F2       __LONGTOA
+ 0000:006E1       _isatty
+ 0000:006CF       __DOSERROR
+ 0000:00696       __IOERROR
+ 0000:00671 idle  PSBP@
+ 0000:00671 idle  F_PSBP@
+ 0000:0066E       N_PSBP@
+ 0000:00640 idle  F_PSUB@
+ 0000:00640 idle  PSUB@
+ 0000:0063D idle  N_PSUB@
+ 0000:00611 idle  F_PADD@
+ 0000:00611 idle  PADD@
+ 0000:0060E       N_PADD@
+ 0000:005CD idle  PSBA@
+ 0000:005CD idle  F_PSBA@
+ 0000:005CA idle  N_PSBA@
+ 0000:00589       F_PADA@
+ 0000:00589 idle  PADA@
+ 0000:00586 idle  N_PADA@
+ 0000:00568       F_LXURSH@
+ 0000:00568 idle  LXURSH@
+ 0000:00565 idle  N_LXURSH@
+ 0000:00547       F_LXLSH@
+ 0000:00547 idle  LXLSH@
+ 0000:00544       N_LXLSH@
+ 0000:004B0       F_LUMOD@
+ 0000:004B0 idle  LUMOD@
+ 0000:004AD idle  N_LUMOD@
+ 0000:004A8 idle  F_LMOD@
+ 0000:004A8 idle  LMOD@
+ 0000:004A5       N_LMOD@
+ 0000:004A0       F_LUDIV@
+ 0000:004A0 idle  LUDIV@
+ 0000:0049D idle  N_LUDIV@
+ 0000:00499       F_LDIV@
+ 0000:00499 idle  LDIV@
+ 0000:00496       N_LDIV@
+ 0000:00485       _setvect
+ 0000:00476       _getvect
+ 0000:00463       _gettime
+ 0000:00450       _getdate
+ 0000:0043F       _setcbrk
+ 0000:00435       _getcbrk
+ 0000:00419       F_SCOPY@
+ 0000:00419 idle  SCOPY@
+ 0000:003F8       F_PCMP@
+ 0000:003F8 idle  PCMP@
+ 0000:003E1       F_LXMUL@
+ 0000:003E1 idle  LXMUL@
+ 0000:003D5 idle  __c_exit
+ 0000:003C7 idle  __cexit
+ 0000:003B5       __exit
+ 0000:003A6       _exit
+ 0000:00331 idle  __dos_setfileattr
+ 0000:00311       __dos_getfileattr
+ 0000:002EB       _ctrlbrk
+ 0000:00295 idle  _atexit
+ 0000:00293 idle  __MMODEL
+ 0000:00291 idle  DGROUP@
+ 0000:0027A       _abort
+ 0000:001C0       __restorezero
+ 0000:0016B       __terminate
+ 0000:0016A       __checknull
+ 0000:00157       __cleanup
+ 0531:023EB idle  _wait_for_xmit_keyboard
+ 0531:023E6 idle  _empty_outbuffer_keyboard
+ 0531:023E1 idle  _empty_inbuffer_keyboard
+ 0531:023DC idle  _send_char_keyboard
+ 0531:023D7 idle  _put_char_in_buffer_keyboard
+ 0531:02378       _wait_for_dcd_state
+ 0531:02341 idle  _get_nchar_keyboard
+ 0531:022FB idle  _get_nchar_8250
+ 0531:02287 idle  _get_nchar_star
+ 0531:021DF idle  _get_nchar_smart
+ 0531:021B2 idle  _get_first_char_8250
+ 0531:02181 idle  _get_first_char_keyboard
+ 0531:0212B idle  _get_first_char_star
+ 0531:020CD idle  _get_first_char_smart
+ 0531:020BB idle  _char_in_buf_8250
+ 0531:02087 idle  _char_in_buf_keyboard
+ 0531:02034 idle  _char_in_buf_star
+ 0531:01FE1 idle  _char_in_buf_smart
+ 0531:01FC1 idle  _empty_inbuffer_8250
+ 0531:01F84 idle  _empty_inbuffer_star
+ 0531:01F2D idle  _empty_inbuffer_smart
+ 0531:01F28 idle  _empty_outbuffer_8250
+ 0531:01EEB idle  _empty_outbuffer_star
+ 0531:01EA0 idle  _empty_outbuffer_smart
+ 0531:01E55 idle  _get_char_keyboard
+ 0531:01E29       _send_string
+ 0531:01DFB idle  _send_char_8250
+ 0531:01D6D idle  _send_char_star
+ 0531:01CD6 idle  _send_char_smart
+ 0531:01C81 idle  _get_char_8250
+ 0531:01BFE idle  _get_char_star
+ 0531:01B47 idle  _get_char_smart
+ 0531:01AD1 idle  _digi_15_interrupt
+ 0531:01A5B idle  _digi_13_interrupt
+ 0531:019E5 idle  _digi_12_interrupt
+ 0531:0196F idle  _digi_11_interrupt
+ 0531:01917 idle  _com_15_interrupt
+ 0531:018BF idle  _com_13_interrupt
+ 0531:01867 idle  _com_12_interrupt
+ 0531:0180F idle  _com_11_interrupt
+ 0531:0179B idle  _smart_15_interrupt
+ 0531:01727 idle  _smart_13_interrupt
+ 0531:016B3 idle  _smart_12_interrupt
+ 0531:0163F idle  _smart_11_interrupt
+ 0531:015F6 idle  _put_char_in_buffer_8250
+ 0531:015F1 idle  _put_char_in_buffer_star
+ 0531:015EC idle  _put_char_in_buffer_smart
+ 0531:01512       _end_com
+ 0531:012D7       _start_com
+ 0531:012A8 idle  _dcd_detect_8250
+ 0531:012A0 idle  _dcd_detect_keyboard
+ 0531:0125D idle  _dcd_detect_star
+ 0531:01221 idle  _dcd_detect_smart
+ 0531:0120E idle  _chars_in_buffer_8250
+ 0531:011F3 idle  _chars_in_buffer_keyboard
+ 0531:011A7 idle  _chars_in_buffer_smart
+ 0531:01150 idle  _chars_in_buffer_star
+ 0531:010BC idle  _wait_for_xmit_smart
+ 0531:0102C idle  _wait_for_xmit_star
+ 0531:01027 idle  _wait_for_xmit_8250
+ 0531:00FB5       _set_baud_rate
+ 0531:00F19 idle  _set_baud_rate_8250
+ 0531:00E71 idle  _set_baud_rate_smart
+ 0531:00DAE idle  _set_baud_rate_star
+ 0531:00D44       _hang_up
+ 0531:00CAA idle  _change_dtr_state_star
+ 0531:00CA5 idle  _change_dtr_state_keyboard
+ 0531:00C83 idle  _change_dtr_state_8250
+ 0531:00C4A idle  _change_dtr_state_smart
+ 0531:00B81 idle  _write_buf_command
+ 0531:00786       _initport
+ 0531:004F1 idle  _init_8250_port
+ 0531:001DD idle  _init_smart_port
+ 0531:00009 idle  _init_star_smart_port
+ 0770:0987B idle  _silence_guest
+ 0770:0984B idle  _quick_shut_down
+ 0770:097B3 idle  _dcd_toggle
+ 0770:09780 idle  _wall_to_users_anonymous
+ 0770:096B3 idle  _wall_to_users
+ 0770:0968C       _command
+ 0770:09139       _exec
+ 0770:08B62 idle  _modem_terminal
+ 0770:08B52 idle  _modem_terminal_task
+ 0770:08B45 idle  _terminal_return_line
+ 0770:0890F idle  _force
+ 0770:08759       _leave_quietly
+ 0770:08102 idle  _display_callers
+ 0770:07D44 idle  _long_display_callers
+ 0770:07D23 idle  _handle
+ 0770:07AD9       _set_handle
+ 0770:077BF idle  _private
+ 0770:077A2 idle  _list_commands
+ 0770:075E7 idle  _change_user_password
+ 0770:07545       _str_to_num
+ 0770:07510 idle  _change_num
+ 0770:07448 idle  _validate_user
+ 0770:0705B idle  _give_time
+ 0770:0704E       _print_invalid_command
+ 0770:06FEA idle  _stream_toggle
+ 0770:06F5B idle  _make_link
+ 0770:06ECC idle  _relog_user
+ 0770:06E58 idle  _link_node_event
+ 0770:06DD9 idle  _relog_node_event
+ 0770:06C73 idle  _channel_message
+ 0770:06C02 idle  _lock_system
+ 0770:06BD3       _eat_one_space
+ 0770:06913 idle  _set_channel_priority
+ 0770:06742 idle  _set_channel_messages
+ 0770:064DD idle  _set_channel_lock
+ 0770:061CC idle  _kickoff_channel
+ 0770:05FAE idle  _give_channel_moderator
+ 0770:05DEF       _channel_list
+ 0770:05C6D       _set_channel_name
+ 0770:05C14 idle  _name_channel
+ 0770:05B50 idle  _monitor_system
+ 0770:05968 idle  _invite_to_channel
+ 0770:05907       _remove_invite
+ 0770:0538A idle  _make_access_level
+ 0770:05260 idle  _temp_priv_edit
+ 0770:05217 idle  _is_lurking
+ 0770:051F1 idle  _update_sys_info_command
+ 0770:05189 idle  _update_members_command
+ 0770:0510A idle  _show_members
+ 0770:050BC idle  _ansi_online_toggle
+ 0770:04F6B idle  _kill_node
+ 0770:04E0F idle  _kill_node_event
+ 0770:04AB9 idle  _squelch_node
+ 0770:04A63       _squelched
+ 0770:049E8 idle  _set_width
+ 0770:04981 idle  _print_restart_status
+ 0770:0490A idle  _kill_port
+ 0770:047F2 idle  _last_call
+ 0770:0447A idle  _print_stats
+ 0770:043FF       _sprint_time
+ 0770:04358 idle  _super_user
+ 0770:04290 idle  _generate_current_superuser_numbe
+ 0770:041DF idle  _channel_anonymous
+ 0770:041BB       _check_if_silenced
+ 0770:040E4 idle  _lurk
+ 0770:03F69 idle  _system_menu
+ 0770:03E45 idle  _set_call_back_delay
+ 0770:03CB2 idle  _change_all_passwords
+ 0770:03B8D idle  _change_password
+ 0770:03A84       _get_password
+ 0770:03A5A idle  _to_upper
+ 0770:03A49 idle  _set_num_calls
+ 0770:039A1 idle  _select_safeness
+ 0770:03959 idle  _print_safeness
+ 0770:0364A idle  _page_node
+ 0770:03602 idle  _choose_console_page
+ 0770:03580 idle  _print_page_status
+ 0770:03575 idle  _console_alarm_event
+ 0770:03205 idle  _print_num_calls
+ 0770:03180 idle  _get_number
+ 0770:02EEA idle  _system_information
+ 0770:02D7F idle  _sprint_expanded_time
+ 0770:02D68       _print_expanded_time_cr
+ 0770:02C28 idle  _print_expanded_time
+ 0770:02B75 idle  _conditional_sprint
+ 0770:02AE7 idle  _conditional_print
+ 0770:02A59 idle  _run_midnight_task
+ 0770:029C9 idle  _command_util
+ 0770:0298E idle  _print_command_menu
+ 0770:027A8 idle  _toggle_command
+ 0770:02620 idle  _find_command
+ 0770:024F8 idle  _print_verbose_commands
+ 0770:02420 idle  _print_command_list
+ 0770:023C4 idle  _is_online
+ 0770:0202A idle  _start_watcher
+ 0770:02015 idle  _watcher_dealloc
+ 0770:01F9C idle  _print_watchers
+ 0770:01E7D idle  _checksum_system_command
+ 0770:01E24 idle  _checksum_system_event
+ 0770:01D2F idle  _abort_auto_shutdown
+ 0770:01BB9 idle  _user_info
+ 0770:01A60 idle  _time_command
+ 0770:019DD idle  _print_info
+ 0770:019D8 idle  _psudo_call
+ 0770:015D1 idle  _suspend_user
+ 0770:00EBA idle  _start_direct_chat
+ 0770:00E9F idle  _list_all_pending_chat_requests
+ 0770:00E20 idle  _link_config
+ 0770:00B6F idle  _link_config_menu
+ 0770:00AB0 idle  _set_local_link_handle
+ 0770:00A1C idle  _set_link_handle
+ 0770:009ED idle  _issue_cmd_to_link
+ 0770:00935 idle  _set_auto_system_lists
+ 0770:00794 idle  _print_lc_menu
+ 0770:0077D idle  _on_or_off
+ 0770:006F4 idle  _double_space_toggle
+ 0770:0060E idle  _show_serial_info
+ 0770:00574 idle  _save_channel_info
+ 0770:00460 idle  _user_config_menu1
+ 0770:00440 idle  _user_config_menu
+ 0770:003C3 idle  _print_user_config_menu
+ 0770:00346 idle  _get_new_width
+ 0770:002CA idle  _slowdown_text
+ 0770:00162 idle  _show_task_info
+ 0770:000F2 idle  _set_reset_color
+ 0770:0005C idle  _set_return_echo
+ 0770:00000 idle  _nuke_modem
+ 111B:01C22       _check_for_privates
+ 111B:01ACD       _get_string_cntrl
+ 111B:01A69       _dealloc_abuf
+ 111B:019D4       _initabuffer
+ 111B:01904 idle  _aback_abuffer
+ 111B:017C6       _aget_abuffer
+ 111B:0175F idle  _aget_char
+ 111B:01700 idle  _aclear_buffer
+ 111B:0161B       _aput_into_buffer
+ 111B:0159B idle  _aput_char
+ 111B:01568 idle  _is_abuf_empty
+ 111B:011BC       _print_file_to_cntrl
+ 111B:00EC2 idle  _print_file_to
+ 111B:00EAB       _print_file
+ 111B:00D46       _last_ten_kills
+ 111B:00A8D       _log_kill
+ 111B:0099F       _log_event
+ 111B:008B4       _log_error
+ 111B:007E5       _mark_user_log_on
+ 111B:00687       _get_string
+ 111B:003BC       _prompt_get_string
+ 111B:00156       _get_hot_key_prompt
+ 111B:00117       _get_no_echo
+ 111B:000CF       _do_page_break
+ 111B:00076       _wait_ch
+ 111B:0000A       _convstring
+ 12E8:051CA       _shutdown_task
+ 12E8:050F2       _shutdown_node
+ 12E8:04F7E idle  _linked
+ 12E8:04F58       _save_sys_info
+ 12E8:04E60       _save_sys_info_function
+ 12E8:04D4A       _save_channel_info_function
+ 12E8:04C04       _midnight_task
+ 12E8:04B01 idle  _relogged
+ 12E8:04A80       _ginsu
+ 12E8:049E2 idle  _print_login_line
+ 12E8:045B7 idle  _connect_user
+ 12E8:04504 idle  _print_system_login
+ 12E8:042E7 idle  _ansi_choice_menu
+ 12E8:03A9A idle  _main_loop
+ 12E8:038CC idle  _check_for_chat_confirmation
+ 12E8:03881 idle  _remove_priority_messages
+ 12E8:037F2       _remake_handleline
+ 12E8:037B0 idle  _line_out_user
+ 12E8:03797 idle  _warn_user_lineout
+ 12E8:035E2 idle  _print_login_messages
+ 12E8:03420       _init_login_vars
+ 12E8:0315B       _calc_time_for_node
+ 12E8:030D9 idle  _calc_time_at_login
+ 12E8:0303E       _set_temp_user_info
+ 12E8:03009 idle  _sendslow
+ 12E8:02FE8       _delay
+ 12E8:02FAE idle  _get_result_code
+ 12E8:02E85 idle  _init_vars
+ 12E8:02D7C       _print_log_off
+ 12E8:02D28       _show_log_off
+ 12E8:02CD4       _show_log_in
+ 12E8:02BCB       _print_log_in
+ 12E8:029F7 idle  _construct_ddial_log_out_message
+ 12E8:028B8 idle  _construct_ddial_log_in_message
+ 12E8:026A7 idle  _construct_log_out_message
+ 12E8:0252E idle  _construct_log_in_message
+ 12E8:02493       _str_time
+ 12E8:01A22 idle  _pass_prompt
+ 12E8:01966 idle  _print_call_stats
+ 12E8:01948       _leave
+ 12E8:0187F       _remote
+ 12E8:017AA       _re_log
+ 12E8:0160C idle  _log_off_no_restarta
+ 12E8:014DB       _log_off
+ 12E8:014A5       _wait_for_death
+ 12E8:01495       _set_death_on
+ 12E8:01485       _set_death_off
+ 12E8:01463       _hangup_user
+ 12E8:01362       _log_out_user
+ 12E8:012D5       _unlog_user
+ 12E8:012BE       _clear_call_on_logoff
+ 12E8:01288       _call_on_logoff
+ 12E8:01243       _shutdown_server
+ 12E8:01236       _shutdown_timeout_server
+ 12E8:010A9       _start_server
+ 12E8:010A8 idle  _date_sync
+ 12E8:0102F idle  _time_monitor
+ 12E8:00E74       _start_timeout_server
+ 12E8:00E1F idle  _do_time_out
+ 12E8:00CBF idle  _do_time_warning
+ 12E8:00C9B idle  _nodes_online
+ 12E8:00C4E idle  _restart_monitor
+ 12E8:00C04 idle  _stack_monitor
+ 12E8:00B2F idle  _schedule_events
+ 12E8:00AD9       _has_channel
+ 12E8:00A81 idle  _limit_carrots
+ 12E8:00A5D       _broadcast_message
+ 12E8:009BB idle  _make_manual_sysop
+ 12E8:008A4 idle  _make_manual_user
+ 12E8:0085C idle  _print_to_all_with_priv
+ 12E8:00798       _print_lurk_message_from
+ 12E8:0076E idle  _restart_task
+ 12E8:0071F idle  _init_timeout_vars
+ 12E8:006C4       _filter_ansi
+ 12E8:0065A idle  _remove_ansi
+ 12E8:00603       _filter_flashing
+ 12E8:0059D idle  _remove_flashing
+ 12E8:00561       _ansi_strlen
+ 12E8:004AC idle  _console_status
+ 12E8:00083 idle  _update_display_one
+ 12E8:00040       _count_num_char_in_string_and_rem
+ 12E8:00020 idle  _count_num_char_in_string
+ 12E8:00001 idle  _increment_call_statistics
+ 1805:00904       _main
+ 1805:008E5       _unpause
+ 1805:008B4       _pause
+ 1805:008A1       _who_paused
+ 1805:0088E       _ispaused
+ 1805:00876       _iskilled
+ 1805:00868       _unlock_dos
+ 1805:00859       _lock_dos
+ 1805:00841       _islocked
+ 1805:00820 idle  _free_semaphores
+ 1805:0080F       _unlock
+ 1805:007EC       _lock
+ 1805:0070E idle  _multitask
+ 1805:006B5       _initMultitask
+ 1805:006B1 idle  _ctrl_brk_handler
+ 1805:004B4       _make_task
+ 1805:0032A idle  _int8_task_switch
+ 1805:00254 idle  _dv_int8_task_switch
+ 1805:0014D       _next_task
+ 1805:0011D idle  _flip_a_ems_page
+ 1805:000DE idle  _flip_ems_page
+ 1805:000B0 idle  _switch_to_ems_context
+ 1805:0001C       _kill_task
+ 1805:0000F       _end_task
+ 1805:0000B       _our_task_id
+ 1897:01216 idle  _check_operating_system
+ 1897:011D1 idle  _check_for_os2
+ 1897:01196 idle  _check_for_windows
+ 1897:0115F idle  _check_for_dv
+ 1897:00D82       _shut_down
+ 1897:00D6E       _g_exit
+ 1897:00AF6       _allocate_resources
+ 1897:009DC idle  _print_help
+ 1897:00982 idle  _conv_argv_to_upper
+ 1897:00919 idle  _find_file_name_arg
+ 1897:008B0 idle  _find_arg
+ 1897:0086E       _de_allocate_resources
+ 1897:0085C idle  _harderror_handler
+ 1897:00837 idle  _print_stupid_shit
+ 1897:007A9 idle  _print_system_identification
+ 1897:0073E idle  _print_software_startup
+ 1897:00676 idle  _pre_init_vars
+ 1897:004A1 idle  _loadSystemVars
+ 1897:001E1 idle  _load_serial_config_info
+ 1897:00023 idle  _loadChannelVars
+ 1897:0000D       _reboot
+ 19C5:005AD       _update_members_list
+ 19C5:00484       _load_access_of_user
+ 19C5:00203       _save_user
+ 19C5:00081       _load_user
+ 19C5:0003B       _set_bit
+ 19C5:0000D       _test_bit
+ 1A5C:00EFA idle  _g_owns_file
+ 1A5C:00EA1 idle  _g_flush
+ 1A5C:00E2D idle  _g_ftransfer
+ 1A5C:00DC9       _g_fclose
+ 1A5C:00D3D       _g_fopen
+ 1A5C:00CF1 idle  _delete_file_entry
+ 1A5C:00C12 idle  _add_file_entry
+ 1A5C:00BC4 idle  _find_file_pointer
+ 1A5C:00B72 idle  _g_owns_memory
+ 1A5C:00AA0       _g_free_all_handles
+ 1A5C:00A34 idle  _g_keep_memory
+ 1A5C:0099D idle  _g_transfer
+ 1A5C:00946       _g_free
+ 1A5C:008F0       _g_free_from_who
+ 1A5C:0088F       _g_malloc_no_owner
+ 1A5C:0082D       _g_malloc
+ 1A5C:007CB       _g_malloc_main_only
+ 1A5C:00754 idle  _free_some_memory
+ 1A5C:00642 idle  _allocate_some_memory
+ 1A5C:00551       _grab_all_available_memory
+ 1A5C:0051A       _deallocate_ems
+ 1A5C:00397 idle  _look_for_ems
+ 1A5C:002AE idle  _merge_blocks
+ 1A5C:001BC idle  _find_smallest_available_memory
+ 1A5C:00170 idle  _delete_memory_entry
+ 1A5C:0007A idle  _insert_memory_entry_at
+ 1A5C:00003 idle  _find_memory_pointer
+ 1B4F:0275B idle  _enter_date
+ 1B4F:024F9 idle  _set_new_expiration_date
+ 1B4F:0248C idle  _edit_credit
+ 1B4F:02392 idle  _ue_main_prompt
+ 1B4F:020D0 idle  _ue_global_copy
+ 1B4F:02029       _start_user_edit
+ 1B4F:01B6C idle  _ue_new_user_prompt
+ 1B4F:0159D idle  _ue_user_edit_prompt
+ 1B4F:01428 idle  _ue_delete_users
+ 1B4F:01104 idle  _ue_priv_change
+ 1B4F:00E7C idle  _print_user_info
+ 1B4F:00E3C idle  _is_user_online
+ 1B4F:00B2C idle  _priv_time_edit
+ 1B4F:00A82 idle  _print_user_time_pri
+ 1B4F:00A39       _exist
+ 1B4F:00579 idle  _edit_privs
+ 1B4F:00294       _edit_main_privs
+ 1B4F:00229 idle  _print_main_privs_menu
+ 1B4F:0015B idle  _edit_staples
+ 1B4F:000F1 idle  _get_new_staple
+ 1B4F:00059 idle  _edit_staple_menu
+ 1B4F:0000A idle  _file_get_string
+ 1DDF:00001       _get_string_echo
+ 1DE1:01C8C       _release_keyboard_int
+ 1DE1:01C6A       _set_new_keyboard_int
+ 1DE1:01C01 idle  _keyboard_int_9
+ 1DE1:01BED idle  _send_key_command
+ 1DE1:01BA0       _console_alarm
+ 1DE1:01B61 idle  _beep_console
+ 1DE1:018AD       _wrap_line
+ 1DE1:0183E       _direct_screen
+ 1DE1:017F7       _create_bar
+ 1DE1:015E8       _init_display
+ 1DE1:01569 idle  _background
+ 1DE1:014EA idle  _foreground
+ 1DE1:01482 idle  _bold_video
+ 1DE1:0141A idle  _blink_video
+ 1DE1:0137E       _reset_attributes
+ 1DE1:0132A idle  _send_attribute
+ 1DE1:0104A       _print_chr_to
+ 1DE1:00E68 idle  _a_send_console_char
+ 1DE1:00D22 idle  _a_got_ansi
+ 1DE1:00CE4 idle  _move_cursor
+ 1DE1:008CB idle  _a_reading_ansi
+ 1DE1:0087E       _special_code
+ 1DE1:00869       _print_chr
+ 1DE1:00849       _print_cr_to
+ 1DE1:00834       _print_cr
+ 1DE1:00803       _print_str_cr_to
+ 1DE1:007DC       _print_str_cr
+ 1DE1:007BE       _print_sys_mesg
+ 1DE1:00796       _print_string_to
+ 1DE1:0077F       _print_str_cr_noansi
+ 1DE1:00734       _print_string_noansi
+ 1DE1:00712       _print_string
+ 1DE1:006B4 idle  _set_scroll_region
+ 1DE1:00632 idle  _scroll_view
+ 1DE1:0055F idle  _scroll_up_at_cursor
+ 1DE1:004AF idle  _move_back_line
+ 1DE1:0044B       _position
+ 1DE1:003EA       _clear_screen
+ 1DE1:00326 idle  _position_console
+ 1DE1:00275 idle  _clear_to_eol_console
+ 1DE1:001D4 idle  _clear_console
+ 1DE1:0014D       _switch_virtual_console
+ 1DE1:0009D       _find_ansi
+ 1DE1:0008A       _cur_video_state
+ 1DE1:00007       _allocate_a_console
+ 1FAA:01123       _line_editor
+ 1FAA:010B3 idle  _print_short_welcome
+ 1FAA:0103A idle  _print_centered
+ 1FAA:01019 idle  _line_editor_dealloc
+ 1FAA:00D0B idle  _enter_lines
+ 1FAA:00C5B idle  _load_editor_file
+ 1FAA:00BBF idle  _save_editor_file
+ 1FAA:00B70 idle  _show_stats
+ 1FAA:00A9A idle  _edit_lines_in_buffer
+ 1FAA:009FF idle  _delete_buffer
+ 1FAA:0090D idle  _insert_buffer
+ 1FAA:00804 idle  _list_buffer
+ 1FAA:00793 idle  _get_edit_int
+ 1FAA:006AF idle  _show_buffer
+ 1FAA:005E6 idle  _edit_line
+ 1FAA:0056F idle  _delete_line
+ 1FAA:0052E idle  _next_eol
+ 1FAA:004B6 idle  _add_line
+ 1FAA:00426 idle  _insert_line
+ 1FAA:00403 idle  _length_of_null
+ 1FAA:003D0       _length_of_line
+ 1FAA:003A6 idle  _number_of_lines
+ 1FAA:00374 idle  _location_of_line
+ 1FAA:0013C idle  _get_editor_string_wordwrap
+ 1FAA:0000F       _get_editor_string
+ 20D2:00E24       _mail_system
+ 20D2:00D76       _is_new_mail
+ 20D2:00CD7 idle  _time_t_to_dos_date
+ 20D2:00CAA       _user_feedback
+ 20D2:00C63 idle  _send_mail_message
+ 20D2:00A58 idle  _send_a_mail_message
+ 20D2:009D2 idle  _delete_mail_message
+ 20D2:00976 idle  _delete_a_mail_message
+ 20D2:008F1 idle  _read_mail_message
+ 20D2:007FA idle  _read_a_mail_message
+ 20D2:00651 idle  _list_mail
+ 20D2:00534       _mail_line
+ 20D2:00508 idle  _print_strip
+ 20D2:004A1 idle  _open_mail_file
+ 20D2:00453 idle  _find_directory
+ 20D2:00261 idle  _create_message
+ 20D2:0021B       _copy_stream
+ 20D2:00000 idle  _find_mail
+ 21D7:01788       _rotator_menu_system
+ 21D7:0160E idle  _modify_user_rotator_box
+ 21D7:014BF idle  _rotate_message
+ 21D7:0145B       _read_rotator_box
+ 21D7:013A7       _rotator_system
+ 21D7:012EF idle  _modify_rotate_params
+ 21D7:01135 idle  _modify_rotator_box
+ 21D7:00FB4 idle  _modify_box_contents
+ 21D7:00E1D idle  _read_box_contents
+ 21D7:00DB0       _get_yes_no
+ 21D7:00CF5 idle  _list_rotator_box
+ 21D7:00CB0 idle  _ask_question
+ 21D7:00BDF idle  _save_rotator_file
+ 21D7:00BC2 idle  _find_rotator_filename
+ 21D7:00AF5       _init_rotator_bit_array
+ 21D7:00A24 idle  _change_rotator_bit_array
+ 21D7:00816 idle  _save_rotator_entry
+ 21D7:007CB idle  _assign_blank_rotator_info
+ 21D7:00653 idle  _load_rotator_entry
+ 21D7:0053A idle  _open_rotator_file
+ 21D7:004F9 idle  _check_no_rotator_messages
+ 21D7:00266       _kill_all_messages_for_user
+ 21D7:0000D       _update_m_index
+ 2359:005C6       _last_ten_callers
+ 2359:005B3 idle  _close_last_ten_callers
+ 2359:0045D       _log_user_is_leaving
+ 2359:0043D       _file_section
+ 2359:002AE idle  _file_list_section
+ 2359:001A7 idle  _get_file_list_name
+ 2359:00061 idle  _get_file_list
+ 2359:00044 idle  _close_file_list
+ 2359:0000D idle  _filter_control
+ 23D4:00CE5       _reset_channel
+ 23D4:0064A       _to_channel
+ 23D4:005FF       _clear_channel_semaphores
+ 23D4:00590 idle  _clear_user_from_invite_lists
+ 23D4:0034D       _monitor_channel
+ 23D4:00315       _invited
+ 23D4:00282 idle  _list_monitor_channel
+ 23D4:0023A       _is_monitoring
+ 23D4:0019A       _del_channel
+ 23D4:000DC       _add_channel
+ 23D4:000B0 idle  _clear_channels
+ 23D4:00097 idle  _unlock_channel
+ 23D4:00067 idle  _lock_channel
+ 23D4:0003D idle  _channel_link_free
+ 23D4:00009       _channel_empty
+ 24AA:0073F       _delete_task_from_scheduler
+ 24AA:005E1       _add_task_to_scheduler
+ 24AA:00549       _change_task_to_scheduler
+ 24AA:003DE       _see_if_scheduled_event_occurs
+ 24AA:0035F idle  _set_next_scheduled_event
+ 24AA:002FE idle  _del_task_from_scheduler
+ 24AA:002C5 idle  _find_schedule_with_id
+ 24AA:00009 idle  _calc_next_event
+ 251F:014E1       _sysop_file_mngr
+ 251F:01252 idle  _transfer_protocol
+ 251F:010C2 idle  _directory_sysop
+ 251F:0104C idle  _copy_file
+ 251F:00F0D idle  _copy_file_function
+ 251F:00E8C idle  _rename_file
+ 251F:00E3E idle  _make_directory
+ 251F:00DF0 idle  _del_directory
+ 251F:00BB1 idle  _delete_file
+ 251F:009F4 idle  _delete_files_function
+ 251F:00969 idle  _edit_file_sysop
+ 251F:00923 idle  _view_file_sysop
+ 251F:00752 idle  _software_update
+ 251F:005C6 idle  _move_files_around
+ 251F:00504 idle  _put_back_checksum_file
+ 251F:00432 idle  _put_back_exe_file
+ 251F:003EC idle  _print_system_fucked
+ 251F:003CA idle  _print_system_intact_message
+ 251F:00391 idle  _wait_for_return
+ 251F:002DF idle  _g_rename
+ 251F:0026A idle  _write_new_checksum_file
+ 251F:0008C       _auto_reboot_task
+ 251F:0004E       _view_file
+ 251F:0000E       _edit_file
+ 267E:01941       _bbs_system
+ 267E:01868 idle  _reset_bbs_message_date
+ 267E:017DA idle  _toggle_global_on
+ 267E:015A7 idle  _global_newscan
+ 267E:014CF idle  _jump_board
+ 267E:01463 idle  _enter_board
+ 267E:011F6 idle  _save_bbs_user
+ 267E:0104F idle  _load_bbs_user
+ 267E:01036 idle  _create_blank_bbs_acct
+ 267E:00EA2 idle  _load_board_info
+ 267E:00D42 idle  _send_a_bbs_message
+ 267E:00CB7 idle  _delete_bbs_message
+ 267E:00BC4 idle  _delete_a_bbs_message
+ 267E:00B39 idle  _edit_bbs_message
+ 267E:00A98 idle  _edit_a_bbs_message
+ 267E:009B3 idle  _new_messages
+ 267E:00958 idle  _is_new_messages
+ 267E:008B7 idle  _read_bbs_message
+ 267E:005C8 idle  _read_a_bbs_message
+ 267E:003E2 idle  _list_bbs
+ 267E:00388 idle  _open_bbs_file
+ 267E:0036E idle  _find_bbs_directory
+ 267E:0015F idle  _create_bbs_message
+ 267E:00066 idle  _find_bbs
+ 267E:0000E idle  _compare_dates
+ 284E:00935       _link_loop
+ 284E:00918 idle  _link_command
+ 284E:006B8 idle  _link_exec
+ 284E:00682 idle  _link_leave
+ 284E:00335 idle  _ddial_sp
+ 284E:002D1 idle  _ddial_ps
+ 284E:000A1 idle  _ddial_p
+ 284E:0006C idle  _set_ansi
+ 284E:00038 idle  _print_string_dumblink
+ 284E:00004 idle  _print_str_cr_dumblink
+ 292E:014D1       _receive_files
+ 292E:01463       _send_files
+ 292E:013D7 idle  _receive_ymodem_batch
+ 292E:01348 idle  _send_ymodem_batch
+ 292E:00FBF idle  _receive_ymodem_protocol
+ 292E:00CC4 idle  _send_ymodem_protocol
+ 292E:00C25 idle  _decode_ymodem_block0
+ 292E:00B97 idle  _create_ymodem_block0
+ 292E:0090C idle  _receive_xmodem_protocol
+ 292E:00715 idle  _send_xmodem_protocol
+ 292E:006AB idle  _proto_file_length
+ 292E:0066D idle  _proto_write_buffer
+ 292E:005E9 idle  _proto_read_buffer
+ 292E:005D6 idle  _proto_close_file
+ 292E:00596 idle  _proto_open_file
+ 292E:00582 idle  _massive_cancel
+ 292E:00529 idle  _check_cancel
+ 292E:004C1 idle  _sender_start
+ 292E:003F1 idle  _receiver_driven_start
+ 292E:002B2 idle  _recv_packet
+ 292E:00217 idle  _send_packet
+ 292E:001E4 idle  _time_buffer
+ 292E:001A2 idle  _time_integer
+ 292E:00159 idle  _wait_for_sending_state
+ 292E:00100 idle  _get_timeout
+ 292E:000E5 idle  _send_short
+ 292E:000B1 idle  _send_integer
+ 292E:00084 idle  _send_buffer
+ 292E:0001C idle  _calc_crc_checksum
+ 292E:00000 idle  _calc_8bit_checksum
+ 2A7F:00002       _deencrypt
+ 2A90:00031       _nodes_free
+ 2A90:00002       _repeat_chr
+ 2A9A:00C8E idle  _last_procedure
+ 2A9A:00B03 idle  _check_system_checksum
+ 2A9A:00A88       _read_old_time
+ 2A9A:009AF idle  _checksum_ginsu_file
+ 2A9A:00899       _checksum_ginsu_file_multitask
+ 2A9A:00762       _perodic_checksum_system_event
+ 2A9A:006FC idle  _bit_shuffle
+ 2A9A:0066D       _unscramble
+ 2A9A:005F7       _checksum_system
+ 2A9A:005BB       _rom_checksum
+ 2A9A:0053A       _hex_conversion
+ 2A9A:00284       _see_scheduler
+ 2A9A:001E7 idle  _fixed_asctime
+ 2A9A:00161       _files_print
+ 2A9A:00007       _memory_print
+ 2B63:04B00       _information_question
+ 2B63:04AB0       _nuke_greenhouse
+ 2B63:04A90       _company_name
+ 2B63:04A80       _system_startup
+ 2B63:04A60       _glenview_il
+ 2B63:04A50       _po_box_line
+ 2B63:04A10       _copyright_mesg
+ 2B63:04A00       _ginsutalk_line
+ 2B63:049E0       _by_line
+ 2B63:049B0 idle  _info_string
+ 2B63:04900 idle  _ddial_commands
+ 2B63:03FD0       _channels
+ 2B63:03670       _mem_array
+ 2B63:02F90       _file_array
+ 2B63:01781       _user_lines
+ 2B63:00C71       _user_options
+ 2B63:00C60 idle  _user_member_list
+ 2B63:00AF0 idle  _string_table
+ 2B63:00000 idle  _commands
+ 3016:0E33C       __atexittbl
+ 3016:0E2D4       _schedule_data
+ 3016:0DE60       _schedule
+ 3016:0DDE0 idle  _rotator_bit_array
+ 3016:0DDDE idle  _rotator_delay
+ 3016:0DDDC idle  _cur_rot_message
+ 3016:0DDDA idle  _last_rot_message
+ 3016:0DDD8 idle  _rotator_id
+ 3016:0DDD6 idle  _base_seg
+ 3016:0DD6E       _port_screen
+ 3016:0DD54       _is_a_console
+ 3016:0DD53 idle  _width
+ 3016:0DD52 idle  _width_minus_one
+ 3016:0DD50 idle  _cur_pos1
+ 3016:0DD4E idle  _cur_pos2
+ 3016:0DB3E idle  _screens
+ 3016:0DABC idle  _ext_mode
+ 3016:0DAB8 idle  _int_9_key
+ 3016:0DAB6 idle  _ems_page_frame
+ 3016:0DAB2 idle  _location_of_ems
+ 3016:0DA76       _os_name
+ 3016:0DA75 idle  _major_version
+ 3016:0DA74 idle  _minor_version
+ 3016:0DA72 idle  _old_break_value
+ 3016:0DA3E idle  _task_fast
+ 3016:0D6B0       _tasks
+ 3016:0D6AE idle  _begin_task_struct
+ 3016:0D6AC idle  _end_task_struct
+ 3016:0D6AA       _tswitch
+ 3016:0D6A8       _dans_counter
+ 3016:0D6A6 idle  _switchTasks
+ 3016:0D6A4       _numTasksOpen
+ 3016:0D6A0 idle  _old_int8
+ 3016:0D69E idle  _oldss
+ 3016:0D69C idle  _oldsp
+ 3016:0D69A idle  _old_tswitch
+ 3016:0D698 idle  _curMaxTasks
+ 3016:0D598 idle  _semaphores
+ 3016:0D596 idle  _dontKeepNextTask
+ 3016:0D30D       _abuf_status
+ 3016:0BFF5       _line_status
+ 3016:0BFF3       _server
+ 3016:0BFF1       _timeout_server
+ 3016:0BDD8       _sys_info
+ 3016:0BDC2       _sys_toggles
+ 3016:0BDBC       _system_number
+ 3016:0BDBA idle  _number_till_core
+ 3016:0B03A       _port
+ 3016:0B01A       _port_fast
+ 3016:0B018       _num_ports
+ 3016:0B016 idle  _digi_11_mux
+ 3016:0B014 idle  _digi_12_mux
+ 3016:0B012 idle  _digi_13_mux
+ 3016:0B010 idle  _digi_15_mux
+ 3016:0AFF0 idle  _digi_11_loc
+ 3016:0AFD0 idle  _digi_12_loc
+ 3016:0AFB0 idle  _digi_13_loc
+ 3016:0AF90 idle  _digi_15_loc
+ 3016:0AF50 idle  _a_chars_in_buffer
+ 3016:0AF10       _a_dcd_detect
+ 3016:0AED0       _a_put_char_in_buffer
+ 3016:0AE90       _a_get_char
+ 3016:0AE50       _a_send_char
+ 3016:0AE10       _a_empty_inbuffer
+ 3016:0ADD0       _a_char_in_buf
+ 3016:0AD90       _a_get_first_char
+ 3016:0AD50       _a_get_nchar
+ 3016:0AD10       _a_wait_for_xmit
+ 3016:0ACD0       _a_empty_outbuffer
+ 3016:0AC90 idle  _a_change_dtr_state
+ 3016:0AC8E idle  _int_15_loc
+ 3016:0AC8C idle  _int_13_loc
+ 3016:0AC8A idle  _int_12_loc
+ 3016:0AC88 idle  _int_11_loc
+ 3016:0AC68 idle  _smart_11_loc
+ 3016:0AC48 idle  _smart_12_loc
+ 3016:0AC28 idle  _smart_13_loc
+ 3016:0AC08 idle  _smart_15_loc
+ 3016:08E08 idle  _buffers
+ 3016:08DFC idle  _int11
+ 3016:08DF0 idle  _int12
+ 3016:08DE4 idle  _int13
+ 3016:08DD8 idle  _int15
+ 3016:08DB4       __ScanTodVector
+ 3016:08DB2       __RealCvtVector
+ 3016:08DA4       _daylight
+ 3016:08DA0       _timezone
+ 3016:08D98       _tzname
+ 3016:08D7E idle  __monthDay
+ 3016:08B3E       _sys_nerr
+ 3016:08A7E       _sys_errlist
+ 3016:088A4       _environ
+ 3016:08896 idle  __argv
+ 3016:08894 idle  __argc
+ 3016:08857       _directvideo
+ 3016:08848       __video
+ 3016:087DE       __stklen
+ 3016:086FA idle  __dosErrorToSV
+ 3016:086F8       __doserrno
+ 3016:086F6       __notUmask
+ 3016:086F4       __fmode
+ 3016:086CC       __openfd
+ 3016:086CA       __nfile
+ 3016:0853A       __streams
+ 3016:08536 idle  __exitopen
+ 3016:08532       __exitfopen
+ 3016:0852E       __exitbuf
+ 3016:0842C       __ctype
+ 3016:0842A       __atexitcnt
+ 3016:07DC6 idle  _crctab
+ 3016:06A4C idle  _next_id
+ 3016:06A4A idle  _which_next_event_id
+ 3016:06A46 idle  _next_scheduled_event
+ 3016:06A44       _num_schedule
+ 3016:0679E       _max_channels
+ 3016:06644 idle  _file_list
+ 3016:0663C idle  _file_dir
+ 3016:05F3F idle  _rotator_on
+ 3016:05F2E idle  _rotate_file
+ 3016:05957       _system_arrow
+ 3016:0594F idle  _color_lookup
+ 3016:0594D       _cur_console
+ 3016:0594B idle  _avail_screen
+ 3016:0594A idle  _con_char_counter
+ 3016:049AE idle  _edit_user_prompt
+ 3016:0498E idle  _um_main_prompt
+ 3016:0486A       _file_handles
+ 3016:04868       _mem_handles
+ 3016:04589 idle  _sysop_member_list
+ 3016:04580 idle  _userfile
+ 3016:03CCE       _compile_date
+ 3016:03CC5       _compile_time
+ 3016:03CC4 idle  _have_break
+ 3016:03CC3 idle  _have_error
+ 3016:03CC2 idle  _have_key_int
+ 3016:03CC1 idle  _have_com
+ 3016:03CC0 idle  _have_ems
+ 3016:03CBC       _serial_config_file
+ 3016:03CB1 idle  _initial_serial_config_file
+ 3016:03CAF idle  _num_consoles_loaded
+ 3016:03CAD idle  _num_ports_loaded
+ 3016:03CAC idle  _os_type
+ 3016:03CAB idle  _multitasking_os
+ 3016:03CAA       _dv_loaded
+ 3016:03C9C idle  _system_load
+ 3016:03C98 idle  _max_task_switches
+ 3016:03C94 idle  _num_task_switches
+ 3016:03C93 idle  _timer_section
+ 3016:03C92       _tasking
+ 3016:03C82 idle  _emm_page_mapping
+ 3016:0319F       _version_title
+ 3016:0315A       _cr_lf
+ 3016:03148 idle  _welcome
+ 3016:03144       _backspacestring
+ 3016:0017A idle  _OFF_str
+ 3016:00176 idle  _ON_str
+ 3016:00167 idle  _InvalidSyntax
+ 3016:00144 idle  _InvalidCommand
+ 3016:0012D       _InvalidFormat
+ 3016:0011B       _NodeOutOfRange
+ 3016:0010F       _NotOnLine
+ 3016:000BB idle  _board_types
+ 3016:000A4 idle  _illegal_command
+ 3016:000A0 idle  _mailbox_4
+ 3016:0009C idle  _mailbox_3
+ 3016:00098 idle  _mailbox_2
+ 3016:00094 idle  _mailbox_1
+ 3016:0008F       __heaptop
+ 3016:0008B       __brklvl
+ 3016:00087       __heapbase
+ 3016:00085 idle  ___brklvl
+ 3016:00081 idle  __StartTime
+ 3016:0007F       _errno
+ 3016:0007E idle  __osminor
+ 3016:0007D idle  __osversion
+ 3016:0007D       __osmajor
+ 3016:0007D idle  __version
+ 3016:0007B       __psp
+ 3016:00079       __envSize
+ 3016:00077       __envseg
+ 3016:00075       __envLng
+ 3016:00071       __C0environ
+ 3016:0006D       __C0argv
+ 3016:0006B       __C0argc
+ 3016:00067 idle  __Int6Vector
+ 3016:00063 idle  __Int5Vector
+ 3016:0005F idle  __Int4Vector
+ 3016:0005B idle  __Int0Vector
+ 3016:00000 idle  DATASEG@
+
+Program entry point at 0000:0000
+

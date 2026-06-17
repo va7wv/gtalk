@@ -1,0 +1,14 @@
+DONE take lurk messages out of check_for_privates
+DONE let users /t from mail and bbs
+make lineouts only on main channel
+
+/make-/+ should print priv # and tell all the other commands which are removed
+
+fix security
+
+FIXED sysinfo last uptime and downtime are screwed
+  < sysinfo was not saving in /shutdown because
+    the server (and scheduler) were killed before sysinfo task
+    was started) - FIXED>
+
+

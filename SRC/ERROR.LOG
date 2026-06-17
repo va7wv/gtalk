@@ -1,0 +1,15 @@
+ fread() failed on file 
+Date: Tue Jun 16 21:32:47 2026
+
+Error: USER.DAT: No such file or directory
+Date: Tue Jun 16 21:32:47 2026
+
+reading of user failed
+Date: Tue Jun 16 21:32:47 2026
+
+Error: SYSTEM.CFG: No such file or directory
+Date: Tue Jun 16 21:50:00 2026
+
+ System config file did not load Creating NEW
+Date: Tue Jun 16 21:50:00 2026
+

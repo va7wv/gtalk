@@ -1,0 +1,23 @@
+File FILE:
+        user_options[portnum].toggles[loop]=user_lines[portnum].toggles[loop];
+                    if (test_bit(user_options[tswitch].toggles,DOUBLESPACE_TOG))
+                    if (test_bit(user_options[tswitch].toggles,NO_RETURN_ECHO_TOG))
+                    if (test_bit(user_options[tswitch].toggles,DOUBLESPACE_TOG))
+                    if (test_bit(user_options[tswitch].toggles,DOUBLESPACE_TOG))
+                    if (test_bit(user_options[tswitch].toggles,DOUBLESPACE_TOG))
+                    if (test_bit(user_options[tswitch].toggles,DOUBLESPACE_TOG))
+                    if (test_bit(user_options[tswitch].toggles,DOUBLESPACE_TOG))
+                    if (test_bit(user_options[tswitch].toggles,DOUBLESPACE_TOG))
+                    if (test_bit(user_options[tswitch].toggles,DOUBLESPACE_TOG))
+                    if (test_bit(user_options[tswitch].toggles,DOUBLESPACE_TOG))
+    { print_user_config_menu(&user_lines[tswitch],user_options[tswitch].toggles);
+        case 'D' : set_bit(user_options[portnum].toggles,DOUBLESPACE_TOG,
+                    !test_bit(user_options[portnum].toggles,DOUBLESPACE_TOG));
+  set_bit(user_options[portnum].toggles,DOUBLESPACE_TOG,
+          (mode=!test_bit(user_options[portnum].toggles,DOUBLESPACE_TOG)));
+  set_bit(user_options[portnum].toggles,LINECOLORS_TOG,bit);
+  if (test_bit(user_options[portnum].toggles,LINECOLORS_TOG))
+    return  (test_bit(user_options[portnum].privs,LURK_PRV) && test_bit(user_options[portnum].toggles,LURKING_TOG));
+  set_bit(user_options[portnum].toggles,SYSMON_TOG,bit);
+  if (test_bit(user_options[portnum].toggles,SYSMON_TOG))
+  set_bit(user_options[portnum].toggles,ANSIOFF_TOG,!test);

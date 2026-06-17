@@ -1,0 +1,24 @@
+CREATING A NEW USER  -  March 1993  -  David W Jeske
+
+Quick and Dirty
+
+check /sm for a un-used user number.
+
+Remember, /sm is regularly updated every morning at 6am. If you wish to
+manually update it. Type /MEMUD and wait for the messages which will appear
+on the "System Channel" (T0). See /sysmon.
+
+when you find a free user number.
+
+type /u<number>
+
+Enter the User Edit Password
+
+If that user number exists it will automatically put you in to a user
+editor. If that user number is empty, it will automatically put you into
+the NEW user section.
+
+ALTERNATIVELY:  You can type /u<return>, enter the user edit password,
+                And select (N)ew User from the menu.
+
+
